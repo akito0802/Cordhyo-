@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#111827" />
+  <title>コードの使い方 | Guitar Chord Book</title>
+  <link rel="stylesheet" href="style.css?v=20260728-17" />
+  <link rel="stylesheet" href="usage-guide.css?v=20260729-1" />
+  <link rel="stylesheet" href="site-nav.css?v=20260729-1" />
+</head>
+<body>
+  <nav class="site-nav" aria-label="ページ切り替え">
+    <a href="index.html">🎸 コード</a>
+    <a href="usage.html" class="active" aria-current="page">🎼 使い方</a>
+  </nav>
+
+  <header class="hero usage-hero">
+    <div>
+      <p class="eyebrow">CHORD USAGE GUIDE</p>
+      <h1>場面から選べる<br>コードの使い方</h1>
+      <p class="lead">曲の最初・つなぎ・盛り上げ・終止・緊張から、合うコードを探せるよ。</p>
+    </div>
+  </header>
+
+  <main class="container usage-page-container">
+    <section class="controls usage-key-control" aria-label="キー選択">
+      <label>ルート音
+        <select id="usageRoot" aria-label="ルート音を選択">
+          <option>C</option><option>C#</option><option>D</option><option>D#</option>
+          <option>E</option><option>F</option><option>F#</option><option>G</option>
+          <option>G#</option><option>A</option><option>A#</option><option>B</option>
+        </select>
+      </label>
+      <p class="control-note">表のコードを押すと、コード辞典ページでフォームを表示するよ。</p>
+    </section>
+
+    <section id="usageGuide" class="usage-guide" aria-labelledby="usageTitle">
+      <div class="usage-guide-heading">
+        <div><h2 id="usageTitle">曲の最初</h2><p id="usageDescription"></p></div>
+        <span class="usage-guide-note">コードを押すと辞典へ移動</span>
+      </div>
+      <div id="usageTabs" class="usage-tabs" role="tablist" aria-label="コードの使い方を切り替え"></div>
+      <div class="usage-table-wrap">
+        <table class="usage-table">
+          <thead><tr><th>使えるコード</th><th>役割・雰囲気</th><th>次につなぐ例</th></tr></thead>
+          <tbody id="usageTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>Guitar Chord Book — コードの使い方</footer>
+  <script src="usage-page.js?v=20260729-1"></script>
+</body>
+</html>
