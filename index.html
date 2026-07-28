@@ -12,7 +12,7 @@
     <div>
       <p class="eyebrow">GUITAR CHORD BOOK</p>
       <h1>選んですぐ見られる<br>ギターコード表</h1>
-      <p class="lead">種類とコード名を選択ボックスから選ぶだけ。</p>
+      <p class="lead">ルート音とコードの種類を選ぶだけ。</p>
     </div>
   </header>
 
@@ -20,22 +20,26 @@
     <section class="controls" aria-label="コード選択">
       <div class="filters selection-filters">
         <label>
-          コードの種類
-          <select id="typeFilter">
-            <option value="all">すべて</option>
-            <option value="major">メジャー</option>
-            <option value="minor">マイナー</option>
-            <option value="7th">7th</option>
-            <option value="maj7">maj7</option>
-            <option value="m7">m7</option>
-            <option value="sus">sus</option>
-            <option value="add">add</option>
+          ルート音
+          <select id="rootSelect" aria-label="ルート音を選択">
+            <option>C</option><option>C#</option><option>D</option><option>D#</option>
+            <option>E</option><option>F</option><option>F#</option><option>G</option>
+            <option>G#</option><option>A</option><option>A#</option><option>B</option>
           </select>
         </label>
 
         <label>
-          コード名
-          <select id="chordSelect" aria-label="表示するコードを選択"></select>
+          コードの種類
+          <select id="typeSelect" aria-label="コードの種類を選択">
+            <option value="major">メジャー</option>
+            <option value="minor">マイナー</option>
+            <option value="7">7</option>
+            <option value="maj7">maj7</option>
+            <option value="m7">m7</option>
+            <option value="sus2">sus2</option>
+            <option value="sus4">sus4</option>
+            <option value="add9">add9</option>
+          </select>
         </label>
       </div>
     </section>
