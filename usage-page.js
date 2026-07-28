@@ -18,6 +18,7 @@ const usageTabs=document.querySelector('#usageTabs');
 const usageTitle=document.querySelector('#usageTitle');
 const usageDescription=document.querySelector('#usageDescription');
 const usageTableBody=document.querySelector('#usageTableBody');
+const restoreRequested=new URLSearchParams(location.search).get('restore')==='1';
 const savedUsageState=JSON.parse(sessionStorage.getItem('usagePageState')||'null');
 let activeUsage=savedUsageState?.activeUsage&&usageGuideData[savedUsageState.activeUsage]?savedUsageState.activeUsage:'intro';
 if(savedUsageState?.root&&roots.includes(savedUsageState.root))usageRoot.value=savedUsageState.root;
@@ -39,17 +40,24 @@ function renderTable(){
 function saveUsageState(){
  sessionStorage.setItem('usagePageState',JSON.stringify({activeUsage,root:usageRoot.value,scrollY:window.scrollY}));
 }
+function restoreScroll(){
+ if(!restoreRequested||savedUsageState?.scrollY==null)return;
+ const y=Number(savedUsageState.scrollY)||0;
+ requestAnimationFrame(()=>requestAnimationFrame(()=>window.scrollTo({top:y,left:0,behavior:'auto'})));
+ setTimeout(()=>window.scrollTo({top:y,left:0,behavior:'auto'}),120);
+}
+
 usageTabs.addEventListener('click',event=>{
  const button=event.target.closest('[data-usage]');
  if(!button)return;
  activeUsage=button.dataset.usage;
  renderTable();
+ saveUsageState();
 });
-usageRoot.addEventListener('change',renderTable);
+usageRoot.addEventListener('change',()=>{renderTable();saveUsageState();});
 usageTableBody.addEventListener('click',event=>{
  if(event.target.closest('.usage-chord'))saveUsageState();
 });
+window.addEventListener('pagehide',saveUsageState);
 renderTable();
-if(savedUsageState?.scrollY!=null){
- requestAnimationFrame(()=>requestAnimationFrame(()=>window.scrollTo(0,Number(savedUsageState.scrollY)||0)));
-}
+restoreScroll();
