@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#111827" />
+  <title>コード理論 | Guitar Chord Book</title>
+  <link rel="stylesheet" href="style.css?v=20260728-17" />
+  <link rel="stylesheet" href="site-nav.css?v=20260729-2" />
+  <link rel="stylesheet" href="theory.css?v=20260729-1" />
+</head>
+<body>
+  <nav class="site-nav" aria-label="ページ切り替え">
+    <a href="index.html">🎸 コード</a>
+    <a href="usage.html">🎼 使い方</a>
+    <a href="progressions.html">🔄 コード進行</a>
+    <a href="theory.html" class="active" aria-current="page">📖 理論</a>
+  </nav>
+
+  <header class="hero theory-hero">
+    <div>
+      <p class="eyebrow">CHORD THEORY</p>
+      <h1>音の仕組みからわかる<br>ギターコード理論</h1>
+      <p class="lead">コードの作り方、テンション、ダイアトニック、借用和音まで順番に学べるよ。</p>
+    </div>
+  </header>
+
+  <main class="container theory-page-container">
+    <section class="controls theory-controls" aria-label="理論検索">
+      <label>理論を検索
+        <input id="theorySearch" type="search" placeholder="例：テンション、オンコード、セカンダリー" autocomplete="off" />
+      </label>
+      <p id="theoryCount" class="control-note"></p>
+    </section>
+
+    <section class="theory-guide" aria-labelledby="theoryTitle">
+      <div class="theory-heading">
+        <div>
+          <h2 id="theoryTitle">基礎</h2>
+          <p id="theoryDescription">まず知っておきたい音程・度数・コードの基本。</p>
+        </div>
+        <span>項目を押すと開く</span>
+      </div>
+      <div id="theoryTabs" class="theory-tabs" role="tablist" aria-label="理論カテゴリ"></div>
+      <div id="theoryCards" class="theory-cards"></div>
+    </section>
+  </main>
+
+  <footer>Guitar Chord Book — コード理論</footer>
+  <script src="theory.js?v=20260729-1"></script>
+</body>
+</html>
