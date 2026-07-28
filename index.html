@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#111827" />
   <title>Guitar Chord Book</title>
-  <link rel="stylesheet" href="style.css?v=20260728-6" />
+  <link rel="stylesheet" href="style.css?v=20260728-7" />
 </head>
 <body>
   <header class="hero">
     <div>
       <p class="eyebrow">GUITAR CHORD BOOK</p>
       <h1>選んですぐ見られる<br>ギターコード表</h1>
-      <p class="lead">ルート音とコードの種類を選ぶだけ。</p>
+      <p class="lead">基本コードと、弾き語りでよく使うオンコード。</p>
     </div>
   </header>
 
@@ -56,13 +56,33 @@
             </optgroup>
           </select>
         </label>
+
+        <label class="slash-field">
+          オンコード
+          <select id="slashSelect" aria-label="オンコードを選択">
+            <option value="none">なし</option>
+            <optgroup label="初心者によく使うオンコード">
+              <option value="C/E">C/E</option>
+              <option value="C/G">C/G</option>
+              <option value="D/F#">D/F#</option>
+              <option value="D/A">D/A</option>
+              <option value="Em/G">Em/G</option>
+              <option value="F/A">F/A</option>
+              <option value="G/B">G/B</option>
+              <option value="G/D">G/D</option>
+              <option value="Am/C">Am/C</option>
+              <option value="Am/E">Am/E</option>
+            </optgroup>
+          </select>
+        </label>
       </div>
+      <p class="control-note">オンコードを選ぶと、ルート音とコードの種類より優先して表示するよ。</p>
     </section>
 
     <section id="selectedChord" class="selected-chord" aria-live="polite"></section>
   </main>
 
   <footer>Guitar Chord Book — Vanilla HTML / CSS / JavaScript</footer>
-  <script src="script.js?v=20260728-6"></script>
+  <script src="script.js?v=20260728-7"></script>
 </body>
 </html>
