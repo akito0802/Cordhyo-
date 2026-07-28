@@ -70,6 +70,34 @@ function getForms(root, type) {
   return forms.map((form,index) => ({ ...form, label:`フォーム${index + 1}` }));
 }
 
+function findBarres(frets) {
+  const groups = [];
+  const fretValues = [...new Set(frets.filter(v => typeof v === 'number' && v > 0))];
+
+  fretValues.forEach(fret => {
+    const strings = frets
+      .map((value, index) => value === fret ? index : -1)
+      .filter(index => index >= 0);
+
+    if (strings.length < 2) return;
+
+    let start = strings[0];
+    let previous = strings[0];
+    for (let i = 1; i <= strings.length; i++) {
+      const current = strings[i];
+      if (current === previous + 1) {
+        previous = current;
+        continue;
+      }
+      if (previous - start + 1 >= 2) groups.push({ fret, start, end: previous });
+      start = current;
+      previous = current;
+    }
+  });
+
+  return groups;
+}
+
 function diagram(name, frets) {
   const numeric = frets.filter(v => typeof v === 'number' && v > 0);
   const minFret = numeric.length ? Math.min(...numeric) : 1;
@@ -86,11 +114,23 @@ function diagram(name, frets) {
   for (let f=0; f<=fretCount; f++) svg += `<line class="${f===0 && baseFret===1?'nut':'fret'}" x1="${x0}" y1="${y0+f*fretHeight}" x2="${x0+5*stringWidth}" y2="${y0+f*fretHeight}"/>`;
   if (baseFret > 1) svg += `<text class="fret-label" x="22" y="${y0+fretHeight*.65}">${baseFret}fr</text>`;
 
+  const barres = findBarres(frets);
+  const covered = new Set();
+  barres.forEach(barre => {
+    const displayFret = barre.fret - baseFret + 1;
+    if (displayFret < 1 || displayFret > fretCount) return;
+    const y = y0 + (displayFret - .5) * fretHeight;
+    const x1 = x0 + barre.start * stringWidth;
+    const x2 = x0 + barre.end * stringWidth;
+    svg += `<line class="barre" x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"/>`;
+    for (let s = barre.start; s <= barre.end; s++) covered.add(`${s}:${barre.fret}`);
+  });
+
   frets.forEach((value, string) => {
     const x = x0 + string * stringWidth;
     if (value === 'x') svg += `<text class="mute-mark" x="${x}" y="22">×</text>`;
     else if (value === 0) svg += `<text class="open-mark" x="${x}" y="22">○</text>`;
-    else {
+    else if (!covered.has(`${string}:${value}`)) {
       const displayFret = value - baseFret + 1;
       const y = y0 + (displayFret - .5) * fretHeight;
       if (displayFret >= 1 && displayFret <= fretCount) svg += `<circle class="dot" cx="${x}" cy="${y}" r="9"/>`;
