@@ -85,6 +85,7 @@ select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,107,5
 .fret { stroke-width: 1; }
 .nut { stroke-width: 5; }
 .dot { fill: var(--accent); }
+.barre { stroke: var(--accent); stroke-width: 18; stroke-linecap: round; }
 .open-mark, .mute-mark, .fret-label { font-size: 12px; font-weight: 800; text-anchor: middle; fill: #44403c; }
 footer { padding: 30px 20px; text-align: center; color: var(--muted); font-size: 13px; }
 
