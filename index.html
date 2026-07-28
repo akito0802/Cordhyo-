@@ -6,6 +6,8 @@
   <meta name="theme-color" content="#111827" />
   <title>Guitar Chord Book</title>
   <link rel="stylesheet" href="style.css?v=20260728-17" />
+  <link rel="stylesheet" href="search-style.css?v=20260728-1" />
+  <link rel="stylesheet" href="usage-guide.css?v=20260729-1" />
 </head>
 <body>
   <header class="hero"><div><p class="eyebrow">GUITAR CHORD BOOK</p><h1>選んですぐ見られる<br>ギターコード表</h1><p class="lead">ルート音・コードの種類・実用的なオンコードから選べるよ。</p></div></header>
@@ -52,6 +54,15 @@
       <p class="control-note">テンションコードは、弾きやすさを優先して一部の音を省略した実用フォームも表示するよ。</p>
       <div class="popular-slash" aria-label="よく使うオンコード"><div class="popular-slash-heading"><p>よく使うオンコード</p><span>タップですぐ表示</span></div><div id="slashQuickList" class="slash-quick-list"></div></div>
     </section>
+
+    <section id="usageGuide" class="usage-guide" aria-labelledby="usageTitle">
+      <div class="usage-guide-heading"><div><h2 id="usageTitle">曲の最初</h2><p id="usageDescription"></p></div><span class="usage-guide-note">コードを押すとフォームを表示</span></div>
+      <div id="usageTabs" class="usage-tabs" role="tablist" aria-label="コードの使い方を切り替え"></div>
+      <div class="usage-table-wrap">
+        <table class="usage-table"><thead><tr><th>使えるコード</th><th>役割・雰囲気</th><th>次につなぐ例</th></tr></thead><tbody id="usageTableBody"></tbody></table>
+      </div>
+    </section>
+
     <section id="selectedChord" class="selected-chord" aria-live="polite"></section>
   </main>
   <footer>Guitar Chord Book — Vanilla HTML / CSS / JavaScript</footer>
@@ -59,5 +70,6 @@
   <script src="advanced-chords.js?v=20260728-1"></script>
   <script src="more-chords.js?v=20260728-1"></script>
   <script src="chord-search.js?v=20260728-1"></script>
+  <script src="usage-guide.js?v=20260729-1"></script>
 </body>
 </html>
