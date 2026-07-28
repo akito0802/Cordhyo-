@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#111827" />
   <title>Guitar Chord Book</title>
-  <link rel="stylesheet" href="style.css?v=20260728-9" />
+  <link rel="stylesheet" href="style.css?v=20260728-10" />
 </head>
 <body>
   <header class="hero">
     <div>
       <p class="eyebrow">GUITAR CHORD BOOK</p>
       <h1>選んですぐ見られる<br>ギターコード表</h1>
-      <p class="lead">ルート音・コードの種類・ベース音から選べるよ。</p>
+      <p class="lead">ルート音・コードの種類・実際によく使うオンコードから選べるよ。</p>
     </div>
   </header>
 
@@ -58,22 +58,19 @@
         </label>
 
         <label>
-          ベース音（オンコード）
-          <select id="bassSelect" aria-label="ベース音を選択">
+          オンコード
+          <select id="bassSelect" aria-label="オンコードを選択">
             <option value="none">なし</option>
-            <option>C</option><option>C#</option><option>D</option><option>D#</option>
-            <option>E</option><option>F</option><option>F#</option><option>G</option>
-            <option>G#</option><option>A</option><option>A#</option><option>B</option>
           </select>
         </label>
       </div>
-      <p class="control-note">ベース音を選ぶと、G/B・D/F#・Am/Eのようなオンコードになるよ。</p>
+      <p class="control-note">選んだコードで実際によく使うオンコードだけ表示するよ。</p>
     </section>
 
     <section id="selectedChord" class="selected-chord" aria-live="polite"></section>
   </main>
 
   <footer>Guitar Chord Book — Vanilla HTML / CSS / JavaScript</footer>
-  <script src="script.js?v=20260728-9"></script>
+  <script src="script.js?v=20260728-10"></script>
 </body>
 </html>
