@@ -18,7 +18,9 @@ const usageTabs=document.querySelector('#usageTabs');
 const usageTitle=document.querySelector('#usageTitle');
 const usageDescription=document.querySelector('#usageDescription');
 const usageTableBody=document.querySelector('#usageTableBody');
-let activeUsage='intro';
+const savedUsageState=JSON.parse(sessionStorage.getItem('usagePageState')||'null');
+let activeUsage=savedUsageState?.activeUsage&&usageGuideData[savedUsageState.activeUsage]?savedUsageState.activeUsage:'intro';
+if(savedUsageState?.root&&roots.includes(savedUsageState.root))usageRoot.value=savedUsageState.root;
 
 function chordName(type){return `${usageRoot.value}${suffixes[type] ?? type}`;}
 function renderTabs(){
@@ -34,6 +36,9 @@ function renderTable(){
  }).join('');
  renderTabs();
 }
+function saveUsageState(){
+ sessionStorage.setItem('usagePageState',JSON.stringify({activeUsage,root:usageRoot.value,scrollY:window.scrollY}));
+}
 usageTabs.addEventListener('click',event=>{
  const button=event.target.closest('[data-usage]');
  if(!button)return;
@@ -41,4 +46,10 @@ usageTabs.addEventListener('click',event=>{
  renderTable();
 });
 usageRoot.addEventListener('change',renderTable);
+usageTableBody.addEventListener('click',event=>{
+ if(event.target.closest('.usage-chord'))saveUsageState();
+});
 renderTable();
+if(savedUsageState?.scrollY!=null){
+ requestAnimationFrame(()=>requestAnimationFrame(()=>window.scrollTo(0,Number(savedUsageState.scrollY)||0)));
+}
