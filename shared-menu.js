@@ -8,7 +8,7 @@
       <a class="shared-menu-link" href="https://akito0802.github.io/NEET-note/"><span class="shared-menu-icon">📝</span><span>ノート</span></a>
       <a class="shared-menu-link" href="https://akito0802.github.io/scale/"><span class="shared-menu-icon">🎸</span><span>スケール</span></a>
       <a class="shared-menu-link" href="https://akito0802.github.io/-h/"><span class="shared-menu-icon">🎵</span><span>指板</span></a>
-      <a class="shared-menu-link current" href="theory.html"><span class="shared-menu-icon">📚</span><span>理論</span></a>
+      <a class="shared-menu-link current" href="index.html"><span class="shared-menu-icon">📚</span><span>コード表</span></a>
     </nav>
     <button id="sharedMenuOpenBtn" class="shared-menu-button" type="button" aria-label="メニューを開く" aria-expanded="false">☰</button>`;
   document.body.prepend(wrapper);
