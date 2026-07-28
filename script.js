@@ -2,6 +2,7 @@ const rootSelect=document.querySelector('#rootSelect');
 const typeSelect=document.querySelector('#typeSelect');
 const bassSelect=document.querySelector('#bassSelect');
 const selectedChord=document.querySelector('#selectedChord');
+const slashQuickList=document.querySelector('#slashQuickList');
 const roots=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 let selectedFormIndex=0;
 
@@ -50,12 +51,12 @@ const slashShapes={
  'Bm/D':['x',5,4,4,3,2], 'Bm/F#':[2,2,4,4,3,2], 'Bm/A':['x',0,4,4,3,2], 'Bm/E':[0,2,4,4,3,2]
 };
 
+const popularSlashChords=['C/E','C/G','D/F#','D/A','E/G#','E/B','F/A','F/C','G/B','G/D','A/C#','A/E','Am/C','Am/E','Em/G','Em/B','Dm/F','Bm/D'];
 const eShapes={major:r=>[r,r+2,r+2,r+1,r,r],minor:r=>[r,r+2,r+2,r,r,r],'7':r=>[r,r+2,r,r+1,r,r],maj7:r=>[r,r+2,r+1,r+1,r,r],m7:r=>[r,r+2,r,r,r,r]};
 const aShapes={major:r=>['x',r,r+2,r+2,r+2,r],minor:r=>['x',r,r+2,r+2,r+1,r],'7':r=>['x',r,r+2,r,r+2,r],maj7:r=>['x',r,r+2,r+1,r+2,r],m7:r=>['x',r,r+2,r,r+1,r]};
 
 function chordBaseName(root,type){return root+typeData[type].suffix;}
 function notesFor(root,type){const i=roots.indexOf(root);return [...new Set(typeData[type].intervals.map(n=>roots[(i+n)%12]))].join('・');}
-function lowestFret(frets){const n=frets.filter(v=>typeof v==='number'&&v>0);return n.length?Math.min(...n):0;}
 
 function updateBassOptions(){
  const baseName=chordBaseName(rootSelect.value,typeSelect.value);
@@ -92,6 +93,29 @@ function diagram(name,frets,barres=[]){
  return svg+'</svg>';
 }
 
+function renderQuickList(){
+ slashQuickList.innerHTML=popularSlashChords.map(name=>`<button class="slash-chip" type="button" data-slash="${name}">${name}</button>`).join('');
+}
+
+function selectSlashChord(name){
+ const [base,bass]=name.split('/');
+ let root='';
+ let type='major';
+ for(const candidate of [...roots].sort((a,b)=>b.length-a.length)){
+  if(base.startsWith(candidate)){root=candidate;break;}
+ }
+ const suffix=base.slice(root.length);
+ const match=Object.entries(typeData).find(([,data])=>data.suffix===suffix);
+ if(match)type=match[0];
+ rootSelect.value=root;
+ typeSelect.value=type;
+ selectedFormIndex=0;
+ updateBassOptions();
+ bassSelect.value=bass;
+ render();
+ selectedChord.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
 function render(){
  const root=rootSelect.value,type=typeSelect.value,bass=bassSelect.value,data=typeData[type],baseName=chordBaseName(root,type);
  const name=bass==='none'?baseName:`${baseName}/${bass}`;
@@ -103,5 +127,7 @@ function render(){
 [rootSelect,typeSelect].forEach(el=>el.addEventListener('change',()=>{selectedFormIndex=0;updateBassOptions();render();}));
 bassSelect.addEventListener('change',()=>{selectedFormIndex=0;render();});
 selectedChord.addEventListener('click',e=>{const b=e.target.closest('[data-form]');if(!b)return;selectedFormIndex=Number(b.dataset.form);render();});
+slashQuickList.addEventListener('click',e=>{const button=e.target.closest('[data-slash]');if(button)selectSlashChord(button.dataset.slash);});
+renderQuickList();
 updateBassOptions();
 render();
