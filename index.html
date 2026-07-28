@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#111827" />
   <title>Guitar Chord Book</title>
-  <link rel="stylesheet" href="style.css?v=20260728-12" />
+  <link rel="stylesheet" href="style.css?v=20260728-13" />
 </head>
 <body>
   <header class="hero">
@@ -57,7 +57,7 @@
           </select>
         </label>
 
-        <label>
+        <label class="slash-field">
           オンコード
           <select id="bassSelect" aria-label="オンコードを選択">
             <option value="none">なし</option>
@@ -65,12 +65,20 @@
         </label>
       </div>
       <p class="control-note">選んだコードで実際によく使われるオンコードだけ候補に出るよ。</p>
+
+      <div class="popular-slash" aria-label="よく使うオンコード">
+        <div class="popular-slash-heading">
+          <p>よく使うオンコード</p>
+          <span>タップですぐ表示</span>
+        </div>
+        <div id="slashQuickList" class="slash-quick-list"></div>
+      </div>
     </section>
 
     <section id="selectedChord" class="selected-chord" aria-live="polite"></section>
   </main>
 
   <footer>Guitar Chord Book — Vanilla HTML / CSS / JavaScript</footer>
-  <script src="script.js?v=20260728-12"></script>
+  <script src="script.js?v=20260728-13"></script>
 </body>
 </html>
