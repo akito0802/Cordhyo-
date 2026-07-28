@@ -29,7 +29,7 @@ function renderTable(){
  usageTitle.textContent=item.label;
  usageDescription.textContent=item.description;
  usageTableBody.innerHTML=item.types.map((type,index)=>{
-  const href=`index.html?root=${encodeURIComponent(usageRoot.value)}&type=${encodeURIComponent(type)}`;
+  const href=`index.html?root=${encodeURIComponent(usageRoot.value)}&type=${encodeURIComponent(type)}&from=usage`;
   return `<tr><td><a class="usage-chord" href="${href}">${chordName(type)}</a></td><td>${item.roles[index]}</td><td>${item.next[index]}</td></tr>`;
  }).join('');
  renderTabs();
