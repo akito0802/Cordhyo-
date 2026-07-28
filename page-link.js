@@ -26,5 +26,13 @@ if(returnDestinations[linkedFrom]){
  const returnWrap=document.createElement('div');
  returnWrap.className='context-return-wrap';
  returnWrap.innerHTML=`<a class="context-return-button" href="${destination.href}">${destination.label}</a>`;
+ const returnButton=returnWrap.querySelector('a');
+ returnButton.addEventListener('click',event=>{
+  const sourceFile=linkedFrom==='usage'?'usage.html':'progressions.html';
+  if(document.referrer.includes(sourceFile)&&history.length>1){
+   event.preventDefault();
+   history.back();
+  }
+ });
  selectedChord.insertAdjacentElement('beforebegin',returnWrap);
 }
