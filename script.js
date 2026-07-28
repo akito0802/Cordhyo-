@@ -37,9 +37,17 @@ const openShapes={
 };
 
 const slashShapes={
- 'C/E':[0,3,2,0,1,0],'C/G':[3,3,2,0,1,0],'D/F#':[2,0,0,2,3,2],'D/A':['x',0,0,2,3,2],
- 'Em/G':[3,2,2,0,0,0],'F/A':['x',0,3,2,1,1],'G/B':['x',2,0,0,0,3],'G/D':['x','x',0,0,0,3],
- 'Am/C':['x',3,2,2,1,0],'Am/E':[0,0,2,2,1,0]
+ 'C/E':[0,3,2,0,1,0], 'C/G':[3,3,2,0,1,0], 'C/B':['x',2,2,0,1,0], 'C/D':['x','x',0,0,1,0], 'C/F':['x','x',3,0,1,0],
+ 'D/F#':[2,0,0,2,3,2], 'D/A':['x',0,0,2,3,2], 'D/C#':['x',4,0,2,3,2], 'D/C':['x',3,0,2,3,2], 'D/B':['x',2,0,2,3,2],
+ 'Dm/C':['x',3,0,2,3,1], 'Dm/B':['x',2,0,2,3,1],
+ 'E/G#':[4,2,2,1,0,0], 'E/B':['x',2,2,1,0,0], 'E/D':['x','x',0,1,0,0], 'E/D#':['x','x',1,0,0,0],
+ 'Em/G':[3,2,2,0,0,0], 'Em/B':['x',2,2,0,0,0], 'Em/D':['x','x',0,0,0,0],
+ 'F/A':['x',0,3,2,1,1], 'F/C':['x',3,3,2,1,1], 'F/E':['x','x',2,2,1,1], 'F/G':[3,'x',3,2,1,1],
+ 'G/B':['x',2,0,0,0,3], 'G/D':['x','x',0,0,0,3], 'G/F#':[2,'x',0,0,0,3], 'G/F':[1,'x',0,0,0,3], 'G/A':['x',0,0,0,0,3],
+ 'A/C#':['x',4,2,2,2,0], 'A/E':[0,0,2,2,2,0], 'A/G#':[4,0,2,2,2,0], 'A/G':[3,0,2,2,2,0],
+ 'Am/C':['x',3,2,2,1,0], 'Am/E':[0,0,2,2,1,0], 'Am/G':[3,0,2,2,1,0],
+ 'B/D#':['x',6,4,4,4,2], 'B/F#':[2,2,4,4,4,2],
+ 'Bm/D':['x',5,4,4,3,2], 'Bm/F#':[2,2,4,4,3,2], 'Bm/A':['x',0,4,4,3,2]
 };
 
 const eShapes={major:r=>[r,r+2,r+2,r+1,r,r],minor:r=>[r,r+2,r+2,r,r,r],'7':r=>[r,r+2,r,r+1,r,r],maj7:r=>[r,r+2,r+1,r+1,r,r],m7:r=>[r,r+2,r,r,r,r]};
@@ -48,6 +56,7 @@ const aShapes={major:r=>['x',r,r+2,r+2,r+2,r],minor:r=>['x',r,r+2,r+2,r+1,r],'7'
 function chordBaseName(root,type){return root+typeData[type].suffix;}
 function notesFor(root,type){const i=roots.indexOf(root);return [...new Set(typeData[type].intervals.map(n=>roots[(i+n)%12]))].join('・');}
 function lowestFret(frets){const n=frets.filter(v=>typeof v==='number'&&v>0);return n.length?Math.min(...n):0;}
+function genericShape(root,type){const i=roots.indexOf(root),f=(i-4+12)%12||12;const maker=eShapes[type]||eShapes.major;return maker(f);}
 
 function updateBassOptions(){
  const baseName=chordBaseName(rootSelect.value,typeSelect.value);
@@ -55,8 +64,9 @@ function updateBassOptions(){
   .filter(name=>name.startsWith(`${baseName}/`))
   .map(name=>name.split('/')[1]);
  const previous=bassSelect.value;
- bassSelect.innerHTML='<option value="none">なし</option>'+available.map(bass=>`<option value="${bass}">${baseName}/${bass}</option>`).join('');
+ bassSelect.innerHTML='<option value="none">なし</option>'+available.map(b=>`<option value="${b}">${baseName}/${b}</option>`).join('');
  bassSelect.value=available.includes(previous)?previous:'none';
+ bassSelect.disabled=available.length===0;
 }
 
 function getForms(root,type,bass){
