@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#111827" />
   <title>Guitar Chord Book</title>
-  <link rel="stylesheet" href="style.css?v=20260728-15" />
+  <link rel="stylesheet" href="style.css?v=20260728-16" />
 </head>
 <body>
   <header class="hero">
@@ -32,45 +32,40 @@
           コードの種類
           <select id="typeSelect" aria-label="コードの種類を選択">
             <optgroup label="基本コード">
-              <option value="major">メジャー</option>
-              <option value="minor">マイナー</option>
-              <option value="5">5（パワーコード）</option>
-              <option value="6">6</option>
-              <option value="m6">m6</option>
-              <option value="7">7</option>
-              <option value="maj7">maj7</option>
-              <option value="m7">m7</option>
+              <option value="major">メジャー</option><option value="minor">マイナー</option>
+              <option value="5">5（パワーコード）</option><option value="6">6</option><option value="m6">m6</option>
+              <option value="7">7</option><option value="maj7">maj7</option><option value="m7">m7</option>
             </optgroup>
-            <optgroup label="よく使う装飾コード">
-              <option value="sus2">sus2</option>
-              <option value="sus4">sus4</option>
-              <option value="7sus4">7sus4</option>
-              <option value="add9">add9</option>
-              <option value="madd9">m(add9)</option>
+            <optgroup label="装飾・サスコード">
+              <option value="sus2">sus2</option><option value="sus4">sus4</option><option value="7sus2">7sus2</option><option value="7sus4">7sus4</option>
+              <option value="add9">add9</option><option value="madd9">m(add9)</option><option value="add11">add11</option>
+              <option value="sus2add9">sus2(add9)</option><option value="sus4add9">sus4(add9)</option><option value="9sus4">9sus4</option>
             </optgroup>
-            <optgroup label="少し発展">
-              <option value="m7b5">m7♭5</option>
-              <option value="dim">dim</option>
-              <option value="dim7">dim7</option>
-              <option value="aug">aug</option>
+            <optgroup label="9・11・13系">
+              <option value="9">9</option><option value="m9">m9</option><option value="maj9">maj9</option>
+              <option value="69">6/9</option><option value="m69">m6/9</option>
+              <option value="11">11</option><option value="m11">m11</option><option value="maj11">maj11</option>
+              <option value="13">13</option><option value="m13">m13</option><option value="maj13">maj13</option>
+            </optgroup>
+            <optgroup label="オルタード・発展コード">
+              <option value="7b5">7♭5</option><option value="7s5">7♯5</option><option value="7b9">7♭9</option><option value="7s9">7♯9</option>
+              <option value="7b13">7♭13</option><option value="7s11">7♯11</option>
+              <option value="m7b5">m7♭5</option><option value="m9b5">m9♭5</option><option value="m11b5">m11♭5</option>
+              <option value="dim">dim</option><option value="dim7">dim7</option><option value="dimadd9">dim(add9)</option><option value="dim7add11">dim7(add11)</option>
+              <option value="aug">aug</option><option value="aug7">aug7</option><option value="augmaj7">augmaj7</option>
             </optgroup>
           </select>
         </label>
 
         <label class="slash-field">
           オンコード
-          <select id="bassSelect" aria-label="オンコードを選択">
-            <option value="none">なし</option>
-          </select>
+          <select id="bassSelect" aria-label="オンコードを選択"><option value="none">なし</option></select>
         </label>
       </div>
-      <p class="control-note">選んだコードで実際によく使われるオンコードだけ候補に出るよ。</p>
+      <p class="control-note">テンションコードは、弾きやすさを優先して一部の音を省略した実用フォームも表示するよ。</p>
 
       <div class="popular-slash" aria-label="よく使うオンコード">
-        <div class="popular-slash-heading">
-          <p>よく使うオンコード</p>
-          <span>タップですぐ表示</span>
-        </div>
+        <div class="popular-slash-heading"><p>よく使うオンコード</p><span>タップですぐ表示</span></div>
         <div id="slashQuickList" class="slash-quick-list"></div>
       </div>
     </section>
@@ -79,6 +74,6 @@
   </main>
 
   <footer>Guitar Chord Book — Vanilla HTML / CSS / JavaScript</footer>
-  <script src="script.js?v=20260728-15"></script>
+  <script src="script.js?v=20260728-16"></script>
 </body>
 </html>
