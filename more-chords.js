@@ -1,0 +1,34 @@
+// 追加拡張コード定義
+Object.assign(typeData,{
+ maj7b5:{suffix:'maj7♭5',label:'maj7♭5',intervals:[0,4,6,11],mood:'明るさの中に鋭い緊張感',use:'現代ジャズや浮遊感のある進行に。'},
+ maj7s5:{suffix:'maj7♯5',label:'maj7♯5',intervals:[0,4,8,11],mood:'幻想的で不安定な響き',use:'劇伴や印象的な終止に。'},
+ maj9b5:{suffix:'maj9♭5',label:'maj9♭5',intervals:[0,2,4,6,11],mood:'透明感と鋭さを併せ持つ響き',use:'モダンジャズやフュージョンに。'},
+ maj9s5:{suffix:'maj9♯5',label:'maj9♯5',intervals:[0,2,4,8,11],mood:'明るく幻想的な響き',use:'シティポップや劇伴に。'},
+ maj13b5:{suffix:'maj13♭5',label:'maj13♭5',intervals:[0,2,4,6,9,11],mood:'豪華で浮遊感の強い響き',use:'現代ジャズの終止に。'},
+ m7s5:{suffix:'m7♯5',label:'m7♯5',intervals:[0,3,8,10],mood:'暗く不安定な響き',use:'オルタードなマイナー進行に。'},
+ m9s5:{suffix:'m9♯5',label:'m9♯5',intervals:[0,2,3,8,10],mood:'深く幻想的な響き',use:'ネオソウルや劇伴に。'},
+ m11s5:{suffix:'m11♯5',label:'m11♯5',intervals:[0,2,3,5,8,10],mood:'濃密で浮遊感のある響き',use:'モーダルな伴奏に。'},
+ mMaj7s11:{suffix:'mMaj7♯11',label:'mMaj7♯11',intervals:[0,3,6,7,11],mood:'切なく鋭い響き',use:'映画音楽や現代ジャズに。'},
+ mMaj9s11:{suffix:'mMaj9♯11',label:'mMaj9♯11',intervals:[0,2,3,6,7,11],mood:'透明感と緊張感の強い響き',use:'劇伴やフュージョンに。'},
+ '7b5b9':{suffix:'7(♭5,♭9)',label:'7(♭5,♭9)',intervals:[0,1,4,6,10],mood:'鋭く不穏なドミナント',use:'半音進行やマイナー解決に。'},
+ '7b5s9':{suffix:'7(♭5,♯9)',label:'7(♭5,♯9)',intervals:[0,3,4,6,10],mood:'荒々しく現代的な響き',use:'ブルースやフュージョンに。'},
+ '7s5b9':{suffix:'7(♯5,♭9)',label:'7(♯5,♭9)',intervals:[0,1,4,8,10],mood:'濃密で強い緊張感',use:'ハーモニックマイナー系に。'},
+ '7s5s9':{suffix:'7(♯5,♯9)',label:'7(♯5,♯9)',intervals:[0,3,4,8,10],mood:'強烈でブルージーな響き',use:'ロックやオルタードに。'},
+ '13b5':{suffix:'13♭5',label:'13♭5',intervals:[0,2,4,6,9,10],mood:'華やかで鋭い響き',use:'ジャズの代理ドミナントに。'},
+ '13s5':{suffix:'13♯5',label:'13♯5',intervals:[0,2,4,8,9,10],mood:'豪華で浮遊感のある響き',use:'マイナーへの解決に。'},
+ '13b9s11':{suffix:'13(♭9,♯11)',label:'13(♭9,♯11)',intervals:[0,1,4,6,7,9,10],mood:'複雑で鋭い緊張感',use:'現代ジャズのドミナントに。'},
+ '13s9b13':{suffix:'13(♯9,♭13)',label:'13(♯9,♭13)',intervals:[0,3,4,7,8,10],mood:'濃密で荒々しい響き',use:'オルタード進行に。'},
+ '9sus2':{suffix:'9sus2',label:'9sus2',intervals:[0,2,7,10],mood:'開放的でブルージーな響き',use:'ファンクやロックに。'},
+ '13sus2':{suffix:'13sus2',label:'13sus2',intervals:[0,2,7,9,10],mood:'広がりのあるサス響き',use:'ゴスペルやソウルに。'},
+ '7sus2b9':{suffix:'7sus2♭9',label:'7sus2♭9',intervals:[0,1,2,7,10],mood:'不穏で開放的な響き',use:'マイナー解決前の装飾に。'},
+ '7sus2s9':{suffix:'7sus2♯9',label:'7sus2♯9',intervals:[0,2,3,7,10],mood:'荒々しく開放的な響き',use:'ファンクや現代ロックに。'},
+ mAdd2:{suffix:'m(add2)',label:'m(add2)',intervals:[0,2,3,7],mood:'近接音が切ない響き',use:'静かなアルペジオに。'},
+ mAdd4:{suffix:'m(add4)',label:'m(add4)',intervals:[0,3,5,7],mood:'暗さの中に浮遊感がある',use:'オルタナやR&Bに。'},
+ dimb9:{suffix:'dim♭9',label:'dim♭9',intervals:[0,1,3,6,9],mood:'非常に不穏な響き',use:'特殊な経過コードに。'},
+ dims9:{suffix:'dim♯9',label:'dim♯9',intervals:[0,3,6,9],mood:'緊張感の強い減七響き',use:'半音進行の装飾に。'},
+ augMaj9:{suffix:'augMaj9',label:'augMaj9',intervals:[0,2,4,8,11],mood:'幻想的で豪華な響き',use:'劇伴や印象的な終止に。'},
+ aug13:{suffix:'aug13',label:'aug13',intervals:[0,2,4,8,9,10],mood:'広がりと強い緊張感',use:'ジャズやフュージョンに。'}
+});
+selectedFormIndex=0;
+updateBassOptions();
+render();
