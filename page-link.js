@@ -14,8 +14,8 @@ if(linkedRoot||linkedType){
 }
 
 const returnDestinations={
- usage:{href:'usage.html',label:'← 使い方へ戻る'},
- progressions:{href:'progressions.html',label:'← コード進行へ戻る'}
+ usage:{href:'usage.html?restore=1',label:'← 使い方へ戻る'},
+ progressions:{href:'progressions.html?restore=1',label:'← コード進行へ戻る'}
 };
 
 if(returnDestinations[linkedFrom]){
@@ -26,13 +26,5 @@ if(returnDestinations[linkedFrom]){
  const returnWrap=document.createElement('div');
  returnWrap.className='context-return-wrap';
  returnWrap.innerHTML=`<a class="context-return-button" href="${destination.href}">${destination.label}</a>`;
- const returnButton=returnWrap.querySelector('a');
- returnButton.addEventListener('click',event=>{
-  const sourceFile=linkedFrom==='usage'?'usage.html':'progressions.html';
-  if(document.referrer.includes(sourceFile)&&history.length>1){
-   event.preventDefault();
-   history.back();
-  }
- });
  selectedChord.insertAdjacentElement('beforebegin',returnWrap);
 }
