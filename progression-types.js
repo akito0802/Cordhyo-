@@ -1,0 +1,1 @@
+Object.assign(typeSuffix,{'13':'13',mMaj7:'mMaj7',mMaj9:'mMaj9',mMaj13:'mMaj13','6':'6',m6:'m6',add11:'add11','7b9':'7♭9','7s9':'7♯9','7b13':'7♭13','7s11':'7♯11'});
