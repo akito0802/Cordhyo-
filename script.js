@@ -59,7 +59,7 @@ const eShapes={
  '7':r=>[r,r+2,r,r+1,r,r],maj7:r=>[r,r+2,r+1,r+1,r,r],m7:r=>[r,r+2,r,r,r,r],
  sus2:r=>[r,r+2,r+4,r+4,r,r],sus4:r=>[r,r+2,r+2,r+2,r,r],'7sus4':r=>[r,r+2,r,r+2,r,r],
  add9:r=>[r,r+2,r+4,r+1,r,r],madd9:r=>[r,r+2,r+4,r,r,r],
- m7b5:r=>[r,r+1,r,r,r+1,r],dim:r=>[r,r+1,r+2,r,'x','x'],dim7:r=>[r,r+1,r+2,r+1,'x','x'],aug:r=>[r,r+3,r+2,r+1,r,r]
+ m7b5:r=>[r,r+1,r,r,r+3,'x'],dim:r=>[r,r+1,r+2,r,'x','x'],dim7:r=>[r,r+1,r+2,r,r+2,r],aug:r=>[r,r+3,r+2,r+1,r+1,r]
 };
 const aShapes={
  major:r=>['x',r,r+2,r+2,r+2,r],minor:r=>['x',r,r+2,r+2,r+1,r],
@@ -67,7 +67,7 @@ const aShapes={
  '7':r=>['x',r,r+2,r,r+2,r],maj7:r=>['x',r,r+2,r+1,r+2,r],m7:r=>['x',r,r+2,r,r+1,r],
  sus2:r=>['x',r,r+2,r+2,r,r],sus4:r=>['x',r,r+2,r+2,r+3,r],'7sus4':r=>['x',r,r+2,r,r+3,r],
  add9:r=>['x',r,r+2,r+4,r+2,r],madd9:r=>['x',r,r+2,r+4,r+1,r],
- m7b5:r=>['x',r,r+1,r,r+1,'x'],dim:r=>['x',r,r+1,r+2,r+1,'x'],dim7:r=>['x',r,r+1,r+2,r+1,r+2],aug:r=>['x',r,r+3,r+2,r+2,r]
+ m7b5:r=>['x',r,r+1,r,r+1,'x'],dim:r=>['x',r,r+1,r+2,r+1,'x'],dim7:r=>['x',r,r+1,r+2,r+1,r+2],aug:r=>['x',r,r+3,r+2,r+2,'x']
 };
 
 function chordBaseName(root,type){return root+typeData[type].suffix;}
