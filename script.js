@@ -48,7 +48,17 @@ const aShapes={major:r=>['x',r,r+2,r+2,r+2,r],minor:r=>['x',r,r+2,r+2,r+1,r],'7'
 function chordBaseName(root,type){return root+typeData[type].suffix;}
 function notesFor(root,type){const i=roots.indexOf(root);return [...new Set(typeData[type].intervals.map(n=>roots[(i+n)%12]))].join('・');}
 function lowestFret(frets){const n=frets.filter(v=>typeof v==='number'&&v>0);return n.length?Math.min(...n):0;}
-function genericShape(root,type){const i=roots.indexOf(root),f=(i-4+12)%12||12;const maker=eShapes[type]||eShapes.major;return maker(f);}
+
+function updateBassOptions(){
+ const baseName=chordBaseName(rootSelect.value,typeSelect.value);
+ const available=Object.keys(slashShapes)
+  .filter(name=>name.startsWith(`${baseName}/`))
+  .map(name=>name.split('/')[1]);
+ const previous=bassSelect.value;
+ bassSelect.innerHTML='<option value="none">なし</option>'+available.map(bass=>`<option value="${bass}">${baseName}/${bass}</option>`).join('');
+ bassSelect.value=available.includes(previous)?previous:'none';
+}
+
 function getForms(root,type,bass){
  const base=chordBaseName(root,type),slash=bass==='none'?null:`${base}/${bass}`;
  if(slash&&slashShapes[slash])return [{label:'フォーム1',shape:'オンコード',frets:slashShapes[slash],barres:[]}];
@@ -79,11 +89,12 @@ function render(){
  const root=rootSelect.value,type=typeSelect.value,bass=bassSelect.value,data=typeData[type],baseName=chordBaseName(root,type);
  const name=bass==='none'?baseName:`${baseName}/${bass}`;
  const forms=getForms(root,type,bass),form=forms[selectedFormIndex]||forms[0];
- const supported=bass==='none'||Boolean(slashShapes[name]);
- const bassInfo=bass==='none'?'通常コード':supported?`最低音を${bass}にしたオンコード`:'この組み合わせは専用フォーム未対応。通常フォームを表示中。';
+ const bassInfo=bass==='none'?'通常コード':`最低音を${bass}にした、実際によく使われるオンコード`;
  selectedChord.innerHTML=`<article class="selected-card"><div class="selected-heading"><p class="selected-label">選択中のコード</p><h2 class="selected-name">${name}</h2><div class="meta"><span class="badge">${data.label}</span><span class="badge">${form.shape}</span></div></div><div class="form-tabs">${forms.map((f,i)=>`<button class="form-tab ${i===selectedFormIndex?'active':''}" data-form="${i}" type="button">${f.label}<small>${f.shape}</small></button>`).join('')}</div><div class="selected-content"><div class="diagram-panel"><div class="diagram-wrap">${diagram(name,form.frets,form.barres)}</div></div><div class="info-list"><div class="info-box"><strong>構成音</strong>${notesFor(root,type)}</div><div class="info-box"><strong>ベース音</strong>${bassInfo}</div><div class="info-box"><strong>響き</strong>${data.mood}</div><div class="info-box"><strong>使い方</strong>${data.use}</div></div></div></article>`;
 }
 
-[rootSelect,typeSelect,bassSelect].forEach(el=>el.addEventListener('change',()=>{selectedFormIndex=0;render();}));
+[rootSelect,typeSelect].forEach(el=>el.addEventListener('change',()=>{selectedFormIndex=0;updateBassOptions();render();}));
+bassSelect.addEventListener('change',()=>{selectedFormIndex=0;render();});
 selectedChord.addEventListener('click',e=>{const b=e.target.closest('[data-form]');if(!b)return;selectedFormIndex=Number(b.dataset.form);render();});
+updateBassOptions();
 render();
