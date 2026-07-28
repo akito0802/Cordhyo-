@@ -3,13 +3,38 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#111827" />
+  <meta name="theme-color" content="#d9c7a8" />
   <title>コード理論 | Guitar Chord Book</title>
   <link rel="stylesheet" href="style.css?v=20260728-17" />
   <link rel="stylesheet" href="site-nav.css?v=20260729-2" />
   <link rel="stylesheet" href="theory.css?v=20260729-2" />
+  <style>
+    .shared-menu-button{position:fixed;top:14px;left:14px;z-index:10001;display:grid;place-items:center;width:42px;height:42px;padding:0;border:1px solid rgba(0,0,0,.14);border-radius:12px;background:rgba(255,255,255,.94);color:#1f2937;font-size:1.35rem;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.12);cursor:pointer}
+    .shared-menu-overlay{position:fixed;inset:0;z-index:9998;background:rgba(17,24,39,.42);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s ease,visibility .2s ease}
+    .shared-menu-overlay.open{opacity:1;visibility:visible;pointer-events:auto}
+    .shared-side-menu{position:fixed;top:0;left:0;z-index:9999;width:min(82vw,300px);height:100dvh;padding:24px 18px;background:#fffdf8;box-shadow:14px 0 34px rgba(0,0,0,.2);transform:translateX(-110%);visibility:hidden;transition:transform .22s ease,visibility .22s ease;box-sizing:border-box;text-align:left}
+    .shared-side-menu.open{transform:translateX(0);visibility:visible}
+    .shared-side-menu-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+    .shared-side-menu-head h2{margin:0;font-size:1.15rem;color:#1f2937}
+    .shared-menu-close{width:36px;height:36px;border:0;border-radius:10px;background:#f1f1f1;color:#1f2937;font-size:1.3rem;cursor:pointer}
+    .shared-menu-link{display:flex;align-items:center;gap:12px;width:100%;padding:14px 12px;margin-bottom:8px;border-radius:12px;color:#1f2937;background:transparent;text-decoration:none;font-weight:700;box-sizing:border-box}
+    .shared-menu-link:hover,.shared-menu-link:focus{background:#f2eee6}
+    .shared-menu-link.current{background:#e9e1d4}
+    .shared-menu-icon{width:28px;text-align:center;font-size:1.15rem}
+    @media(max-width:680px){.shared-menu-button{top:10px;left:10px;width:38px;height:38px}.site-nav{padding-left:56px}}
+  </style>
 </head>
 <body>
+  <div id="sharedMenuOverlay" class="shared-menu-overlay"></div>
+  <nav id="sharedSideMenu" class="shared-side-menu" aria-hidden="true" aria-label="サイトメニュー">
+    <div class="shared-side-menu-head"><h2>メニュー</h2><button id="sharedMenuCloseBtn" class="shared-menu-close" type="button" aria-label="メニューを閉じる">×</button></div>
+    <a class="shared-menu-link" href="https://akito0802.github.io/NEET-note/"><span class="shared-menu-icon">📝</span><span>ノート</span></a>
+    <a class="shared-menu-link" href="https://akito0802.github.io/scale/"><span class="shared-menu-icon">🎸</span><span>スケール</span></a>
+    <a class="shared-menu-link" href="https://akito0802.github.io/-h/"><span class="shared-menu-icon">🎵</span><span>指板</span></a>
+    <a class="shared-menu-link current" href="theory.html"><span class="shared-menu-icon">📚</span><span>理論</span></a>
+  </nav>
+  <button id="sharedMenuOpenBtn" class="shared-menu-button" type="button" aria-label="メニューを開く" aria-expanded="false">☰</button>
+
   <nav class="site-nav" aria-label="ページ切り替え">
     <a href="index.html">🎸 コード</a>
     <a href="usage.html">🎼 使い方</a>
@@ -48,5 +73,19 @@
 
   <footer>Guitar Chord Book — コード理論</footer>
   <script src="theory.js?v=20260729-2"></script>
+  <script>
+    (() => {
+      const openButton=document.getElementById('sharedMenuOpenBtn');
+      const closeButton=document.getElementById('sharedMenuCloseBtn');
+      const menu=document.getElementById('sharedSideMenu');
+      const overlay=document.getElementById('sharedMenuOverlay');
+      const open=()=>{menu.classList.add('open');overlay.classList.add('open');menu.setAttribute('aria-hidden','false');openButton.setAttribute('aria-expanded','true');document.body.style.overflow='hidden'};
+      const close=()=>{menu.classList.remove('open');overlay.classList.remove('open');menu.setAttribute('aria-hidden','true');openButton.setAttribute('aria-expanded','false');document.body.style.overflow=''};
+      openButton.addEventListener('click',open);
+      closeButton.addEventListener('click',close);
+      overlay.addEventListener('click',close);
+      document.addEventListener('keydown',event=>{if(event.key==='Escape')close()});
+    })();
+  </script>
 </body>
 </html>
