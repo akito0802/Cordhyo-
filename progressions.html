@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#111827" />
+  <title>コード進行集 | Guitar Chord Book</title>
+  <link rel="stylesheet" href="style.css?v=20260728-17" />
+  <link rel="stylesheet" href="site-nav.css?v=20260729-1" />
+  <link rel="stylesheet" href="progressions.css?v=20260729-1" />
+</head>
+<body>
+  <nav class="site-nav" aria-label="ページ切り替え">
+    <a href="index.html">🎸 コード</a>
+    <a href="usage.html">🎼 使い方</a>
+    <a href="progressions.html" class="active" aria-current="page">🔄 コード進行</a>
+  </nav>
+
+  <header class="hero progression-hero">
+    <div>
+      <p class="eyebrow">CHORD PROGRESSIONS</p>
+      <h1>雰囲気から選べる<br>コード進行集</h1>
+      <p class="lead">定番進行をキーごとに自動変換。コードを押すと辞典でフォームを確認できるよ。</p>
+    </div>
+  </header>
+
+  <main class="container progression-page-container">
+    <section class="controls progression-controls" aria-label="コード進行の条件">
+      <label>キー
+        <select id="progressionKey" aria-label="キーを選択">
+          <option>C</option><option>C#</option><option>D</option><option>D#</option>
+          <option>E</option><option>F</option><option>F#</option><option>G</option>
+          <option>G#</option><option>A</option><option>A#</option><option>B</option>
+        </select>
+      </label>
+      <label>進行検索
+        <input id="progressionSearch" type="search" placeholder="例：王道、切ない、ジャズ" autocomplete="off" />
+      </label>
+      <p id="progressionCount" class="control-note"></p>
+    </section>
+
+    <section class="progression-guide" aria-labelledby="progressionTitle">
+      <div class="progression-heading">
+        <div>
+          <h2 id="progressionTitle">定番ポップス</h2>
+          <p id="progressionDescription">幅広い曲で使いやすい、覚えておくと便利な進行。</p>
+        </div>
+        <span>コードを押すと辞典へ移動</span>
+      </div>
+      <div id="progressionTabs" class="progression-tabs" role="tablist" aria-label="コード進行カテゴリ"></div>
+      <div id="progressionCards" class="progression-cards"></div>
+    </section>
+  </main>
+
+  <footer>Guitar Chord Book — コード進行集</footer>
+  <script src="progressions.js?v=20260729-1"></script>
+</body>
+</html>
