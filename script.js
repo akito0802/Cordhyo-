@@ -1,9 +1,9 @@
 const rootSelect = document.querySelector('#rootSelect');
 const typeSelect = document.querySelector('#typeSelect');
+const slashSelect = document.querySelector('#slashSelect');
 const selectedChord = document.querySelector('#selectedChord');
 
 const roots = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
-const noteNames = roots;
 let selectedFormIndex = 0;
 
 const typeData = {
@@ -44,6 +44,19 @@ const openShapes = {
   'C:aug':['x',3,2,1,1,'x'], 'E:aug':[0,3,2,1,1,0]
 };
 
+const slashChords = {
+  'C/E':{root:'C',type:'major',bass:'E',frets:[0,3,2,0,1,0],description:'Cコードの最低音をEにした形。C→C/E→Fの流れでよく使う。'},
+  'C/G':{root:'C',type:'major',bass:'G',frets:[3,3,2,0,1,0],description:'Cコードの最低音をGにした形。響きを太くしたいときに便利。'},
+  'D/F#':{root:'D',type:'major',bass:'F#',frets:[2,0,0,2,3,2],description:'G→D/F#→Emの下降ベースで超定番。'},
+  'D/A':{root:'D',type:'major',bass:'A',frets:['x',0,0,2,3,2],description:'Dコードを安定させるオンコード。アルペジオにも使いやすい。'},
+  'Em/G':{root:'E',type:'minor',bass:'G',frets:[3,2,2,0,0,0],description:'Emの暗さを保ちながら、低音をGにした柔らかい形。'},
+  'F/A':{root:'F',type:'major',bass:'A',frets:['x',0,3,2,1,1],description:'C→F/A→Gのような滑らかなベース進行で使える。'},
+  'G/B':{root:'G',type:'major',bass:'B',frets:['x',2,0,0,0,3],description:'C→G/B→Amの下降ベースで特によく使う。'},
+  'G/D':{root:'G',type:'major',bass:'D',frets:['x','x',0,0,0,3],description:'Gコードの低音をDにして、軽くすっきり響かせる形。'},
+  'Am/C':{root:'A',type:'minor',bass:'C',frets:['x',3,2,2,1,0],description:'Amの最低音をCにした形。Cとの行き来が自然。'},
+  'Am/E':{root:'A',type:'minor',bass:'E',frets:[0,0,2,2,1,0],description:'Amを低音Eで支える形。力強く安定した響きになる。'}
+};
+
 const eShapes = {
   major:r=>[r,r+2,r+2,r+1,r,r], minor:r=>[r,r+2,r+2,r,r,r], '5':r=>[r,r+2,r+2,'x','x','x'],
   '6':r=>[r,r+2,r+2,r+1,r+2,r], m6:r=>[r,r+2,r+2,r,r+2,r], '7':r=>[r,r+2,r,r+1,r,r],
@@ -62,7 +75,7 @@ const aShapes = {
 };
 
 function chordName(root,type){return root+typeData[type].suffix;}
-function notesFor(root,type){const i=roots.indexOf(root);return [...new Set(typeData[type].intervals.map(n=>noteNames[(i+n)%12]))].join('・');}
+function notesFor(root,type){const i=roots.indexOf(root);return [...new Set(typeData[type].intervals.map(n=>roots[(i+n)%12]))].join('・');}
 function lowestFret(frets){const nums=frets.filter(v=>typeof v==='number'&&v>0);return nums.length?Math.min(...nums):0;}
 
 function getForms(root,type){
@@ -96,11 +109,20 @@ function diagram(name,frets,barres=[]){
 }
 
 function render(){
+  const slashValue=slashSelect.value;
+  if(slashValue!=='none'){
+    const slash=slashChords[slashValue];
+    selectedFormIndex=0;
+    selectedChord.innerHTML=`<article class="selected-card"><div class="selected-heading"><p class="selected-label">選択中のオンコード</p><h2 class="selected-name">${slashValue}</h2><div class="meta"><span class="badge">オンコード</span><span class="badge">ベース音 ${slash.bass}</span></div></div><div class="selected-content"><div class="diagram-panel"><div class="diagram-wrap">${diagram(slashValue,slash.frets,[])}</div></div><div class="info-list"><div class="info-box"><strong>構成音</strong>${notesFor(slash.root,slash.type)}</div><div class="info-box"><strong>最低音</strong>${slash.bass}</div><div class="info-box"><strong>使い方</strong>${slash.description}</div><div class="info-box"><strong>オンコードとは</strong>「コード名 / ベース音」で表し、いちばん低い音だけを変えたコードだよ。</div></div></div></article>`;
+    return;
+  }
+
   const root=rootSelect.value,type=typeSelect.value,data=typeData[type],name=chordName(root,type),forms=getForms(root,type),form=forms[selectedFormIndex]||forms[0],low=lowestFret(form.frets);
   selectedChord.innerHTML=`<article class="selected-card"><div class="selected-heading"><p class="selected-label">選択中のコード</p><h2 class="selected-name">${name}</h2><div class="meta"><span class="badge">${data.label}</span><span class="badge">${form.shape}</span></div></div><div class="form-tabs" role="tablist" aria-label="コードフォーム切替">${forms.map((item,index)=>`<button class="form-tab ${index===selectedFormIndex?'active':''}" data-form="${index}" type="button">${item.label}<small>${item.shape}</small></button>`).join('')}</div><div class="selected-content"><div class="diagram-panel"><div class="diagram-wrap">${diagram(name,form.frets,form.barres)}</div></div><div class="info-list"><div class="info-box"><strong>構成音</strong>${notesFor(root,type)}</div><div class="info-box"><strong>ポジション</strong>${form.shape==='オープンコード'?'オープンポジション':`${low}フレット付近`}</div><div class="info-box"><strong>響き</strong>${data.mood}</div><div class="info-box"><strong>使い方</strong>${data.use}</div></div></div></article>`;
 }
 
-rootSelect.addEventListener('change',()=>{selectedFormIndex=0;render();});
-typeSelect.addEventListener('change',()=>{selectedFormIndex=0;render();});
+rootSelect.addEventListener('change',()=>{slashSelect.value='none';selectedFormIndex=0;render();});
+typeSelect.addEventListener('change',()=>{slashSelect.value='none';selectedFormIndex=0;render();});
+slashSelect.addEventListener('change',()=>{selectedFormIndex=0;render();});
 selectedChord.addEventListener('click',event=>{const button=event.target.closest('[data-form]');if(!button)return;selectedFormIndex=Number(button.dataset.form);render();});
 render();
