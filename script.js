@@ -17,26 +17,27 @@ const typeData = {
   add9: { suffix:'add9', label:'add9', intervals:[0,4,7,14], mood:'広がりのある爽やかな響き', use:'アコギのアルペジオや弾き語りに合う。' }
 };
 
+const openShapes = {
+  'C:major':['x',3,2,0,1,0], 'D:major':['x','x',0,2,3,2], 'E:major':[0,2,2,1,0,0], 'G:major':[3,2,0,0,0,3], 'A:major':['x',0,2,2,2,0],
+  'A:minor':['x',0,2,2,1,0], 'D:minor':['x','x',0,2,3,1], 'E:minor':[0,2,2,0,0,0],
+  'A:7':['x',0,2,0,2,0], 'B:7':['x',2,1,2,0,2], 'C:7':['x',3,2,3,1,0], 'D:7':['x','x',0,2,1,2], 'E:7':[0,2,0,1,0,0], 'G:7':[3,2,0,0,0,1],
+  'C:maj7':['x',3,2,0,0,0], 'F:maj7':['x','x',3,2,1,0], 'A:maj7':['x',0,2,1,2,0],
+  'A:m7':['x',0,2,0,1,0], 'D:m7':['x','x',0,2,1,1], 'E:m7':[0,2,0,0,0,0],
+  'D:sus2':['x','x',0,2,3,0], 'E:sus2':[0,2,4,4,0,0], 'A:sus2':['x',0,2,2,0,0],
+  'D:sus4':['x','x',0,2,3,3], 'E:sus4':[0,2,2,2,0,0], 'A:sus4':['x',0,2,2,3,0],
+  'C:add9':['x',3,2,0,3,0], 'D:add9':['x','x',0,2,3,0], 'E:add9':[0,2,4,1,0,0], 'G:add9':[3,2,0,2,0,3], 'A:add9':['x',0,2,4,2,0]
+};
+
 const eShapes = {
-  major:r=>[r,r+2,r+2,r+1,r,r],
-  minor:r=>[r,r+2,r+2,r,r,r],
-  '7':r=>[r,r+2,r,r+1,r,r],
-  maj7:r=>[r,r+2,r+1,r+1,r,r],
-  m7:r=>[r,r+2,r,r,r,r],
-  sus2:r=>[r,r+2,r+4,r+4,r,r],
-  sus4:r=>[r,r+2,r+2,r+2,r,r],
-  add9:r=>[r,r+2,r+2,r+1,r,r+2]
+  major:r=>[r,r+2,r+2,r+1,r,r], minor:r=>[r,r+2,r+2,r,r,r], '7':r=>[r,r+2,r,r+1,r,r],
+  maj7:r=>[r,r+2,r+1,r+1,r,r], m7:r=>[r,r+2,r,r,r,r], sus2:r=>[r,r+2,r+4,r+4,r,r],
+  sus4:r=>[r,r+2,r+2,r+2,r,r], add9:r=>[r,r+2,r+2,r+1,r,r+2]
 };
 
 const aShapes = {
-  major:r=>['x',r,r+2,r+2,r+2,r],
-  minor:r=>['x',r,r+2,r+2,r+1,r],
-  '7':r=>['x',r,r+2,r,r+2,r],
-  maj7:r=>['x',r,r+2,r+1,r+2,r],
-  m7:r=>['x',r,r+2,r,r+1,r],
-  sus2:r=>['x',r,r+2,r+2,r,r],
-  sus4:r=>['x',r,r+2,r+2,r+3,r],
-  add9:r=>['x',r,r+2,r+4,r,r]
+  major:r=>['x',r,r+2,r+2,r+2,r], minor:r=>['x',r,r+2,r+2,r+1,r], '7':r=>['x',r,r+2,r,r+2,r],
+  maj7:r=>['x',r,r+2,r+1,r+2,r], m7:r=>['x',r,r+2,r,r+1,r], sus2:r=>['x',r,r+2,r+2,r,r],
+  sus4:r=>['x',r,r+2,r+2,r+3,r], add9:r=>['x',r,r+2,r+4,r,r]
 };
 
 function chordName(root, type) { return root + typeData[type].suffix; }
@@ -46,40 +47,53 @@ function notesFor(root, type) {
   return [...new Set(typeData[type].intervals.map(i => noteNames[(rootIndex + i) % 12]))].join('・');
 }
 
-function getForms(root, type) {
-  const rootIndex = roots.indexOf(root);
-  const eRoot = (rootIndex - 4 + 12) % 12;
-  const aRoot = (rootIndex - 9 + 12) % 12;
-  const candidates = [
-    { label:'フォーム1', shape:'6弦ルート', frets:eShapes[type](eRoot) },
-    { label:'フォーム2', shape:'5弦ルート', frets:aShapes[type](aRoot) },
-    { label:'フォーム3', shape:eRoot <= aRoot ? '6弦ルート・ハイ' : '5弦ルート・ハイ', frets:(eRoot <= aRoot ? eShapes[type](eRoot + 12) : aShapes[type](aRoot + 12)) }
-  ];
-  return candidates.sort((a,b) => lowestFret(a.frets) - lowestFret(b.frets));
-}
-
 function lowestFret(frets) {
   const nums = frets.filter(v => typeof v === 'number' && v > 0);
   return nums.length ? Math.min(...nums) : 0;
 }
 
+function getForms(root, type) {
+  const rootIndex = roots.indexOf(root);
+  const eRoot = (rootIndex - 4 + 12) % 12 || 12;
+  const aRoot = (rootIndex - 9 + 12) % 12 || 12;
+  const movable = [
+    { shape:'6弦ルート', frets:eShapes[type](eRoot) },
+    { shape:'5弦ルート', frets:aShapes[type](aRoot) },
+    { shape:eRoot <= aRoot ? '6弦ルート・ハイ' : '5弦ルート・ハイ', frets:eRoot <= aRoot ? eShapes[type](eRoot + 12) : aShapes[type](aRoot + 12) }
+  ].sort((a,b) => lowestFret(a.frets) - lowestFret(b.frets));
+
+  const open = openShapes[`${root}:${type}`];
+  const forms = open
+    ? [{ shape:'オープンコード', frets:open }, ...movable.slice(0,2)]
+    : movable;
+
+  return forms.map((form,index) => ({ ...form, label:`フォーム${index + 1}` }));
+}
+
 function diagram(name, frets) {
-  const x0 = 35, y0 = 34, stringWidth = 22, fretHeight = 27;
   const numeric = frets.filter(v => typeof v === 'number' && v > 0);
   const minFret = numeric.length ? Math.min(...numeric) : 1;
+  const maxFret = numeric.length ? Math.max(...numeric) : 1;
   const baseFret = minFret > 4 ? minFret : 1;
-  let svg = `<svg class="chord-diagram large-diagram" viewBox="0 0 170 190" role="img" aria-label="${name}のコード図">`;
-  for (let s=0; s<6; s++) svg += `<line class="string" x1="${x0+s*stringWidth}" y1="${y0}" x2="${x0+s*stringWidth}" y2="${y0+4*fretHeight}"/>`;
-  for (let f=0; f<=4; f++) svg += `<line class="${f===0 && baseFret===1?'nut':'fret'}" x1="${x0}" y1="${y0+f*fretHeight}" x2="${x0+5*stringWidth}" y2="${y0+f*fretHeight}"/>`;
-  if (baseFret > 1) svg += `<text class="fret-label" x="17" y="${y0+18}">${baseFret}fr</text>`;
+  const fretCount = Math.max(4, maxFret - baseFret + 1);
+  const x0 = 42, y0 = 38, stringWidth = 24;
+  const boardHeight = 150;
+  const fretHeight = boardHeight / fretCount;
+  const svgHeight = 210;
+
+  let svg = `<svg class="chord-diagram large-diagram" viewBox="0 0 190 ${svgHeight}" role="img" aria-label="${name}のコード図">`;
+  for (let s=0; s<6; s++) svg += `<line class="string" x1="${x0+s*stringWidth}" y1="${y0}" x2="${x0+s*stringWidth}" y2="${y0+boardHeight}"/>`;
+  for (let f=0; f<=fretCount; f++) svg += `<line class="${f===0 && baseFret===1?'nut':'fret'}" x1="${x0}" y1="${y0+f*fretHeight}" x2="${x0+5*stringWidth}" y2="${y0+f*fretHeight}"/>`;
+  if (baseFret > 1) svg += `<text class="fret-label" x="22" y="${y0+fretHeight*.65}">${baseFret}fr</text>`;
+
   frets.forEach((value, string) => {
     const x = x0 + string * stringWidth;
-    if (value === 'x') svg += `<text class="mute-mark" x="${x}" y="18">×</text>`;
-    else if (value === 0) svg += `<text class="open-mark" x="${x}" y="18">○</text>`;
+    if (value === 'x') svg += `<text class="mute-mark" x="${x}" y="22">×</text>`;
+    else if (value === 0) svg += `<text class="open-mark" x="${x}" y="22">○</text>`;
     else {
       const displayFret = value - baseFret + 1;
       const y = y0 + (displayFret - .5) * fretHeight;
-      svg += `<circle class="dot" cx="${x}" cy="${y}" r="9"/>`;
+      if (displayFret >= 1 && displayFret <= fretCount) svg += `<circle class="dot" cx="${x}" cy="${y}" r="9"/>`;
     }
   });
   return svg + '</svg>';
@@ -92,24 +106,23 @@ function render() {
   const name = chordName(root, type);
   const forms = getForms(root, type);
   const form = forms[selectedFormIndex] || forms[0];
+  const low = lowestFret(form.frets);
 
   selectedChord.innerHTML = `
     <article class="selected-card">
       <div class="selected-heading">
-        <div>
-          <p class="selected-label">選択中のコード</p>
-          <h2 class="selected-name">${name}</h2>
-          <div class="meta"><span class="badge">${data.label}</span><span class="badge">${form.shape}</span></div>
-        </div>
+        <p class="selected-label">選択中のコード</p>
+        <h2 class="selected-name">${name}</h2>
+        <div class="meta"><span class="badge">${data.label}</span><span class="badge">${form.shape}</span></div>
       </div>
       <div class="form-tabs" role="tablist" aria-label="コードフォーム切替">
         ${forms.map((item,index)=>`<button class="form-tab ${index===selectedFormIndex?'active':''}" data-form="${index}" type="button">${item.label}<small>${item.shape}</small></button>`).join('')}
       </div>
       <div class="selected-content">
-        <div class="diagram-wrap">${diagram(name, form.frets)}</div>
+        <div class="diagram-panel"><div class="diagram-wrap">${diagram(name, form.frets)}</div></div>
         <div class="info-list">
           <div class="info-box"><strong>構成音</strong>${notesFor(root, type)}</div>
-          <div class="info-box"><strong>ポジション</strong>${lowestFret(form.frets) === 0 ? 'オープンポジション' : `${lowestFret(form.frets)}フレット付近`}</div>
+          <div class="info-box"><strong>ポジション</strong>${form.shape === 'オープンコード' ? 'オープンポジション' : `${low}フレット付近`}</div>
           <div class="info-box"><strong>響き</strong>${data.mood}</div>
           <div class="info-box"><strong>使い方</strong>${data.use}</div>
         </div>
