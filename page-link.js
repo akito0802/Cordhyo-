@@ -28,3 +28,11 @@ if(returnDestinations[linkedFrom]){
  returnWrap.innerHTML=`<a class="context-return-button" href="${destination.href}">${destination.label}</a>`;
  selectedChord.insertAdjacentElement('beforebegin',returnWrap);
 }
+
+const sharedMenuStyle=document.createElement('link');
+sharedMenuStyle.rel='stylesheet';
+sharedMenuStyle.href='shared-menu.css?v=1';
+document.head.appendChild(sharedMenuStyle);
+const sharedMenuScript=document.createElement('script');
+sharedMenuScript.src='shared-menu.js?v=1';
+document.body.appendChild(sharedMenuScript);
