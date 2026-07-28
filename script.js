@@ -33,7 +33,6 @@ const eShapes = {
   maj7:r=>[r,r+2,r+1,r+1,r,r], m7:r=>[r,r+2,r,r,r,r], sus2:r=>[r,r+2,r+4,r+4,r,r],
   sus4:r=>[r,r+2,r+2,r+2,r,r], add9:r=>[r,r+2,r+2,r+1,r,r+2]
 };
-
 const aShapes = {
   major:r=>['x',r,r+2,r+2,r+2,r], minor:r=>['x',r,r+2,r+2,r+1,r], '7':r=>['x',r,r+2,r,r+2,r],
   maj7:r=>['x',r,r+2,r+1,r+2,r], m7:r=>['x',r,r+2,r,r+1,r], sus2:r=>['x',r,r+2,r+2,r,r],
@@ -41,12 +40,10 @@ const aShapes = {
 };
 
 function chordName(root, type) { return root + typeData[type].suffix; }
-
 function notesFor(root, type) {
   const rootIndex = roots.indexOf(root);
   return [...new Set(typeData[type].intervals.map(i => noteNames[(rootIndex + i) % 12]))].join('・');
 }
-
 function lowestFret(frets) {
   const nums = frets.filter(v => typeof v === 'number' && v > 0);
   return nums.length ? Math.min(...nums) : 0;
@@ -56,65 +53,31 @@ function getForms(root, type) {
   const rootIndex = roots.indexOf(root);
   const eRoot = (rootIndex - 4 + 12) % 12 || 12;
   const aRoot = (rootIndex - 9 + 12) % 12 || 12;
+  const eForm = fret => ({ shape:'6弦ルート', frets:eShapes[type](fret), barres:[{fret,start:0,end:5}] });
+  const aForm = fret => ({ shape:'5弦ルート', frets:aShapes[type](fret), barres:[{fret,start:1,end:5}] });
   const movable = [
-    { shape:'6弦ルート', frets:eShapes[type](eRoot) },
-    { shape:'5弦ルート', frets:aShapes[type](aRoot) },
-    { shape:eRoot <= aRoot ? '6弦ルート・ハイ' : '5弦ルート・ハイ', frets:eRoot <= aRoot ? eShapes[type](eRoot + 12) : aShapes[type](aRoot + 12) }
+    eForm(eRoot),
+    aForm(aRoot),
+    eRoot <= aRoot ? {...eForm(eRoot + 12), shape:'6弦ルート・ハイ'} : {...aForm(aRoot + 12), shape:'5弦ルート・ハイ'}
   ].sort((a,b) => lowestFret(a.frets) - lowestFret(b.frets));
-
   const open = openShapes[`${root}:${type}`];
-  const forms = open
-    ? [{ shape:'オープンコード', frets:open }, ...movable.slice(0,2)]
-    : movable;
-
+  const forms = open ? [{ shape:'オープンコード', frets:open, barres:[] }, ...movable.slice(0,2)] : movable;
   return forms.map((form,index) => ({ ...form, label:`フォーム${index + 1}` }));
 }
 
-function findBarres(frets) {
-  const groups = [];
-  const fretValues = [...new Set(frets.filter(v => typeof v === 'number' && v > 0))];
-
-  fretValues.forEach(fret => {
-    const strings = frets
-      .map((value, index) => value === fret ? index : -1)
-      .filter(index => index >= 0);
-
-    if (strings.length < 2) return;
-
-    let start = strings[0];
-    let previous = strings[0];
-    for (let i = 1; i <= strings.length; i++) {
-      const current = strings[i];
-      if (current === previous + 1) {
-        previous = current;
-        continue;
-      }
-      if (previous - start + 1 >= 2) groups.push({ fret, start, end: previous });
-      start = current;
-      previous = current;
-    }
-  });
-
-  return groups;
-}
-
-function diagram(name, frets) {
+function diagram(name, frets, barres = []) {
   const numeric = frets.filter(v => typeof v === 'number' && v > 0);
   const minFret = numeric.length ? Math.min(...numeric) : 1;
   const maxFret = numeric.length ? Math.max(...numeric) : 1;
   const baseFret = minFret > 4 ? minFret : 1;
   const fretCount = Math.max(4, maxFret - baseFret + 1);
-  const x0 = 42, y0 = 38, stringWidth = 24;
-  const boardHeight = 150;
+  const x0 = 42, y0 = 38, stringWidth = 24, boardHeight = 150;
   const fretHeight = boardHeight / fretCount;
-  const svgHeight = 210;
-
-  let svg = `<svg class="chord-diagram large-diagram" viewBox="0 0 190 ${svgHeight}" role="img" aria-label="${name}のコード図">`;
+  let svg = `<svg class="chord-diagram large-diagram" viewBox="0 0 190 210" role="img" aria-label="${name}のコード図">`;
   for (let s=0; s<6; s++) svg += `<line class="string" x1="${x0+s*stringWidth}" y1="${y0}" x2="${x0+s*stringWidth}" y2="${y0+boardHeight}"/>`;
   for (let f=0; f<=fretCount; f++) svg += `<line class="${f===0 && baseFret===1?'nut':'fret'}" x1="${x0}" y1="${y0+f*fretHeight}" x2="${x0+5*stringWidth}" y2="${y0+f*fretHeight}"/>`;
   if (baseFret > 1) svg += `<text class="fret-label" x="22" y="${y0+fretHeight*.65}">${baseFret}fr</text>`;
 
-  const barres = findBarres(frets);
   const covered = new Set();
   barres.forEach(barre => {
     const displayFret = barre.fret - baseFret + 1;
@@ -123,7 +86,7 @@ function diagram(name, frets) {
     const x1 = x0 + barre.start * stringWidth;
     const x2 = x0 + barre.end * stringWidth;
     svg += `<line class="barre" x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"/>`;
-    for (let s = barre.start; s <= barre.end; s++) covered.add(`${s}:${barre.fret}`);
+    for (let s=barre.start; s<=barre.end; s++) if (frets[s] === barre.fret) covered.add(`${s}:${barre.fret}`);
   });
 
   frets.forEach((value, string) => {
@@ -147,25 +110,13 @@ function render() {
   const forms = getForms(root, type);
   const form = forms[selectedFormIndex] || forms[0];
   const low = lowestFret(form.frets);
-
   selectedChord.innerHTML = `
     <article class="selected-card">
-      <div class="selected-heading">
-        <p class="selected-label">選択中のコード</p>
-        <h2 class="selected-name">${name}</h2>
-        <div class="meta"><span class="badge">${data.label}</span><span class="badge">${form.shape}</span></div>
-      </div>
-      <div class="form-tabs" role="tablist" aria-label="コードフォーム切替">
-        ${forms.map((item,index)=>`<button class="form-tab ${index===selectedFormIndex?'active':''}" data-form="${index}" type="button">${item.label}<small>${item.shape}</small></button>`).join('')}
-      </div>
+      <div class="selected-heading"><p class="selected-label">選択中のコード</p><h2 class="selected-name">${name}</h2><div class="meta"><span class="badge">${data.label}</span><span class="badge">${form.shape}</span></div></div>
+      <div class="form-tabs" role="tablist" aria-label="コードフォーム切替">${forms.map((item,index)=>`<button class="form-tab ${index===selectedFormIndex?'active':''}" data-form="${index}" type="button">${item.label}<small>${item.shape}</small></button>`).join('')}</div>
       <div class="selected-content">
-        <div class="diagram-panel"><div class="diagram-wrap">${diagram(name, form.frets)}</div></div>
-        <div class="info-list">
-          <div class="info-box"><strong>構成音</strong>${notesFor(root, type)}</div>
-          <div class="info-box"><strong>ポジション</strong>${form.shape === 'オープンコード' ? 'オープンポジション' : `${low}フレット付近`}</div>
-          <div class="info-box"><strong>響き</strong>${data.mood}</div>
-          <div class="info-box"><strong>使い方</strong>${data.use}</div>
-        </div>
+        <div class="diagram-panel"><div class="diagram-wrap">${diagram(name, form.frets, form.barres)}</div></div>
+        <div class="info-list"><div class="info-box"><strong>構成音</strong>${notesFor(root, type)}</div><div class="info-box"><strong>ポジション</strong>${form.shape === 'オープンコード' ? 'オープンポジション' : `${low}フレット付近`}</div><div class="info-box"><strong>響き</strong>${data.mood}</div><div class="info-box"><strong>使い方</strong>${data.use}</div></div>
       </div>
     </article>`;
 }
