@@ -49,7 +49,7 @@
     </section>
   </main>
   <footer>Chord Book — Piano Chords</footer>
-  <script src="piano.js?v=10"></script>
+  <script src="piano.js?v=11"></script>
   <script>
     (()=>{
       const rootSelect=document.querySelector('#pianoRoot');
@@ -63,11 +63,11 @@
         const root=NOTES.indexOf(rootSelect.value);
         const bass=bassSelect.value==='none'?null:NOTES.indexOf(bassSelect.value);
         const source=PLAY_VOICINGS[typeSelect.value]||FORMULAS[typeSelect.value];
-        const seen=new Set();
+        const seen=new Set(bass===null?[]:[bass]);
         const chord=[];
         source.forEach(interval=>{
           const pc=(root+interval)%12;
-          if(pc===bass||seen.has(pc))return;
+          if(seen.has(pc))return;
           seen.add(pc);
           chord.push({pc,midi:60+root+interval});
         });
@@ -105,8 +105,43 @@
         }
       }
 
-      [rootSelect,typeSelect,bassSelect].forEach(el=>el.addEventListener('change',()=>setTimeout(syncSlashBassChip,0)));
-      setTimeout(syncSlashBassChip,0);
+      function dedupeKeyboardHighlights(){
+        if(document.querySelector('#keyboard.single-octave'))return;
+        const root=NOTES.indexOf(rootSelect.value);
+        const formula=FORMULAS[typeSelect.value];
+        const desired=new Map();
+        formula.forEach(interval=>{
+          const absolute=root+interval;
+          const pc=absolute%12;
+          const octave=Math.min(1,Math.floor(absolute/12));
+          if(!desired.has(pc))desired.set(pc,new Set());
+          desired.get(pc).add(octave);
+        });
+        const bass=bassSelect.value==='none'?null:NOTES.indexOf(bassSelect.value);
+        if(bass!==null){
+          if(!desired.has(bass))desired.set(bass,new Set());
+          desired.get(bass).add(0);
+        }
+        NOTES.forEach((_,pc)=>{
+          const keys=[...document.querySelectorAll(`#keyboard [data-pc="${pc}"]`)];
+          keys.forEach((key,index)=>{
+            const keep=desired.get(pc)?.has(index);
+            if(keep)return;
+            key.classList.remove('active','root-active','bass-active');
+            key.querySelectorAll('.key-degree').forEach(label=>label.remove());
+          });
+        });
+      }
+
+      function syncAfterRender(){
+        setTimeout(()=>{
+          syncSlashBassChip();
+          dedupeKeyboardHighlights();
+        },0);
+      }
+
+      [rootSelect,typeSelect,bassSelect].forEach(el=>el.addEventListener('change',syncAfterRender));
+      syncAfterRender();
     })();
   </script>
   <script src="shared-menu.js?v=1"></script>
