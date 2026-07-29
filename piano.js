@@ -15,15 +15,15 @@ function render(){
   document.querySelector('#pianoChordName').textContent=rootEl.value+LABELS[typeEl.value];
   document.querySelector('#pianoNotes').textContent=formula.map(interval=>NOTES[(root+interval)%12]).join(' ・ ');
   document.querySelector('#pianoDegrees').textContent=formula.map(interval=>DEGREE[interval]||interval).join(' ・ ');
-  document.querySelector('#pianoBadges').innerHTML=`<span class="badge">${formula.length}音</span><span class="badge">ルート ${rootEl.value}</span><span class="badge">3オクターブ表示</span>`;
+  document.querySelector('#pianoBadges').innerHTML=`<span class="badge">${formula.length}音</span><span class="badge">ルート ${rootEl.value}</span><span class="badge">2オクターブ表示</span>`;
 
   keyboard.innerHTML='';
   const whitePitchClasses=[0,2,4,5,7,9,11];
   const blackAfterWhite={0:1,1:3,3:6,4:8,5:10};
-  const totalWhiteKeys=21;
+  const totalWhiteKeys=14;
   const whiteWidth=100/totalWhiteKeys;
 
-  for(let octave=0;octave<3;octave++){
+  for(let octave=0;octave<2;octave++){
     whitePitchClasses.forEach((pc,index)=>{
       const whiteIndex=octave*7+index;
       const key=document.createElement('div');
@@ -40,7 +40,7 @@ function render(){
         const blackActive=pcs.has(blackPc);
         black.className='black-key'+(blackActive?' active':'')+(blackPc===root&&blackActive?' root-active':'');
         black.style.left=`${(whiteIndex+1)*whiteWidth}%`;
-        black.style.width=`${whiteWidth*0.62}%`;
+        black.style.width=`${whiteWidth*.62}%`;
         black.innerHTML=`<span class="key-label">${NOTES[blackPc]}${blackActive?`<span class="key-degree">${pcs.get(blackPc)}</span>`:''}</span>`;
         keyboard.appendChild(black);
       }
