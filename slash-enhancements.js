@@ -48,33 +48,45 @@
     return audioContext;
   }
 
-  function playTone(midi, start, duration = 1.45, volume = 0.1) {
+  function playTone(midi, start, duration = 1.55, volume = 0.1, bassTone = false) {
     const ctx = getContext();
     const gain = ctx.createGain();
     const osc = ctx.createOscillator();
-    osc.type = 'triangle';
+    const filter = ctx.createBiquadFilter();
+    osc.type = bassTone ? 'sine' : 'triangle';
     osc.frequency.value = 440 * Math.pow(2, (midi - 69) / 12);
+    filter.type = 'lowpass';
+    filter.frequency.value = bassTone ? 700 : 2200;
     gain.gain.setValueAtTime(0.0001, start);
-    gain.gain.exponentialRampToValueAtTime(volume, start + 0.015);
+    gain.gain.exponentialRampToValueAtTime(bassTone ? 0.22 : volume, start + 0.015);
     gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
-    osc.connect(gain).connect(ctx.destination);
+    osc.connect(filter).connect(gain).connect(ctx.destination);
     osc.start(start);
     osc.stop(start + duration + 0.05);
   }
 
-  function chordMidi(root, type, bass = 'none') {
+  function chordVoicing(root, type, bass = 'none') {
     const rootPc = roots.indexOf(root);
+    const bassPc = bass === 'none' ? rootPc : roots.indexOf(bass);
     const intervals = typeData[type]?.intervals || [0,4,7];
-    let notes = intervals.map((interval, index) => 60 + rootPc + interval + (index > 3 ? 12 : 0));
-    notes.unshift(48 + (bass === 'none' ? rootPc : roots.indexOf(bass)));
-    return [...new Set(notes)].slice(0,7);
+    const upper = intervals
+      .map(interval => 60 + rootPc + interval)
+      .filter(note => note % 12 !== bassPc)
+      .map((note, index) => note + (index > 2 ? 12 : 0));
+    return { bass: 36 + bassPc, upper: [...new Set(upper)].slice(0,6) };
+  }
+
+  function playVoicing(root, type, bass, start) {
+    const voicing = chordVoicing(root, type, bass);
+    playTone(voicing.bass, start, 1.65, 0.1, true);
+    voicing.upper.forEach((note, index) => playTone(note, start + 0.09 + index * 0.018, 1.5, 0.085));
   }
 
   function playComparison(root, type, bass) {
     const ctx = getContext();
     const start = ctx.currentTime + 0.05;
-    chordMidi(root, type, 'none').forEach((note, index) => playTone(note, start + index * 0.015));
-    chordMidi(root, type, bass).forEach((note, index) => playTone(note, start + 1.8 + index * 0.015));
+    playVoicing(root, type, 'none', start);
+    playVoicing(root, type, bass, start + 2.05);
   }
 
   function renderEnhancements() {
@@ -103,7 +115,7 @@
       </div>
       <div class="slash-feature-card slash-compare-card">
         <h3>通常コードと聴き比べ</h3>
-        <p>${bass === 'none' ? 'オンコードを選ぶと通常形との違いを聴き比べできるよ。' : `${baseName} → ${currentName} の順に再生するよ。`}</p>
+        <p>${bass === 'none' ? 'オンコードを選ぶと通常形との違いを聴き比べできるよ。' : `${baseName} → ${currentName} の順に、最低音を強調して再生するよ。`}</p>
         <button type="button" class="slash-compare-button" ${bass === 'none' ? 'disabled' : ''}>🎧 聴き比べ</button>
       </div>`;
 
