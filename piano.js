@@ -5,25 +5,31 @@ const DEGREE={0:'1',2:'9',3:'♭3',4:'3',5:'11',6:'♭5',7:'5',8:'♯5',9:'6',10
 const rootEl=document.querySelector('#pianoRoot');
 const typeEl=document.querySelector('#pianoType');
 const keyboard=document.querySelector('#keyboard');
+const octaveLabel=document.querySelector('#octaveLabel');
 
 function render(){
   const root=NOTES.indexOf(rootEl.value);
   const formula=FORMULAS[typeEl.value];
+  const octaveCount=Math.max(...formula)<=11?1:2;
   const pcs=new Map();
   formula.forEach(interval=>pcs.set((root+interval)%12,DEGREE[interval]||String(interval)));
 
   document.querySelector('#pianoChordName').textContent=rootEl.value+LABELS[typeEl.value];
   document.querySelector('#pianoNotes').textContent=formula.map(interval=>NOTES[(root+interval)%12]).join(' ・ ');
   document.querySelector('#pianoDegrees').textContent=formula.map(interval=>DEGREE[interval]||interval).join(' ・ ');
-  document.querySelector('#pianoBadges').innerHTML=`<span class="badge">${formula.length}音</span><span class="badge">ルート ${rootEl.value}</span><span class="badge">2オクターブ表示</span>`;
+  document.querySelector('#pianoBadges').innerHTML=`<span class="badge">${formula.length}音</span><span class="badge">ルート ${rootEl.value}</span><span class="badge">${octaveCount}オクターブ表示</span>`;
 
+  octaveLabel.textContent=`${octaveCount} OCTAVE${octaveCount===1?'':'S'}`;
+  keyboard.setAttribute('aria-label',`${octaveCount}オクターブのピアノ鍵盤`);
+  keyboard.classList.toggle('single-octave',octaveCount===1);
   keyboard.innerHTML='';
+
   const whitePitchClasses=[0,2,4,5,7,9,11];
   const blackAfterWhite={0:1,1:3,3:6,4:8,5:10};
-  const totalWhiteKeys=14;
+  const totalWhiteKeys=7*octaveCount;
   const whiteWidth=100/totalWhiteKeys;
 
-  for(let octave=0;octave<2;octave++){
+  for(let octave=0;octave<octaveCount;octave++){
     whitePitchClasses.forEach((pc,index)=>{
       const whiteIndex=octave*7+index;
       const key=document.createElement('div');
