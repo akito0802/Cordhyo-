@@ -73,7 +73,9 @@
     const chordButton = event.target.closest('.play-chord-button');
     const arpeggioButton = event.target.closest('.play-arpeggio-button');
     if (!chordButton && !arpeggioButton) return;
-    if (window.chordPlaybackMode === 'normal') return;
+    const mode = window.chordPlaybackMode || 'combined';
+    if (mode === 'normal') return;
+    if (mode === 'lower') event.stopImmediatePropagation();
 
     const ctx = getContext();
     const now = ctx.currentTime + 0.03;
@@ -81,7 +83,7 @@
     getLowerOctaveNotes().forEach((midi, index) => {
       playLowTone(midi, now + (isArpeggio ? index * 0.16 : index * 0.018), isArpeggio ? 2.3 : 1.9);
     });
-  });
+  }, true);
 
   const style = document.createElement('style');
   style.textContent = '.octave-mode-selector{display:flex;align-items:center;gap:10px;flex-wrap:wrap;width:100%;margin:0 0 2px;padding:0;border:0}.octave-mode-selector legend{font-weight:800;margin-right:4px}.octave-mode-selector label{display:flex;align-items:center;gap:5px;padding:7px 10px;border:1px solid #d8cdbc;border-radius:999px;background:#fff}.octave-mode-selector input{accent-color:#7b6548}@media(max-width:560px){.octave-mode-selector{justify-content:center}.octave-mode-selector legend{width:100%;text-align:center}}';
