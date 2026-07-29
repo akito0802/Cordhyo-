@@ -7,7 +7,9 @@
   <title>ピアノコード表 | Chord Book</title>
   <link rel="stylesheet" href="style.css?v=20260728-17" />
   <link rel="stylesheet" href="site-nav.css?v=20260729-2" />
-  <link rel="stylesheet" href="piano.css?v=1" />
+  <link rel="stylesheet" href="shared-menu.css?v=1" />
+  <link rel="stylesheet" href="note-theme.css?v=2" />
+  <link rel="stylesheet" href="piano.css?v=2" />
 </head>
 <body>
   <nav class="site-nav" aria-label="ページ切り替え">
@@ -17,26 +19,55 @@
     <a href="progressions.html">🔄 コード進行</a>
     <a href="theory.html">📖 理論</a>
   </nav>
-  <header class="hero piano-hero"><div><p class="eyebrow">PIANO CHORD BOOK</p><h1>選んですぐ見られる<br>ピアノコード表</h1><p class="lead">ルート音とコードの種類を選ぶと、押さえる鍵盤と構成音がすぐわかるよ。</p></div></header>
+
+  <header class="hero piano-hero">
+    <div>
+      <p class="eyebrow">PIANO CHORD BOOK</p>
+      <h1>選んですぐ見られる<br>ピアノコード表</h1>
+      <p class="lead">3オクターブの鍵盤全体で、コードの構成音と位置を見渡せるよ。</p>
+    </div>
+  </header>
+
   <main class="container piano-container">
     <section class="controls piano-controls" aria-label="ピアノコード選択">
       <div class="selection-filters piano-filters">
-        <label>ルート音<select id="pianoRoot"><option>C</option><option>C#</option><option>D</option><option>D#</option><option>E</option><option>F</option><option>F#</option><option>G</option><option>G#</option><option>A</option><option>A#</option><option>B</option></select></label>
-        <label>コードの種類<select id="pianoType">
-          <optgroup label="基本"><option value="major">メジャー</option><option value="minor">マイナー</option><option value="5">5</option><option value="sus2">sus2</option><option value="sus4">sus4</option><option value="dim">dim</option><option value="aug">aug</option></optgroup>
-          <optgroup label="6・7系"><option value="6">6</option><option value="m6">m6</option><option value="7">7</option><option value="maj7">maj7</option><option value="m7">m7</option><option value="mMaj7">mMaj7</option><option value="dim7">dim7</option><option value="m7b5">m7♭5</option></optgroup>
-          <optgroup label="テンション"><option value="add9">add9</option><option value="madd9">m(add9)</option><option value="9">9</option><option value="maj9">maj9</option><option value="m9">m9</option><option value="11">11</option><option value="m11">m11</option><option value="13">13</option><option value="m13">m13</option></optgroup>
-        </select></label>
+        <label>ルート音
+          <select id="pianoRoot" aria-label="ルート音を選択"><option>C</option><option>C#</option><option>D</option><option>D#</option><option>E</option><option>F</option><option>F#</option><option>G</option><option>G#</option><option>A</option><option>A#</option><option>B</option></select>
+        </label>
+        <label>コードの種類
+          <select id="pianoType" aria-label="コードの種類を選択">
+            <optgroup label="基本"><option value="major">メジャー</option><option value="minor">マイナー</option><option value="5">5</option><option value="sus2">sus2</option><option value="sus4">sus4</option><option value="dim">dim</option><option value="aug">aug</option></optgroup>
+            <optgroup label="6・7系"><option value="6">6</option><option value="m6">m6</option><option value="7">7</option><option value="maj7">maj7</option><option value="m7">m7</option><option value="mMaj7">mMaj7</option><option value="dim7">dim7</option><option value="m7b5">m7♭5</option></optgroup>
+            <optgroup label="テンション"><option value="add9">add9</option><option value="madd9">m(add9)</option><option value="9">9</option><option value="maj9">maj9</option><option value="m9">m9</option><option value="11">11</option><option value="m11">m11</option><option value="13">13</option><option value="m13">m13</option></optgroup>
+          </select>
+        </label>
       </div>
-      <p class="control-note">オレンジ色の鍵盤が押さえる音。鍵盤名と度数も下に表示するよ。</p>
+      <p class="control-note">オレンジ色がコードの構成音。濃いオレンジがルート音だよ。</p>
     </section>
-    <section id="pianoChord" class="piano-card" aria-live="polite">
-      <div class="piano-heading"><div><p class="selected-label">SELECTED CHORD</p><h2 id="pianoChordName">C</h2></div><div id="pianoBadges" class="meta"></div></div>
-      <div id="keyboard" class="keyboard" aria-label="ピアノ鍵盤"></div>
-      <div class="piano-info-grid"><div class="info-box"><strong>構成音</strong><span id="pianoNotes"></span></div><div class="info-box"><strong>度数</strong><span id="pianoDegrees"></span></div></div>
+
+    <section id="pianoChord" class="selected-chord" aria-live="polite">
+      <article class="selected-card piano-card">
+        <div class="piano-heading">
+          <div><p class="selected-label">SELECTED CHORD</p><h2 id="pianoChordName" class="selected-name">C</h2></div>
+          <div id="pianoBadges" class="meta"></div>
+        </div>
+
+        <div class="keyboard-panel">
+          <div class="keyboard-topline"><strong>鍵盤全体</strong><span>3 OCTAVES</span></div>
+          <div id="keyboard" class="keyboard" aria-label="3オクターブのピアノ鍵盤"></div>
+          <div class="keyboard-legend"><span><i class="legend-root"></i>ルート音</span><span><i class="legend-tone"></i>構成音</span></div>
+        </div>
+
+        <div class="piano-info-grid">
+          <div class="info-box"><strong>構成音</strong><span id="pianoNotes"></span></div>
+          <div class="info-box"><strong>度数</strong><span id="pianoDegrees"></span></div>
+        </div>
+      </article>
     </section>
   </main>
+
   <footer>Chord Book — Piano Chords</footer>
-  <script src="piano.js?v=1"></script>
+  <script src="piano.js?v=2"></script>
+  <script src="shared-menu.js?v=1"></script>
 </body>
 </html>
