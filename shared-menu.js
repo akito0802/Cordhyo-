@@ -22,4 +22,11 @@
   closeButton.addEventListener('click',close);
   overlay.addEventListener('click',close);
   document.addEventListener('keydown',event=>{if(event.key==='Escape')close()});
+
+  if(document.body.classList.contains('piano-page')&&!document.querySelector('script[data-piano-descriptions]')){
+    const script=document.createElement('script');
+    script.src='piano-descriptions.js?v=1';
+    script.dataset.pianoDescriptions='true';
+    document.body.appendChild(script);
+  }
 })();
