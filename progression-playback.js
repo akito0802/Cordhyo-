@@ -5,6 +5,7 @@
     '9':[0,2,4,7,10], maj9:[0,2,4,7,11], m9:[0,2,3,7,10], sus2:[0,2,7], sus4:[0,5,7],
     add9:[0,2,4,7], dim:[0,3,6], dim7:[0,3,6,9], m7b5:[0,3,6,10]
   };
+  const bpmChoices = [40,50,60,70,80,90,100,110,120,130,140,150,160,180,200,220,240];
 
   let audioContext;
   let playbackId = 0;
@@ -28,7 +29,6 @@
     gain.gain.exponentialRampToValueAtTime(volume, start + 0.012);
     gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
     gain.connect(filter).connect(ctx.destination);
-
     [1, 2, 3].forEach((harmonic, index) => {
       const osc = ctx.createOscillator();
       const partial = ctx.createGain();
@@ -73,7 +73,6 @@
     stopPlayback();
     const chordButtons = [...card.querySelectorAll('.progression-chord')];
     if (!chordButtons.length) return;
-
     const ctx = getContext();
     const unlock = ctx.createOscillator();
     const unlockGain = ctx.createGain();
@@ -84,11 +83,10 @@
 
     activeCard = card;
     const id = ++playbackId;
-    const bpmInput = card.querySelector('.progression-bpm');
+    const bpmSelect = card.querySelector('.progression-bpm');
     const loopInput = card.querySelector('.progression-loop');
-    const bpm = Math.max(40, Math.min(240, Number(bpmInput?.value) || 100));
-    const beatMs = 60000 / bpm;
-    const chordMs = beatMs * 4;
+    const bpm = Math.max(40, Math.min(240, Number(bpmSelect?.value) || 120));
+    const chordMs = (60000 / bpm) * 4;
     const playButton = card.querySelector('.progression-play-button');
     if (playButton) {
       playButton.classList.add('is-playing');
@@ -127,8 +125,41 @@
       }, chordButtons.length * chordMs);
       activeTimers.push(endTimer);
     }
-
     runCycle();
+  }
+
+  function bpmOptions() {
+    return bpmChoices.map(value => `<option value="${value}"${value === 120 ? ' selected' : ''}>${value}</option>`).join('');
+  }
+
+  function applyTapTempo(card) {
+    const now = performance.now();
+    const taps = card._tapTimes || [];
+    if (taps.length && now - taps[taps.length - 1] > 2000) taps.length = 0;
+    taps.push(now);
+    while (taps.length > 6) taps.shift();
+    card._tapTimes = taps;
+
+    const button = card.querySelector('.progression-tap-button');
+    if (taps.length < 2) {
+      if (button) button.textContent = 'TAP もう1回';
+      return;
+    }
+
+    const intervalsMs = taps.slice(1).map((time, index) => time - taps[index]);
+    const average = intervalsMs.reduce((sum, value) => sum + value, 0) / intervalsMs.length;
+    const bpm = Math.max(40, Math.min(240, Math.round(60000 / average)));
+    const select = card.querySelector('.progression-bpm');
+    if (select) {
+      let option = [...select.options].find(item => Number(item.value) === bpm);
+      if (!option) {
+        option = new Option(String(bpm), String(bpm));
+        select.add(option);
+      }
+      select.value = String(bpm);
+    }
+    if (button) button.textContent = `TAP ${bpm}`;
+    stopPlayback();
   }
 
   function addControls() {
@@ -140,13 +171,20 @@
         <button type="button" class="progression-play-button">▶ 再生</button>
         <button type="button" class="progression-stop-button">■ 停止</button>
         <label class="progression-loop-label"><input type="checkbox" class="progression-loop"> 🔁 ループ</label>
-        <label class="progression-bpm-label">BPM <input type="number" class="progression-bpm" min="40" max="240" value="100" inputmode="numeric"></label>`;
-      const sequence = card.querySelector('.chord-sequence');
-      sequence?.insertAdjacentElement('afterend', player);
+        <label class="progression-bpm-label">BPM <select class="progression-bpm" aria-label="BPMを選択">${bpmOptions()}</select></label>
+        <button type="button" class="progression-tap-button">TAP</button>`;
+      card.querySelector('.chord-sequence')?.insertAdjacentElement('afterend', player);
     });
   }
 
   document.addEventListener('click', event => {
+    const tapButton = event.target.closest('.progression-tap-button');
+    if (tapButton) {
+      event.preventDefault();
+      event.stopPropagation();
+      applyTapTempo(tapButton.closest('.progression-card'));
+      return;
+    }
     const playButton = event.target.closest('.progression-play-button');
     if (playButton) {
       event.preventDefault();
@@ -156,13 +194,16 @@
       else playCard(card);
       return;
     }
-
     if (event.target.closest('.progression-stop-button')) {
       event.preventDefault();
       event.stopPropagation();
       stopPlayback();
     }
   }, true);
+
+  document.addEventListener('change', event => {
+    if (event.target.matches('.progression-bpm')) stopPlayback();
+  });
 
   ['progressionKey', 'progressionSearch'].forEach(id => {
     document.getElementById(id)?.addEventListener('input', stopPlayback);
@@ -177,7 +218,8 @@
     .progression-player button:active{transform:scale(.97)}
     .progression-play-button.is-playing{background:#332b22;color:#fff}
     .progression-loop-label,.progression-bpm-label{display:flex;align-items:center;gap:5px;font-size:.88rem;font-weight:700;color:#5f5549}
-    .progression-bpm{width:72px;min-height:36px;padding:5px 7px;border:1px solid #cfc2af;border-radius:9px;background:#fff;font:inherit}
+    .progression-bpm{min-width:74px;min-height:38px;padding:5px 8px;border:1px solid #cfc2af;border-radius:9px;background:#fff;font:inherit}
+    .progression-tap-button{min-width:82px}
     .progression-chord.is-playing{background:#332b22!important;color:#fff!important;transform:translateY(-2px);box-shadow:0 5px 14px rgba(51,43,34,.22)}
     @media(max-width:560px){.progression-player button{flex:1}.progression-loop-label,.progression-bpm-label{flex:1;justify-content:center}}
   `;
