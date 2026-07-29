@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="style.css?v=20260728-17" />
   <link rel="stylesheet" href="site-nav.css?v=20260729-2" />
   <link rel="stylesheet" href="shared-menu.css?v=1" />
-  <link rel="stylesheet" href="piano.css?v=4" />
+  <link rel="stylesheet" href="piano.css?v=5" />
 </head>
 <body class="piano-page">
   <nav class="site-nav" aria-label="ページ切り替え">
@@ -24,7 +24,7 @@
       <div>
         <p class="piano-eyebrow">PIANO CHORD BOOK</p>
         <h1>選んですぐ見られる<br>ピアノコード表</h1>
-        <p class="piano-lead">ルート音とコードの種類から、2オクターブの鍵盤で構成音をすぐ確認できるよ。</p>
+        <p class="piano-lead">コードに合わせて、1オクターブまたは2オクターブの鍵盤で構成音を確認できるよ。</p>
       </div>
     </header>
 
@@ -54,8 +54,8 @@
       </div>
 
       <div class="keyboard-panel">
-        <div class="keyboard-topline"><strong>鍵盤</strong><span>2 OCTAVES</span></div>
-        <div id="keyboard" class="keyboard" aria-label="2オクターブのピアノ鍵盤"></div>
+        <div class="keyboard-topline"><strong>鍵盤</strong><span id="octaveLabel">1 OCTAVE</span></div>
+        <div id="keyboard" class="keyboard single-octave" aria-label="1オクターブのピアノ鍵盤"></div>
         <div class="keyboard-legend"><span><i class="legend-root"></i>ルート音</span><span><i class="legend-tone"></i>構成音</span></div>
       </div>
 
@@ -67,7 +67,7 @@
   </main>
 
   <footer>Chord Book — Piano Chords</footer>
-  <script src="piano.js?v=3"></script>
+  <script src="piano.js?v=4"></script>
   <script src="shared-menu.js?v=1"></script>
 </body>
 </html>
