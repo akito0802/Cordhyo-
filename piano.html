@@ -49,6 +49,66 @@
     </section>
   </main>
   <footer>Chord Book — Piano Chords</footer>
-  <script src="piano.js?v=9"></script><script src="shared-menu.js?v=1"></script>
+  <script src="piano.js?v=10"></script>
+  <script>
+    (()=>{
+      const rootSelect=document.querySelector('#pianoRoot');
+      const typeSelect=document.querySelector('#pianoType');
+      const bassSelect=document.querySelector('#pianoBass');
+      const oldPlayButton=document.querySelector('#playChord');
+      const playButton=oldPlayButton.cloneNode(true);
+      oldPlayButton.replaceWith(playButton);
+
+      function uniqueVoicing(){
+        const root=NOTES.indexOf(rootSelect.value);
+        const bass=bassSelect.value==='none'?null:NOTES.indexOf(bassSelect.value);
+        const source=PLAY_VOICINGS[typeSelect.value]||FORMULAS[typeSelect.value];
+        const seen=new Set();
+        const chord=[];
+        source.forEach(interval=>{
+          const pc=(root+interval)%12;
+          if(pc===bass||seen.has(pc))return;
+          seen.add(pc);
+          chord.push({pc,midi:60+root+interval});
+        });
+        return {bass,chord};
+      }
+
+      playButton.addEventListener('click',()=>{
+        const {bass,chord}=uniqueVoicing();
+        if(bass!==null){
+          playMidi(48+bass,1.1,0);
+          flashPitchClass(bass);
+        }
+        chord.forEach((note,index)=>{
+          const delay=(bass!==null?.06:0)+index*.035;
+          playMidi(note.midi,1,delay);
+          setTimeout(()=>flashPitchClass(note.pc),delay*1000);
+        });
+      });
+
+      function syncSlashBassChip(){
+        const bassName=bassSelect.value;
+        const notesBox=document.querySelector('#pianoNotes');
+        if(!notesBox)return;
+        notesBox.querySelectorAll('.note-chip').forEach(chip=>{
+          chip.classList.remove('bass');
+          chip.textContent=chip.textContent.replace(/\s*↓$/,'');
+        });
+        if(bassName==='none')return;
+        const bassPc=NOTES.indexOf(bassName);
+        const bassChip=[...notesBox.querySelectorAll('.note-chip')].find(chip=>Number(chip.dataset.pc)===bassPc);
+        if(bassChip){
+          bassChip.classList.add('bass');
+          bassChip.textContent=`${bassName} ↓`;
+          notesBox.prepend(bassChip);
+        }
+      }
+
+      [rootSelect,typeSelect,bassSelect].forEach(el=>el.addEventListener('change',()=>setTimeout(syncSlashBassChip,0)));
+      setTimeout(syncSlashBassChip,0);
+    })();
+  </script>
+  <script src="shared-menu.js?v=1"></script>
 </body>
 </html>
