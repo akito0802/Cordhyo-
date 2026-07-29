@@ -74,6 +74,14 @@
     const chordButtons = [...card.querySelectorAll('.progression-chord')];
     if (!chordButtons.length) return;
 
+    const ctx = getContext();
+    const unlock = ctx.createOscillator();
+    const unlockGain = ctx.createGain();
+    unlockGain.gain.value = 0.0001;
+    unlock.connect(unlockGain).connect(ctx.destination);
+    unlock.start();
+    unlock.stop(ctx.currentTime + 0.01);
+
     activeCard = card;
     const id = ++playbackId;
     const bpmInput = card.querySelector('.progression-bpm');
@@ -94,8 +102,8 @@
           if (id !== playbackId) return;
           chordButtons.forEach(el => el.classList.remove('is-playing'));
           button.classList.add('is-playing');
-          const ctx = getContext();
-          const start = ctx.currentTime + 0.025;
+          const currentContext = getContext();
+          const start = currentContext.currentTime + 0.025;
           notesFor(button.dataset.root, button.dataset.type).forEach((midi, noteIndex) => {
             pianoTone(midi, start + noteIndex * 0.012, Math.max(0.7, chordMs / 1000 * 0.88), 0.085);
           });
@@ -176,6 +184,9 @@
   document.head.appendChild(style);
 
   const cards = document.getElementById('progressionCards');
-  if (cards) new MutationObserver(() => { stopPlayback(); addControls(); }).observe(cards, { childList:true, subtree:true });
+  if (cards) new MutationObserver(() => {
+    stopPlayback();
+    addControls();
+  }).observe(cards, { childList:true });
   addControls();
 })();
