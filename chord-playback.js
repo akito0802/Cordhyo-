@@ -70,12 +70,30 @@
     return [...new Set(notes)].slice(0, 7);
   }
 
-  function playChord(arpeggio = false) {
+  function playNotes(notes, arpeggio = false, startOffset = 0) {
     const ctx = getContext();
-    const now = ctx.currentTime + 0.03;
-    currentNotes().forEach((midi, index) => {
-      pianoTone(midi, now + (arpeggio ? index * 0.16 : index * 0.018), arpeggio ? 2.2 : 1.8, 0.11);
+    const now = ctx.currentTime + 0.03 + startOffset;
+    notes.forEach((midi, index) => {
+      pianoTone(midi, now + (arpeggio ? index * 0.16 : index * 0.018), arpeggio ? 2.2 : 1.8, 0.1);
     });
+  }
+
+  function playChord(mode = 'normal') {
+    const notes = currentNotes();
+    if (mode === 'lower') {
+      playNotes(notes.map(note => note - 12));
+      return;
+    }
+    if (mode === 'both') {
+      playNotes(notes.map(note => note - 12));
+      playNotes(notes, false, 0.04);
+      return;
+    }
+    if (mode === 'arpeggio') {
+      playNotes(notes, true);
+      return;
+    }
+    playNotes(notes);
   }
 
   function mountControls() {
@@ -83,15 +101,24 @@
     if (!card || card.querySelector('.playback-controls')) return;
     const controls = document.createElement('div');
     controls.className = 'playback-controls';
-    controls.innerHTML = '<button type="button" class="play-chord-button">▶ 再生</button><button type="button" class="play-arpeggio-button">🎼 アルペジオ</button><small>ピアノ音で響きを確認</small>';
+    controls.innerHTML = `
+      <div class="playback-title"><strong>試聴</strong><small>ピアノ音で響きを確認</small></div>
+      <div class="playback-buttons">
+        <button type="button" data-play-mode="normal">▶ 通常</button>
+        <button type="button" data-play-mode="lower">↘ オク下</button>
+        <button type="button" data-play-mode="both">⏬ 同時再生</button>
+        <button type="button" data-play-mode="arpeggio">🎼 アルペジオ</button>
+      </div>`;
     const content = card.querySelector('.selected-content');
     card.insertBefore(controls, content || null);
-    controls.querySelector('.play-chord-button').addEventListener('click', () => playChord(false));
-    controls.querySelector('.play-arpeggio-button').addEventListener('click', () => playChord(true));
+    controls.addEventListener('click', event => {
+      const button = event.target.closest('[data-play-mode]');
+      if (button) playChord(button.dataset.playMode);
+    });
   }
 
   const style = document.createElement('style');
-  style.textContent = '.playback-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0 18px;padding:12px;border:1px solid rgba(93,75,52,.16);border-radius:14px;background:rgba(255,255,255,.72)}.playback-controls button{min-height:44px;padding:10px 16px;border:1px solid #cfc2af;border-radius:12px;background:#fffdf8;color:#332b22;font:inherit;font-weight:800;cursor:pointer;box-shadow:0 2px 7px rgba(64,45,25,.08)}.playback-controls button:active{transform:translateY(1px);box-shadow:none}.playback-controls small{color:#746858}@media(max-width:560px){.playback-controls button{flex:1;min-width:130px}.playback-controls small{width:100%;text-align:center}}';
+  style.textContent = '.playback-controls{display:grid;gap:10px;margin:14px 0 18px;padding:12px;border:1px solid rgba(93,75,52,.16);border-radius:14px;background:rgba(255,255,255,.72)}.playback-title{display:flex;align-items:baseline;gap:9px}.playback-title small{color:#746858}.playback-buttons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.playback-controls button{min-height:44px;padding:10px 8px;border:1px solid #cfc2af;border-radius:12px;background:#fffdf8;color:#332b22;font:inherit;font-weight:800;cursor:pointer;box-shadow:0 2px 7px rgba(64,45,25,.08)}.playback-controls button:active{transform:translateY(1px);box-shadow:none}@media(max-width:680px){.playback-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}}';
   document.head.appendChild(style);
 
   const target = document.querySelector('#selectedChord');
