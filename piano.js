@@ -16,6 +16,9 @@ const bassEl=document.querySelector('#pianoBass');
 const keyboard=document.querySelector('#keyboard');
 const octaveLabel=document.querySelector('#octaveLabel');
 const playChordButton=document.querySelector('#playChord');
+const searchEl=document.querySelector('#pianoSearch');
+const searchClear=document.querySelector('#pianoSearchClear');
+const searchResults=document.querySelector('#pianoSearchResults');
 let audioContext;
 function getAudioContext(){if(!audioContext)audioContext=new(window.AudioContext||window.webkitAudioContext)();if(audioContext.state==='suspended')audioContext.resume();return audioContext;}
 function playMidi(midi,duration=.7,delay=0){const context=getAudioContext(),oscillator=context.createOscillator(),gain=context.createGain(),start=context.currentTime+delay;oscillator.type='triangle';oscillator.frequency.value=440*Math.pow(2,(midi-69)/12);gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(.18,start+.025);gain.gain.exponentialRampToValueAtTime(.0001,start+duration);oscillator.connect(gain).connect(context.destination);oscillator.start(start);oscillator.stop(start+duration+.05);}
@@ -39,5 +42,25 @@ function render(){
  for(let octave=0;octave<octaveCount;octave++)whites.forEach((pc,index)=>{const wi=octave*7+index,key=document.createElement('div'),active=pcs.has(pc),isBass=bass===pc;key.className='white-key'+(active?' active':'')+(pc===root&&active?' root-active':'')+(isBass?' bass-active':'');key.style.left=`${wi*width}%`;key.style.width=`${width}%`;key.dataset.pc=pc;key.innerHTML=`<span class="key-label">${NOTES[pc]}${active?`<span class="key-degree">${pcs.get(pc)}</span>`:''}${isBass?'<span class="key-degree">Bass</span>':''}</span>`;key.setAttribute('role','button');key.tabIndex=0;const play=()=>playPitchClass(pc,4+octave);key.addEventListener('click',play);key.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();play();}});keyboard.appendChild(key);
  if(Object.prototype.hasOwnProperty.call(blackAfter,index)){const bpc=blackAfter[index],black=document.createElement('div'),bactive=pcs.has(bpc),bBass=bass===bpc;black.className='black-key'+(bactive?' active':'')+(bpc===root&&bactive?' root-active':'')+(bBass?' bass-active':'');black.style.left=`${(wi+1)*width}%`;black.style.width=`${width*.62}%`;black.dataset.pc=bpc;black.innerHTML=`<span class="key-label">${NOTES[bpc]}${bactive?`<span class="key-degree">${pcs.get(bpc)}</span>`:''}${bBass?'<span class="key-degree">Bass</span>':''}</span>`;black.setAttribute('role','button');black.tabIndex=0;const playBlack=()=>playPitchClass(bpc,4+octave);black.addEventListener('click',playBlack);black.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();playBlack();}});keyboard.appendChild(black);}});
 }
+function normalizeSearch(value){return value.toLowerCase().replaceAll('♭','b').replaceAll('♯','#').replaceAll('＃','#').replaceAll('−','').replace(/[\s,_()]/g,'');}
+const TYPE_META=[...typeEl.options].map(option=>({value:option.value,label:LABELS[option.value]??option.textContent.trim(),text:option.textContent.trim(),group:option.parentElement.label||'コード'}));
+const SEARCH_INDEX=NOTES.flatMap(root=>TYPE_META.map(type=>{const name=root+type.label;return{root,type:type.value,name,group:type.group,keywords:normalizeSearch(`${name} ${type.text} ${type.value} ${type.group}`)}}));
+let currentMatches=[];
+function closeSearch(){searchResults.classList.remove('open');searchEl.setAttribute('aria-expanded','false');}
+function chooseSearchResult(item){rootEl.value=item.root;typeEl.value=item.type;bassEl.value='none';searchEl.value=item.name;render();closeSearch();document.querySelector('#pianoChord').scrollIntoView({behavior:'smooth',block:'start'});}
+function updateSearch(){
+ const query=normalizeSearch(searchEl.value);
+ if(!query){searchResults.innerHTML='';closeSearch();return;}
+ currentMatches=SEARCH_INDEX.filter(item=>item.keywords.includes(query)).sort((a,b)=>{const an=normalizeSearch(a.name),bn=normalizeSearch(b.name);return Number(!an.startsWith(query))-Number(!bn.startsWith(query))||a.name.length-b.name.length;}).slice(0,18);
+ searchResults.innerHTML=currentMatches.length?currentMatches.map((item,index)=>`<button type="button" class="piano-search-result" role="option" data-index="${index}"><span>${item.name}</span><small>${item.group}</small></button>`).join(''):'<div class="piano-search-empty">該当するコードが見つからないよ</div>';
+ searchResults.classList.add('open');searchEl.setAttribute('aria-expanded','true');
+ searchResults.querySelectorAll('.piano-search-result').forEach(button=>button.addEventListener('click',()=>chooseSearchResult(currentMatches[Number(button.dataset.index)])));
+}
 playChordButton.addEventListener('click',()=>{const root=NOTES.indexOf(rootEl.value),formula=FORMULAS[typeEl.value],bass=bassEl.value==='none'?null:NOTES.indexOf(bassEl.value);if(bass!==null)playMidi(48+bass,1.1,0);formula.forEach((interval,index)=>{playMidi(60+root+interval,1,bass!==null?.06+index*.035:index*.035);setTimeout(()=>flashPitchClass((root+interval)%12),index*35);});});
-[rootEl,typeEl,bassEl].forEach(el=>el.addEventListener('change',render));render();
+[rootEl,typeEl,bassEl].forEach(el=>el.addEventListener('change',render));
+searchEl.addEventListener('input',updateSearch);
+searchEl.addEventListener('focus',()=>{if(searchEl.value)updateSearch();});
+searchEl.addEventListener('keydown',event=>{if(event.key==='Enter'&&currentMatches.length){event.preventDefault();chooseSearchResult(currentMatches[0]);}else if(event.key==='Escape'){closeSearch();}});
+searchClear.addEventListener('click',()=>{searchEl.value='';currentMatches=[];closeSearch();searchEl.focus();});
+document.addEventListener('click',event=>{if(!event.target.closest('.piano-search-wrap'))closeSearch();});
+render();
