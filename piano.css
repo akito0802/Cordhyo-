@@ -1,0 +1,10 @@
+.piano-hero{background:radial-gradient(circle at 16% 22%,rgba(255,107,53,.88),transparent 29%),radial-gradient(circle at 86% 12%,rgba(250,204,21,.45),transparent 25%),linear-gradient(145deg,#111827,#292524)}
+.piano-container{margin-top:-34px}.piano-controls{margin-bottom:22px}.piano-filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+.piano-card{padding:28px;border:1px solid var(--line);border-radius:26px;background:var(--card);box-shadow:var(--shadow)}
+.piano-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:24px}.piano-heading h2{margin:0;font-size:clamp(48px,9vw,76px);line-height:1}.piano-heading .meta{justify-content:flex-end}
+.keyboard{position:relative;display:flex;width:100%;height:clamp(190px,33vw,310px);overflow-x:auto;overflow-y:hidden;padding-bottom:4px;border-radius:18px;background:#111827;box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)}
+.white-key{position:relative;flex:1 0 72px;min-width:72px;height:100%;border:1px solid #9ca3af;border-top:0;border-radius:0 0 10px 10px;background:linear-gradient(#fff,#f4f1ea);z-index:1}.white-key.active{background:linear-gradient(#ffb08f,#ff6b35);color:#fff}
+.black-key{position:absolute;top:0;width:44px;height:62%;transform:translateX(-50%);border:1px solid #000;border-radius:0 0 8px 8px;background:linear-gradient(#374151,#111827);z-index:3;color:#fff}.black-key.active{background:linear-gradient(#ff8a5b,#ff4d00)}
+.key-label{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);font-size:12px;font-weight:900}.black-key .key-label{bottom:8px;font-size:11px}.key-degree{display:block;margin-top:2px;font-size:9px;opacity:.8}
+.piano-info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:20px}
+@media(max-width:640px){.piano-card{padding:18px}.piano-heading{align-items:flex-start;flex-direction:column}.piano-heading .meta{justify-content:flex-start}.piano-filters{grid-template-columns:1fr}.keyboard{height:220px}.white-key{flex-basis:58px;min-width:58px}.black-key{width:36px}.piano-info-grid{grid-template-columns:1fr}}
