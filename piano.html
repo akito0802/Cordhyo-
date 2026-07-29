@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="style.css?v=20260728-17" />
   <link rel="stylesheet" href="site-nav.css?v=20260729-2" />
   <link rel="stylesheet" href="shared-menu.css?v=1" />
-  <link rel="stylesheet" href="piano.css?v=6" />
+  <link rel="stylesheet" href="piano.css?v=7" />
 </head>
 <body class="piano-page">
   <nav class="site-nav" aria-label="ページ切り替え">
@@ -41,7 +41,7 @@
           </select>
         </label>
       </div>
-      <p class="piano-note">オレンジ色がコードの構成音。濃いオレンジがルート音だよ。</p>
+      <p class="piano-note">オレンジ色がコードの構成音。濃いオレンジがルート音だよ。鍵盤や構成音を押すと音も鳴るよ。</p>
     </section>
 
     <section id="pianoChord" class="note-card piano-result" aria-live="polite">
@@ -50,7 +50,10 @@
           <p class="piano-eyebrow">SELECTED CHORD</p>
           <h2 id="pianoChordName">C</h2>
         </div>
-        <div id="pianoBadges" class="piano-badges"></div>
+        <div class="piano-heading-actions">
+          <div id="pianoBadges" class="piano-badges"></div>
+          <button id="playChord" class="play-chord-button" type="button">▶ コードを鳴らす</button>
+        </div>
       </div>
 
       <div class="keyboard-panel">
@@ -60,14 +63,19 @@
       </div>
 
       <div class="piano-info-grid">
-        <div class="piano-info"><strong>構成音</strong><span id="pianoNotes"></span></div>
+        <div class="piano-info piano-notes-box"><strong>構成音</strong><div id="pianoNotes" class="note-chips"></div></div>
         <div class="piano-info"><strong>度数</strong><span id="pianoDegrees"></span></div>
+      </div>
+
+      <div class="piano-description">
+        <strong>このコードの特徴</strong>
+        <p id="pianoDescription"></p>
       </div>
     </section>
   </main>
 
   <footer>Chord Book — Piano Chords</footer>
-  <script src="piano.js?v=4"></script>
+  <script src="piano.js?v=5"></script>
   <script src="shared-menu.js?v=1"></script>
 </body>
 </html>
