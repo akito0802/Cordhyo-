@@ -1,4 +1,22 @@
 (() => {
+  const topNav=document.querySelector('.site-nav');
+  if(topNav){
+    const pianoLink=topNav.querySelector('a[href="piano.html"]');
+    const insertInstrumentLink=(href,label)=>{
+      if(topNav.querySelector(`a[href="${href}"]`))return;
+      const link=document.createElement('a');
+      link.href=href;
+      link.textContent=label;
+      if(location.pathname.endsWith('/'+href)||location.pathname.endsWith(href)){
+        link.classList.add('active');
+        link.setAttribute('aria-current','page');
+      }
+      pianoLink?.insertAdjacentElement('afterend',link);
+    };
+    insertInstrumentLink('ukulele.html','🌺 ウクレレ');
+    insertInstrumentLink('bass.html','🎸 ベース');
+  }
+
   if (document.getElementById('sharedMenuOpenBtn')) return;
   const wrapper = document.createElement('div');
   wrapper.innerHTML = `
