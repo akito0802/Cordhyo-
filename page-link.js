@@ -36,8 +36,8 @@ if(returnDestinations[linkedFrom]){
 
 const sharedMenuStyle=document.createElement('link');
 sharedMenuStyle.rel='stylesheet';
-sharedMenuStyle.href='shared-menu.css?v=1';
+sharedMenuStyle.href='shared-menu.css?v=2';
 document.head.appendChild(sharedMenuStyle);
 const sharedMenuScript=document.createElement('script');
-sharedMenuScript.src='shared-menu.js?v=1';
+sharedMenuScript.src='shared-menu.js?v=2';
 document.body.appendChild(sharedMenuScript);
