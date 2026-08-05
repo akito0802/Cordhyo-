@@ -1,0 +1,62 @@
+name: Enhance chord theory lab
+
+on:
+  push:
+    paths:
+      - '.github/workflows/enhance-theory-lab.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  enhance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add interactive theory lab
+        run: |
+          cat > theory-pro.css <<'CSS'
+          .theory-lab{margin:0 0 22px;padding:18px;border:1px solid rgba(139,111,71,.22);border-radius:20px;background:linear-gradient(145deg,rgba(255,253,248,.98),rgba(244,239,230,.94));box-shadow:0 12px 32px rgba(80,60,30,.08)}
+          .theory-lab-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:14px}.theory-lab h2{margin:0 0 5px;font-size:1.25rem}.theory-lab p{margin:0;color:#6b6258}.theory-lab-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.theory-lab label{display:grid;gap:5px;font-size:.78rem;font-weight:800;color:#665a4d}.theory-lab select,.theory-lab input{width:100%;padding:10px;border:1px solid #ded6c9;border-radius:11px;background:#fff;color:#1f2937;font:inherit}.theory-lab button{border:0;border-radius:11px;padding:10px 14px;background:#8b6f47;color:#fff;font-weight:800;cursor:pointer}.theory-lab-actions{display:flex;align-items:end}.theory-lab-result{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}.theory-panel{padding:14px;border-radius:15px;background:rgba(255,255,255,.75);border:1px solid #e4ddd2}.theory-panel.wide{grid-column:1/-1}.theory-panel h3{margin:0 0 8px;font-size:.95rem}.theory-chip-row{display:flex;flex-wrap:wrap;gap:7px}.theory-chip{display:inline-flex;align-items:center;padding:6px 9px;border-radius:999px;background:#eee5d8;font-size:.8rem;font-weight:800}.theory-chip.good{background:#e4efe4}.theory-chip.warn{background:#f6e6d9}.theory-progression{font-size:1.12rem;font-weight:900;letter-spacing:.02em}.theory-quiz{margin-top:14px;padding:14px;border-radius:15px;background:#f8f3ea}.theory-quiz-options{display:flex;flex-wrap:wrap;gap:8px;margin-top:9px}.theory-quiz button{background:#eee5d8;color:#3d342a}.theory-quiz button.correct{background:#dcebdc}.theory-quiz button.wrong{background:#f3d8d1}.theory-card-extra{margin-top:12px;padding-top:10px;border-top:1px dashed #d8cec0;font-size:.82rem;color:#685e52}.level-switch{display:flex;gap:6px}.level-switch button{padding:7px 10px;background:#eee5d8;color:#4a4035}.level-switch button.active{background:#8b6f47;color:#fff}@media(max-width:760px){.theory-lab-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.theory-lab-result{grid-template-columns:1fr}.theory-panel.wide{grid-column:auto}.theory-lab-head{display:grid}}@media(max-width:430px){.theory-lab-grid{grid-template-columns:1fr}}
+          CSS
+          cat > theory-pro.js <<'JS'
+          (()=>{'use strict';
+          const N=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+          const flat={'Db':'C#','Eb':'D#','Gb':'F#','Ab':'G#','Bb':'A#'};
+          const modes={major:{label:'メジャー',steps:[0,2,4,5,7,9,11],qualities:['','m','m','','','m','dim'],func:['トニック','サブドミナント','トニック代理','サブドミナント','ドミナント','トニック代理','ドミナント代理']},minor:{label:'ナチュラルマイナー',steps:[0,2,3,5,7,8,10],qualities:['m','dim','','m','m','',''],func:['トニック','ドミナント代理','トニック代理','サブドミナント','ドミナント','サブドミナント代理','ドミナント代理']}};
+          const qualities={
+            '':{name:'メジャー',ints:[0,4,7],formula:'1・3・5',feel:'明るく安定'},m:{name:'マイナー',ints:[0,3,7],formula:'1・♭3・5',feel:'暗く柔らかい'},7:{name:'ドミナント7th',ints:[0,4,7,10],formula:'1・3・5・♭7',feel:'強く解決したがる'},maj7:{name:'メジャー7th',ints:[0,4,7,11],formula:'1・3・5・7',feel:'透明で都会的'},m7:{name:'マイナー7th',ints:[0,3,7,10],formula:'1・♭3・5・♭7',feel:'柔らかく落ち着く'},dim:{name:'ディミニッシュ',ints:[0,3,6],formula:'1・♭3・♭5',feel:'不安定で緊張感'},aug:{name:'オーギュメント',ints:[0,4,8],formula:'1・3・♯5',feel:'浮遊感'},sus4:{name:'サス4',ints:[0,5,7],formula:'1・4・5',feel:'解決を待つ'},add9:{name:'アド9',ints:[0,2,4,7],formula:'1・9・3・5',feel:'爽やかで広い'},m7b5:{name:'ハーフディミニッシュ',ints:[0,3,6,10],formula:'1・♭3・♭5・♭7',feel:'暗く不安定'}
+          };
+          const idx=n=>N.indexOf(flat[n]||n), note=(root,i)=>N[(idx(root)+i+120)%12];
+          function parseChord(v){const m=v.trim().match(/^([A-G](?:#|b)?)(maj7|m7b5|m7|add9|sus4|dim|aug|7|m)?(?:\/([A-G](?:#|b)?))?$/);return m?{root:flat[m[1]]||m[1],q:m[2]||'',bass:m[3]?flat[m[3]]||m[3]:null}:null}
+          function degreeOf(root,key,mode){const d=(idx(root)-idx(key)+12)%12,i=modes[mode].steps.indexOf(d);return i<0?null:i+1}
+          const roman=['I','II','III','IV','V','VI','VII'];
+          function analyze(){const key=$('proKey').value,mode=$('proMode').value,p=parseChord($('proChord').value);if(!p){$('proOut').innerHTML='<div class="theory-panel wide">コード名を C、Am7、G7、C/E のように入力してね。</div>';return}const q=qualities[p.q]||qualities[''],deg=degreeOf(p.root,key,mode),scale=modes[mode].steps.map(s=>note(key,s)),tones=q.ints.map(i=>note(p.root,i));let role='キー外コード';if(deg){role=modes[mode].func[deg-1]}else if(p.q==='7'){const target=scale.find(n=>(idx(n)-idx(p.root)+12)%12===5);if(target)role=`セカンダリードミナント候補 → ${target}`}
+            const available=[2,5,9].map(i=>note(p.root,i)).filter(n=>scale.includes(n)&&!tones.includes(n));const avoid=scale.filter(n=>!tones.includes(n)&&q.ints.some(i=>Math.abs((idx(n)-idx(note(p.root,i))+12)%12)===1));const prog=deg?recommend(deg,key,mode):['前後のコードとの半音進行を確認','一時的な色として短く使う'];
+            $('proOut').innerHTML=`<div class="theory-panel"><h3>${p.root}${p.q}${p.bass?'/'+p.bass:''} の構成</h3><div class="theory-chip-row">${tones.map((n,i)=>`<span class="theory-chip">${n} <small>${q.formula.split('・')[i]||''}</small></span>`).join('')}</div><p>${q.name}。${q.feel}響き。</p></div><div class="theory-panel"><h3>${key}${modes[mode].label}内での役割</h3><p><b>${deg?roman[deg-1]+'度 / ':''}${role}</b></p><p>${deg?'キー内で自然に使えるダイアトニック系コード。':'キー外の音を含むため、借用・経過・セカンダリードミナントなどの可能性を確認。'}</p></div><div class="theory-panel"><h3>使いやすい追加音</h3><div class="theory-chip-row">${available.length?available.map(n=>`<span class="theory-chip good">${n}</span>`).join(''):'<span class="theory-chip">基本構成音を優先</span>'}</div><p>メロディ音として長く伸ばす場合は、実際の響きで確認してね。</p></div><div class="theory-panel"><h3>注意しやすい音</h3><div class="theory-chip-row">${avoid.length?avoid.map(n=>`<span class="theory-chip warn">${n}</span>`).join(''):'<span class="theory-chip good">強い半音衝突は少なめ</span>'}</div><p>避けるべき音ではなく、コードトーンへ解決させると効果的。</p></div><div class="theory-panel wide"><h3>次の進行候補</h3><div class="theory-progression">${prog.join('　/　')}</div></div>`;
+          }
+          function chordAt(d,key,mode){return note(key,modes[mode].steps[d-1])+modes[mode].qualities[d-1]}
+          function recommend(d,key,mode){const map={1:[4,5,6,2],2:[5,7],3:[6,4],4:[5,1,2],5:[1,6],6:[4,2,5],7:[1,3]};return (map[d]||[1]).slice(0,3).map(x=>`${chordAt(d,key,mode)} → ${chordAt(x,key,mode)}`)}
+          const $=id=>document.getElementById(id);
+          function quiz(){const key=$('proKey').value,mode=$('proMode').value,d=1+Math.floor(Math.random()*7),correct=chordAt(d,key,mode),opts=new Set([correct]);while(opts.size<4)opts.add(chordAt(1+Math.floor(Math.random()*7),key,mode));const a=[...opts].sort(()=>Math.random()-.5);$('proQuiz').innerHTML=`<b>${key}${modes[mode].label}の ${roman[d-1]} 度コードは？</b><div class="theory-quiz-options">${a.map(x=>`<button data-answer="${x}">${x}</button>`).join('')}</div><p id="quizFeedback"></p>`;$('proQuiz').querySelectorAll('button').forEach(b=>b.onclick=()=>{const ok=b.dataset.answer===correct;b.classList.add(ok?'correct':'wrong');$('quizFeedback').textContent=ok?`正解！ ${roman[d-1]} = ${correct}`:`惜しい！ 正解は ${correct}`})}
+          function init(){const guide=document.querySelector('.theory-guide');if(!guide||$('theoryLab'))return;const lab=document.createElement('section');lab.id='theoryLab';lab.className='theory-lab';lab.innerHTML=`<div class="theory-lab-head"><div><h2>🎓 コード理論ラボ</h2><p>コード名を入れるだけで、構成音・度数・機能・テンション・注意音・次の進行まで分析。</p></div><div class="level-switch"><button data-level="simple" class="active">やさしく</button><button data-level="deep">詳しく</button></div></div><div class="theory-lab-grid"><label>キー<select id="proKey">${N.map(n=>`<option>${n}</option>`).join('')}</select></label><label>スケール<select id="proMode"><option value="major">メジャー</option><option value="minor">ナチュラルマイナー</option></select></label><label>分析するコード<input id="proChord" value="G7" placeholder="例：Am7 / C/E"></label><div class="theory-lab-actions"><button id="proAnalyze">分析する</button></div></div><div id="proOut" class="theory-lab-result"></div><div id="proQuiz" class="theory-quiz"></div><button id="newQuiz" style="margin-top:9px">別の問題</button>`;guide.parentNode.insertBefore(lab,guide);$('proAnalyze').onclick=analyze;$('newQuiz').onclick=quiz;['proKey','proMode'].forEach(id=>$(id).onchange=()=>{analyze();quiz()});$('proChord').addEventListener('keydown',e=>{if(e.key==='Enter')analyze()});lab.querySelectorAll('[data-level]').forEach(b=>b.onclick=()=>{lab.querySelectorAll('[data-level]').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.body.classList.toggle('theory-deep',b.dataset.level==='deep');document.querySelectorAll('.theory-card-extra').forEach(x=>x.hidden=b.dataset.level!=='deep')});analyze();quiz();enhanceCards()}
+          function enhanceCards(){const obs=new MutationObserver(()=>{document.querySelectorAll('#theoryCards > *').forEach(card=>{if(card.dataset.pro)return;card.dataset.pro='1';const x=document.createElement('div');x.className='theory-card-extra';x.hidden=true;x.textContent='深掘りポイント：構成音を実際に鳴らし、前後のコードとの共通音・半音進行・ベースラインまで確認すると理解が定着するよ。';card.appendChild(x)})});obs.observe($('theoryCards'),{childList:true,subtree:true});setTimeout(()=>obs.takeRecords(),0)}
+          document.readyState==='loading'?document.addEventListener('DOMContentLoaded',init):init();
+          })();
+          JS
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('theory.html'); s=p.read_text(encoding='utf-8')
+          if 'theory-pro.css' not in s:
+              s=s.replace('<link rel="stylesheet" href="theory.css?v=20260729-2" />','<link rel="stylesheet" href="theory.css?v=20260729-2" />\n  <link rel="stylesheet" href="theory-pro.css?v=20260805-1" />')
+          if 'theory-pro.js' not in s:
+              s=s.replace('<script src="theory.js?v=20260729-2"></script>','<script src="theory.js?v=20260729-2"></script>\n  <script src="theory-pro.js?v=20260805-1"></script>')
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add theory.html theory-pro.css theory-pro.js
+          git commit -m "理論欄にコード分析ラボとクイズを追加"
+          git push
