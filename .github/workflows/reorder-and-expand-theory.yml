@@ -1,0 +1,62 @@
+name: Reorder and expand theory
+
+on:
+  push:
+    paths:
+      - '.github/workflows/reorder-and-expand-theory.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reorder theory lab and add lessons
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p=Path('theory-pro.js')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace("guide.parentNode.insertBefore(lab,guide);", "guide.insertAdjacentElement('afterend',lab);")
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('theory.js')
+          s=p.read_text(encoding='utf-8')
+          if "label:'スケール・旋律'" not in s:
+              addition=r''',
+ scaleMelody:{label:'スケール・旋律',description:'コードに合う音階、メロディの作り方、音の解決を学ぶ。',items:[
+  {title:'メジャーペンタトニック',keywords:'メジャー ペンタトニック 5音',body:'メジャースケールから4度と7度を省いた5音音階。半音衝突が少なく、明るく歌いやすいメロディを作りやすい。',simple:'明るい音階から、ぶつかりやすい2音を抜いた使いやすい音階。',example:'Cメジャーペンタトニック：C D E G A',points:['ポップスやカントリーで使いやすい','コードトーンを着地点にする','同じ音をAから始めるとAマイナーペンタトニック']},
+  {title:'マイナーペンタトニック',keywords:'マイナー ペンタトニック ロック',body:'ナチュラルマイナーから2度と♭6度を省いた5音音階。ロック、ブルース、ソロの基本となる。',simple:'暗い音階から使いやすい5音だけを選んだ定番スケール。',example:'Aマイナーペンタトニック：A C D E G',points:['ルート・♭3・4・5・♭7','チョーキングと相性が良い','コードが変わったらコードトーンを狙う']},
+  {title:'ブルーススケール',keywords:'ブルース スケール ブルーノート b5',body:'マイナーペンタトニックに♭5を加えた音階。長調の伴奏にも短調的な表情を加えられる。',simple:'マイナーペンタに、少し濁るブルースらしい音を1つ足したもの。',example:'Aブルース：A C D E♭ E G',points:['♭5は通過音として使いやすい','メジャー3度との揺れがブルースらしさ','長く伸ばす時は伴奏との響きを確認']},
+  {title:'ハーモニックマイナー',keywords:'ハーモニック マイナー 導音',body:'ナチュラルマイナーの7度を半音上げた音階。V7→iの強い解決を作るために使われる。',simple:'暗い音階の最後の音を上げて、主音へ戻りやすくした音階。',example:'Aハーモニックマイナー：A B C D E F G#',points:['E7→Amが作れる','♭6と7の増2度が特徴','クラシックやメタルでも使われる']},
+  {title:'メロディックマイナー',keywords:'メロディック マイナー ジャズ',body:'ジャズではナチュラルマイナーの6度と7度を上げた音階として扱う。派生モードがドミナントやオルタードで使われる。',simple:'マイナーを保ちながら、上の音を滑らかにした音階。',example:'Aメロディックマイナー：A B C D E F# G#',points:['上行下降とも同形で扱うことが多い','リディアン♭7やオルタードの親音階','mMaj7と相性が良い']},
+  {title:'オルタードスケール',keywords:'オルタード altered dominant',body:'ドミナント7th上で♭9・♯9・♭5・♯5を含む強い緊張感を作るスケール。解決先へ半音で進ませる。',simple:'V7を最大限に不安定にして、次のコードへ強く戻す音階。',example:'G7alt上のGオルタード：G A♭ B♭ B D♭ E♭ F',points:['メロディックマイナー第7モード','コードトーンの3度と♭7を意識','Iへ解決する半音進行を作る']},
+  {title:'ホールトーンスケール',keywords:'ホールトーン 全音音階 aug',body:'全て全音間隔で並ぶ6音音階。augや7♯5の上で浮遊感と方向感の薄い響きを作る。',simple:'全部同じ幅で並ぶ、ふわっとした不思議な音階。',example:'Cホールトーン：C D E F# G# A#',points:['2種類しか存在しない','増三和音を多く含む','解決音を明確にすると使いやすい']},
+  {title:'ディミニッシュスケール',keywords:'ディミニッシュ diminished 半全 全半',body:'半音と全音を交互に並べる8音音階。7♭9やdim7上で対称的な緊張感を作る。',simple:'半音と全音を交互に並べた、規則的で緊張感のある音階。',example:'G半全ディミニッシュ：G A♭ B♭ B C# D E F',points:['ドミナントでは半全を使う','dim7では全半を使う','3半音ずらして同じ構成になる']},
+  {title:'メロディの非和声音',keywords:'非和声音 経過音 刺繍音 掛留音',body:'コード構成音以外でも、経過音・刺繍音・掛留音として動きと緊張を作れる。重要なのはどこへ解決するか。',simple:'コードに入っていない音も、次の安定音へ進めば自然に使える。',example:'Cコード上で E→F→G のFを経過音として使う',points:['強拍はコードトーンが安定','掛留音は同じ音を保ってから解決','非和声音を長く伸ばすと緊張が強くなる']},
+  {title:'モチーフ展開',keywords:'モチーフ 反復 変形 メロディ',body:'短い音型を反復し、移高・リズム変更・反行・拡大縮小して曲全体に統一感を作る。',simple:'短いフレーズを少しずつ変えながら何度も使う方法。',example:'C-D-Eを D-E-F、またはC-D-Gへ変形',points:['完全な繰り返しだけにしない','リズムだけ残す方法もある','サビで音域を広げると展開感が出る']},
+  {title:'ターゲットノート',keywords:'ターゲットノート アプローチノート',body:'コードが変わる瞬間に構成音へ着地し、その直前を半音・全音で近づけると進行に沿ったメロディになる。',simple:'コードが変わる所で大事な音に着地し、その前から近づいていく。',example:'G7→Cで F→E、B→C',points:['3度と7度はコード感が強い','半音下・半音上から近づける','全ての拍で狙わず重要箇所を選ぶ']},
+  {title:'トップノートとコード選び',keywords:'トップノート メロディ ハーモナイズ',body:'メロディ音を最上声に置き、その音を含む複数のコード候補から機能とベースラインで選ぶ。',simple:'メロディの音を含むコードを探して、雰囲気に合うものを選ぶ。',example:'メロディEに対して C、Am、Em、Fmaj7など',points:['同じ音でもコードで意味が変わる','前後の機能を確認する','ベースとの距離で響きが変わる']}
+ ]}'''
+              marker='\n};\n\nconst search='
+              if marker not in s:
+                  raise SystemExit('theoryCategories end marker not found')
+              s=s.replace(marker, addition+marker, 1)
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('theory.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('theory.js?v=20260729-2','theory.js?v=20260805-3')
+          s=s.replace('theory-pro.js?v=20260805-1','theory-pro.js?v=20260805-3')
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add theory.html theory.js theory-pro.js
+          git commit -m "基礎を先に表示してスケール・旋律理論を追加"
+          git push
