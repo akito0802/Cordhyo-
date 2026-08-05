@@ -1,5 +1,20 @@
 (()=>{'use strict';
 function titleOf(card){const h=card.querySelector('summary,h3,h2,strong');return h?h.textContent.replace(/[＋−]$/,'').trim():''}
+function bindCloneControls(clone){
+ clone.addEventListener('click',e=>{
+  const btn=e.target.closest('.simple-toggle');
+  if(!btn)return;
+  e.preventDefault();e.stopPropagation();
+  const content=btn.closest('.theory-content')||clone;
+  const simple=content.querySelector('.simple-explanation');
+  if(!simple)return;
+  const next=btn.getAttribute('aria-pressed')!=='true';
+  btn.setAttribute('aria-pressed',String(next));
+  simple.hidden=!next;
+  simple.style.display=next?'block':'none';
+  btn.textContent=next?'通常の説明に戻す':'やさしい言葉で見る';
+ });
+}
 function init(){const root=document.getElementById('theoryCards');if(!root||document.getElementById('theoryItemView'))return;
  const list=document.createElement('div');list.id='theoryItemList';list.className='theory-item-list';
  const detail=document.createElement('div');detail.id='theoryItemView';detail.className='theory-item-view';detail.hidden=true;
@@ -26,6 +41,7 @@ function init(){const root=document.getElementById('theoryCards');if(!root||docu
   const content=document.createElement('div');content.className='theory-fullscreen-content';
   const clone=card.cloneNode(true);clone.removeAttribute('open');clone.classList.add('theory-item-detail');clone.open=true;
   const summary=clone.querySelector('summary');if(summary)summary.style.display='none';
+  bindCloneControls(clone);
   const nav=document.createElement('div');nav.className='theory-item-nav';
   nav.innerHTML=`<button type="button" data-prev ${index===0?'disabled':''}>← 前の項目</button><button type="button" data-next ${index===total-1?'disabled':''}>次の項目 →</button>`;
   top.querySelector('.theory-back').onclick=back;
