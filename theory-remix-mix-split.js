@@ -8,11 +8,10 @@ const remixTitles=new Set([
 const mixTitles=new Set([
  'ミックスの基礎','オートメーション','ボーカルプロデュース','リファレンス曲を使う'
 ]);
-const remixItems=[];const mixItems=[];const remain=[];
+const remixItems=[];const remain=[];
 source.items.forEach(item=>{
  if(remixTitles.has(item.title))remixItems.push(item);
- else if(mixTitles.has(item.title))mixItems.push(item);
- else remain.push(item);
+ else if(!mixTitles.has(item.title))remain.push(item);
 });
 source.items=remain;
 source.description='メロディ、コード、構成、楽器配置、展開を組み立て、曲を完成まで導く実践カテゴリ。';
@@ -21,10 +20,6 @@ theoryCategories.remix={
  description:'原曲素材の分析、ステム編集、ジャンル変換、マッシュアップ、公開前確認まで学ぶ。',
  items:remixItems
 };
-theoryCategories.mixing={
- label:'ミックス',
- description:'音量、EQ、定位、空間、オートメーション、ボーカル処理を整理して作品を仕上げる。',
- items:mixItems
-};
+delete theoryCategories.mixing;
 if(typeof renderCards==='function')renderCards();
 })();
