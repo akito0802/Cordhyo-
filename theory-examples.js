@@ -41,14 +41,15 @@ const catDefaults={
  ear:{melody:'C–E–G｜G–E–C',task:'上行・下降・跳躍を言葉で説明する。'},
  jazz:{melody:'D–F–A–C｜G–B–D–F｜C–E–G–B',task:'ii–V–Iで3度と7度の動きを追う。'}
 };
-function findItem(title){for(const [cat,c] of Object.entries(window.theoryCategories||{})){const item=(c.items||[]).find(x=>x.title===title);if(item)return{cat,item}}return null}
-function titleOf(card){const h=card.querySelector('summary,h3,h2,strong');return h?h.textContent.trim():''}
+function categories(){return typeof theoryCategories!=='undefined'?theoryCategories:null}
+function findItem(title){const cats=categories();if(!cats)return null;for(const [cat,c] of Object.entries(cats)){const item=(c.items||[]).find(x=>x.title===title);if(item)return{cat,item}}return null}
+function titleOf(card){const h=card.querySelector('summary,h3,h2,strong');return h?h.textContent.replace(/[＋−]$/,'').trim():''}
 function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function build(card){if(card.dataset.examplesAdded)return;const title=titleOf(card),found=findItem(title);if(!found)return;card.dataset.examplesAdded='1';const {cat,item}=found,d=catDefaults[cat]||catDefaults.basics,song=songMap[title]||['参考曲は順次追加','まずは自分の好きな曲で、この項目の特徴を1か所探してみる'];const example=item.example||'実際に音を鳴らし、理論上の説明と耳で感じる印象を比べる。';const points=(item.points||[]).slice(0,3);
  const wrap=document.createElement('section');wrap.className='theory-study-pack';wrap.innerHTML=`<h4>もっと具体的に理解する</h4><div class="theory-study-grid"><div class="theory-study-box"><h5>🎼 具体例</h5><p>${escapeHtml(example)}</p>${points.length?`<div class="theory-study-notes">${points.map(x=>`<span class="theory-study-note">${escapeHtml(x)}</span>`).join('')}</div>`:''}</div><div class="theory-study-box"><h5>🎵 練習用メロディ例</h5><p><b>${escapeHtml(d.melody)}</b></p><p>${escapeHtml(d.task)}</p></div><div class="theory-study-box"><h5>🎧 参考楽曲</h5><p><b>${escapeHtml(song[0])}</b></p><p>${escapeHtml(song[1])}</p><p class="theory-song-note">※曲全体がこの理論だけでできているという意味ではなく、聴き取りの参考例だよ。</p></div><div class="theory-study-box"><h5>📝 ミニ問題</h5><p>この項目を使って、2〜4小節のコード進行かメロディを1つ作ってみよう。</p><details class="theory-mini-answer"><summary>答え方のヒント</summary><p>${escapeHtml(example)} を別のキーへ移すか、最後の音だけ変えて響きを比較すると理解しやすい。</p></details></div></div>`;
  const target=card.querySelector('.theory-content')||card;target.appendChild(wrap)
 }
 function scan(){document.querySelectorAll('#theoryCards > *').forEach(build)}
-function init(){const root=document.getElementById('theoryCards');if(!root)return;scan();new MutationObserver(scan).observe(root,{childList:true})}
+function init(){const root=document.getElementById('theoryCards');if(!root)return;scan();new MutationObserver(scan).observe(root,{childList:true,subtree:false})}
 document.readyState==='loading'?document.addEventListener('DOMContentLoaded',init):init();
 })();
