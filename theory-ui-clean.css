@@ -1,0 +1,90 @@
+/* Theory page visual cleanup */
+.theory-page-container{max-width:1080px;padding-bottom:48px}
+.theory-page-container>section{margin-bottom:18px}
+
+/* Search comes first visually */
+.theory-controls{position:relative;z-index:2;padding:16px 18px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.94);box-shadow:0 8px 24px rgba(60,45,25,.07)}
+.theory-controls label{font-size:12px;letter-spacing:.02em}
+.theory-controls input{min-height:52px;padding:14px 16px;border-radius:12px;box-shadow:none}
+.theory-controls .control-note{margin:8px 2px 0;font-size:12px;color:var(--muted)}
+
+/* Compact learning dashboard */
+.theory-roadmap{padding:16px 18px;border-radius:18px;background:#fff;box-shadow:0 8px 24px rgba(60,45,25,.06)}
+.roadmap-head{align-items:center;margin-bottom:12px}
+.roadmap-head h2{font-size:1.08rem}
+.roadmap-head p{font-size:.82rem;line-height:1.5}
+.roadmap-total{min-width:78px;padding:9px 10px;border-radius:12px}
+.roadmap-total strong{font-size:1.25rem}
+.roadmap-progress{height:7px;margin-bottom:12px}
+.roadmap-actions{grid-template-columns:minmax(170px,1fr) auto auto;margin-bottom:0}
+.roadmap-actions select,.roadmap-actions button{min-height:40px;border-radius:10px;font-size:.84rem}
+.roadmap-phases{display:none}
+
+/* Theory lab is secondary, not the hero */
+.theory-lab{padding:16px 18px;border-radius:18px;background:#fff;box-shadow:0 8px 24px rgba(60,45,25,.06)}
+.theory-lab-head{align-items:center;margin-bottom:12px}
+.theory-lab h2{font-size:1.08rem}
+.theory-lab-head p{font-size:.82rem;line-height:1.5}
+.theory-lab-grid{grid-template-columns:140px 180px minmax(190px,1fr) auto;align-items:end}
+.theory-lab select,.theory-lab input{min-height:42px;border-radius:10px}
+.theory-lab button{min-height:42px;border-radius:10px}
+.theory-lab-result{gap:9px;margin-top:12px}
+.theory-panel{padding:12px;border-radius:12px}
+.theory-panel p{font-size:.86rem;line-height:1.55}
+.theory-quiz{padding:12px;margin-top:10px}
+
+/* Main dictionary */
+.theory-guide{padding:20px;border-radius:20px;box-shadow:0 10px 28px rgba(60,45,25,.07)}
+.theory-heading{align-items:center}
+.theory-heading h2{font-size:1.55rem}
+.theory-heading p{font-size:.9rem;line-height:1.55}
+.theory-heading>span{max-width:260px;text-align:right;line-height:1.5}
+.theory-tabs{display:flex;flex-wrap:nowrap;gap:8px;margin:18px -4px 16px;padding:4px;overflow-x:auto;scrollbar-width:none}
+.theory-tabs::-webkit-scrollbar{display:none}
+.theory-tab{flex:0 0 auto;padding:9px 13px;border-radius:11px;font-size:.85rem;white-space:nowrap}
+.theory-cards{gap:9px}
+.theory-card{border-radius:14px;box-shadow:0 2px 8px rgba(60,45,25,.025)}
+.theory-card summary{min-height:56px;padding:15px 16px;font-size:.95rem}
+.theory-card summary::after{font-size:18px}
+.theory-content{padding:0 16px 16px;font-size:.9rem;line-height:1.7}
+.simple-toggle{padding:8px 11px;border-radius:10px;font-size:.82rem}
+.simple-explanation,.theory-example{padding:12px;border-radius:11px}
+.theory-card-tools{justify-content:flex-end;margin-top:12px}
+.theory-card-tools button{padding:7px 10px;border-radius:9px}
+
+@media(max-width:760px){
+  .theory-page-container{margin-top:-20px;padding-left:12px;padding-right:12px}
+  .theory-page-container>section{margin-bottom:12px}
+  .theory-controls,.theory-roadmap,.theory-lab,.theory-guide{padding:14px;border-radius:15px}
+  .theory-controls input{min-height:48px}
+  .roadmap-head{gap:10px}
+  .roadmap-head p{display:none}
+  .roadmap-actions{grid-template-columns:1fr 1fr}
+  .roadmap-actions select{grid-column:1/-1}
+  .roadmap-actions button{padding:0 8px;font-size:.8rem}
+  .theory-lab-head{display:flex;gap:8px}
+  .theory-lab-head p{display:none}
+  .level-switch{margin-left:auto}
+  .level-switch button{min-height:36px;padding:6px 9px;font-size:.76rem}
+  .theory-lab-grid{grid-template-columns:1fr 1fr}
+  .theory-lab-grid label:nth-child(3){grid-column:1/-1}
+  .theory-lab-actions{grid-column:1/-1}
+  .theory-lab-actions button{width:100%}
+  .theory-lab-result{grid-template-columns:1fr}
+  .theory-heading{display:block}
+  .theory-heading h2{font-size:1.32rem}
+  .theory-heading>span{display:none}
+  .theory-tabs{margin:14px -4px 12px}
+  .theory-tab{padding:9px 12px}
+  .theory-card summary{padding:14px;min-height:52px}
+  .theory-content{padding:0 14px 14px}
+  .theory-card-tools{display:grid;grid-template-columns:1fr 1fr}
+  .theory-card-tools button{width:100%}
+}
+
+@media(max-width:430px){
+  .theory-lab-grid{grid-template-columns:1fr}
+  .theory-lab-grid label:nth-child(3),.theory-lab-actions{grid-column:auto}
+  .roadmap-head h2,.theory-lab h2{font-size:1rem}
+  .roadmap-total{min-width:68px}
+}
