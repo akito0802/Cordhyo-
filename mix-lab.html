@@ -17,35 +17,18 @@
 <link rel="stylesheet" href="mix-lab-eq-waveform.css?v=20260806-1">
 </head>
 <body>
-<nav class="site-nav" aria-label="ページ切り替え">
-<a href="index.html">🎸 コード</a><a href="progressions.html">🔄 コード進行</a><a href="theory.html">📖 理論</a><a href="mix-lab.html" class="active" aria-current="page">🎛 Mix Lab</a>
-</nav>
+<nav class="site-nav" aria-label="ページ切り替え"><a href="index.html">🎸 コード</a><a href="progressions.html">🔄 コード進行</a><a href="theory.html">📖 理論</a><a href="mix-lab.html" class="active" aria-current="page">🎛 Mix Lab</a></nav>
 <header class="mix-hero"><div><p class="eyebrow">INTERACTIVE MIX TRAINING</p><h1>Mix Lab</h1><p>音源を読み込み、EQ・楽器別処理・A/B比較・解析・耳トレ・講座を実際に触りながら学べるよ。</p></div></header>
 <main class="mix-wrap">
-<section class="upload-card">
-<label class="file-label">🎵 練習する音源を読み込む<input id="audioFile" type="file" accept="audio/*"></label>
-<div class="transport"><button id="playBtn" type="button">▶ 再生</button><button id="stopBtn" type="button" class="sub">■ 停止</button><span id="fileName">音源未選択</span></div>
-<p class="note">音源はブラウザ内だけで処理され、外部へ送信されないよ。</p>
-</section>
-<nav class="lab-tabs" aria-label="Mix Lab機能">
-<button class="active" data-panel="eq">🎚 EQトレーニング</button><button data-panel="instrument">🎤 楽器別ミックス</button><button data-panel="ab">🎧 A/B比較</button><button data-panel="course">🎓 ミックス講座</button>
-</nav>
-<section id="panel-eq" class="lab-panel active">
-<div class="panel-head"><div><h2>EQトレーニング</h2><p>周波数・ゲイン・帯域幅を動かして、音の変化と代表的な聞こえ方を確認。</p></div><button id="eqReset" class="sub">リセット</button></div>
-<div class="eq-grid">
-<label>周波数 <b id="freqValue">1000 Hz</b><input id="eqFreq" type="range" min="40" max="16000" value="1000" step="10"></label>
-<label>ゲイン <b id="gainValue">0 dB</b><input id="eqGain" type="range" min="-15" max="15" value="0" step="0.5"></label>
-<label>帯域幅 Q <b id="qValue">1.0</b><input id="eqQ" type="range" min="0.2" max="12" value="1" step="0.1"></label>
-</div>
-<div id="eqGuide" class="guide-box"></div>
-<div class="challenge"><h3>耳トレ・ミニ課題</h3><p id="challengeText">「モコモコ」を探して、周波数を合わせてみよう。</p><button id="newChallenge">別の課題</button><button id="checkChallenge" class="sub">答え合わせ</button><p id="challengeResult"></p></div>
-</section>
+<section class="upload-card"><label class="file-label">🎵 練習する音源を読み込む<input id="audioFile" type="file" accept="audio/*"></label><div class="transport"><button id="playBtn" type="button">▶ 再生</button><button id="stopBtn" type="button" class="sub">■ 停止</button><span id="fileName">音源未選択</span></div><p class="note">音源はブラウザ内だけで処理され、外部へ送信されないよ。</p></section>
+<nav class="lab-tabs" aria-label="Mix Lab機能"><button class="active" data-panel="eq">🎚 EQトレーニング</button><button data-panel="instrument">🎤 楽器別ミックス</button><button data-panel="ab">🎧 A/B比較</button><button data-panel="course">🎓 ミックス講座</button></nav>
+<section id="panel-eq" class="lab-panel active"><div class="panel-head"><div><h2>EQトレーニング</h2><p>周波数・ゲイン・帯域幅を動かして、音の変化と代表的な聞こえ方を確認。</p></div><button id="eqReset" class="sub">リセット</button></div><div class="eq-grid"><label>周波数 <b id="freqValue">1000 Hz</b><input id="eqFreq" type="range" min="40" max="16000" value="1000" step="10"></label><label>ゲイン <b id="gainValue">0 dB</b><input id="eqGain" type="range" min="-15" max="15" value="0" step="0.5"></label><label>帯域幅 Q <b id="qValue">1.0</b><input id="eqQ" type="range" min="0.2" max="12" value="1" step="0.1"></label></div><div id="eqGuide" class="guide-box"></div><div class="challenge"><h3>耳トレ・ミニ課題</h3><p id="challengeText">「モコモコ」を探して、周波数を合わせてみよう。</p><button id="newChallenge">別の課題</button><button id="checkChallenge" class="sub">答え合わせ</button><p id="challengeResult"></p></div></section>
 <section id="panel-instrument" class="lab-panel"><div class="panel-head"><div><h2>楽器別ミックス</h2><p>楽器を選ぶと、役割・注意帯域・基本チェーン・確認手順が出るよ。</p></div></div><div id="instrumentButtons" class="instrument-buttons"></div><div id="instrumentDetail" class="instrument-detail"></div></section>
 <section id="panel-ab" class="lab-panel"><div class="panel-head"><div><h2>A/B比較</h2><p>原音とEQ処理後を同じ音量で切り替えて、処理の効果を判断。</p></div></div><div class="ab-switch"><button id="aBtn" class="active">A：原音</button><button id="bBtn">B：EQ処理</button><button id="blindBtn" class="sub">ブラインド切替</button></div><div class="guide-box"><b id="abStatus">現在：A 原音</b><p>大きい音を「良い音」と誤認しやすいから、ゲインを上げた時は出力音量も意識してね。</p></div><div class="ab-notes"><label>比較メモ<textarea id="abMemo" rows="5" placeholder="例：Bはボーカルが前に出たが、少し刺さる"></textarea></label><button id="saveMemo">メモ保存</button><span id="memoSaved"></span></div></section>
 <section id="panel-course" class="lab-panel"><div class="panel-head"><div><h2>レベル別ミックス講座</h2><p>初級・中級・上級の順で進めて、完了状況を端末に保存。</p></div><button id="resetProgress" class="sub">進捗リセット</button></div><div id="courseProgress" class="progress-box"></div><div id="courseList" class="course-list"></div></section>
 </main>
 <footer>Guitar Chord Book — Mix Lab</footer>
-<script src="mix-lab-clean.js?v=20260806-3"></script>
+<script src="mix-lab-player-v3.js?v=20260806-1"></script>
 <script src="shared-menu.js?v=1"></script>
 <script src="neet-menu-ui.js?v=20260806-2"></script>
 </body></html>
