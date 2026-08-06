@@ -9,7 +9,7 @@ if(!audio){
   audio=document.createElement('audio');
   audio.id='mixLabAudio';
   audio.controls=true;
-  audio.preload='metadata';
+  audio.preload='auto';
   audio.setAttribute('playsinline','');
   audio.style.width='100%';
   audio.style.marginTop='12px';
@@ -17,6 +17,11 @@ if(!audio){
 }
 audio.loop=true;
 let objectUrl='';
+const status=document.createElement('p');
+status.id='mixLabPlaybackStatus';
+status.className='note';
+status.textContent='音源を選んでね';
+audio.after(status);
 
 const revoke=()=>{if(objectUrl){URL.revokeObjectURL(objectUrl);objectUrl='';}};
 const setSource=(blob,name)=>{
@@ -27,34 +32,40 @@ const setSource=(blob,name)=>{
   audio.load();
   fileName.textContent=name;
   playBtn.textContent='▶ 再生';
+  status.textContent='読み込み完了';
   document.dispatchEvent(new CustomEvent('mixlab-source-changed',{detail:{blob,name,audio}}));
 };
+const startPlayback=async()=>{
+  try{
+    await audio.play();
+    playBtn.textContent='⏸ 一時停止';
+    status.textContent='再生中';
+    return true;
+  }catch(err){
+    console.error('Mix Lab audio play failed',err);
+    status.textContent=`再生失敗: ${err?.name||'不明'}`;
+    return false;
+  }
+};
 
-input.addEventListener('change',()=>{
+input.addEventListener('change',async()=>{
   const file=input.files?.[0];
-  if(file)setSource(file,file.name);
+  if(!file)return;
+  setSource(file,file.name);
+  status.textContent='下の標準プレイヤーか再生ボタンを押してね';
 });
 
 playBtn.onclick=async e=>{
   e.preventDefault();
   if(!audio.currentSrc&&!audio.src){alert('先に音源を選んでね');return;}
-  try{
-    if(audio.paused){
-      await audio.play();
-      playBtn.textContent='⏸ 一時停止';
-    }else{
-      audio.pause();
-      playBtn.textContent='▶ 再生';
-    }
-  }catch(err){
-    console.error('Mix Lab audio play failed',err);
-    alert(`再生エラー: ${err?.name||'不明'}。下の標準プレイヤーの再生ボタンも試してね。`);
-  }
+  if(audio.paused)await startPlayback();
+  else{audio.pause();playBtn.textContent='▶ 再生';status.textContent='一時停止中';}
 };
-stopBtn.onclick=e=>{e.preventDefault();audio.pause();audio.currentTime=0;playBtn.textContent='▶ 再生';};
-audio.addEventListener('play',()=>playBtn.textContent='⏸ 一時停止');
-audio.addEventListener('pause',()=>playBtn.textContent='▶ 再生');
-audio.addEventListener('error',()=>{fileName.textContent='音源の読み込みに失敗';});
+stopBtn.onclick=e=>{e.preventDefault();audio.pause();audio.currentTime=0;playBtn.textContent='▶ 再生';status.textContent='停止中';};
+audio.addEventListener('play',()=>{playBtn.textContent='⏸ 一時停止';status.textContent='再生中'});
+audio.addEventListener('pause',()=>{if(audio.currentTime>0&&!audio.ended)status.textContent='一時停止中'});
+audio.addEventListener('canplay',()=>{if(audio.paused)status.textContent='再生準備OK'});
+audio.addEventListener('error',()=>{fileName.textContent='音源の読み込みに失敗';status.textContent=`読み込みエラー: ${audio.error?.code||'不明'}`});
 
 const transport=document.querySelector('.transport');
 if(transport&&!$('loopBtn')){
@@ -92,11 +103,16 @@ const samples=[['full','完成形ミニミックス'],['muddy','モコモコし�
 const upload=document.querySelector('.upload-card');
 if(upload&&!document.querySelector('.sample-library')){
   const sec=document.createElement('section');sec.className='sample-library';
-  sec.innerHTML=`<div class="sample-head"><h2>内蔵練習音源</h2><p>選択後、上の再生ボタンか標準プレイヤーで再生してね。</p></div><div class="sample-grid">${samples.map(([k,n])=>`<article class="sample-card"><h3>${n}</h3><button type="button" data-kind="${k}" data-name="${n}">この音源を使う</button></article>`).join('')}</div>`;
+  sec.innerHTML=`<div class="sample-head"><h2>内蔵練習音源</h2><p>「この音源を再生」を押すと、その場ですぐ再生するよ。</p></div><div class="sample-grid">${samples.map(([k,n])=>`<article class="sample-card"><h3>${n}</h3><button type="button" data-kind="${k}" data-name="${n}">この音源を再生</button></article>`).join('')}</div>`;
   upload.after(sec);
-  sec.querySelectorAll('[data-kind]').forEach(b=>b.onclick=()=>{
+  sec.querySelectorAll('[data-kind]').forEach(b=>b.onclick=async()=>{
     b.disabled=true;b.textContent='生成中…';
-    setTimeout(()=>{setSource(makeWav(b.dataset.kind),`${b.dataset.name}.wav`);sec.querySelectorAll('.sample-card').forEach(c=>c.classList.remove('selected'));b.closest('.sample-card').classList.add('selected');sec.querySelectorAll('[data-kind]').forEach(x=>{x.disabled=false;x.textContent=x===b?'選択中':'この音源を使う'});},20);
+    const blob=makeWav(b.dataset.kind);
+    setSource(blob,`${b.dataset.name}.wav`);
+    sec.querySelectorAll('.sample-card').forEach(c=>c.classList.remove('selected'));
+    b.closest('.sample-card').classList.add('selected');
+    const ok=await startPlayback();
+    sec.querySelectorAll('[data-kind]').forEach(x=>{x.disabled=false;x.textContent=x===b?(ok?'再生中':'もう一度再生'):'この音源を再生'});
   });
 }
 
