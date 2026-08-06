@@ -14,6 +14,9 @@ const heroState=$('heroState');
 const liveDot=document.querySelector('.live-dot');
 const frequencyLabels=$('frequencyLabels');
 const analyzerHelp=$('analyzerHelp');
+const newChallengeBtn=$('newChallengeBtn');
+const challengeCompareBtn=$('challengeCompareBtn');
+const challengeResult=$('challengeResult');
 if(!AC||!status||!playBtn||!stopBtn||!bypassBtn||!canvas||!canvasCtx)return;
 
 let ctx=null;
@@ -31,6 +34,13 @@ let bypass=false;
 let analyzerView='spectrum';
 let frequencyData=null;
 let waveformData=null;
+let challenge=null;
+let challengeActive=false;
+let challengeOriginal=false;
+let attempts=0;
+let correct=0;
+let streak=0;
+let best=Number(localStorage.getItem('mixLabEqBest')||0);
 
 const setStatus=text=>status.textContent=text;
 const setPlayingUi=value=>{
@@ -69,7 +79,7 @@ function buildChain(){
   analyser.smoothingTimeConstant=.82;
   frequencyData=new Uint8Array(analyser.frequencyBinCount);
   waveformData=new Uint8Array(analyser.fftSize);
-  syncEq();
+  applyAudioEq();
   low.connect(mid).connect(high).connect(master);
   master.connect(analyser).connect(ctx.destination);
   startVisualizer();
@@ -120,6 +130,7 @@ async function start(){
   await ensureAudio();
   stopNodes();
   if(!master)buildChain();
+  applyAudioEq();
   playing=true;
   playBtn.textContent='⏸ 停止';
   setPlayingUi(true);
@@ -128,14 +139,29 @@ async function start(){
   run();timer=setInterval(run,2000);
 }
 
+function manualValues(){return{low:Number($('lowGain').value),mid:Number($('midGain').value),high:Number($('highGain').value)}}
+
+function activeEqValues(){
+  if(challengeActive&&challenge){
+    if(challengeOriginal)return{low:0,mid:0,high:0};
+    return{low:challenge.band==='low'?challenge.amount:0,mid:challenge.band==='mid'?challenge.amount:0,high:challenge.band==='high'?challenge.amount:0};
+  }
+  return manualValues();
+}
+
+function applyAudioEq(){
+  const values=activeEqValues();
+  if(low)low.gain.setTargetAtTime(values.low,ctx.currentTime,.015);
+  if(mid)mid.gain.setTargetAtTime(values.mid,ctx.currentTime,.015);
+  if(high)high.gain.setTargetAtTime(values.high,ctx.currentTime,.015);
+}
+
 function syncEq(){
-  const lv=Number($('lowGain').value);const mv=Number($('midGain').value);const hv=Number($('highGain').value);
-  $('lowValue').textContent=`${lv>0?'+':''}${lv} dB`;
-  $('midValue').textContent=`${mv>0?'+':''}${mv} dB`;
-  $('highValue').textContent=`${hv>0?'+':''}${hv} dB`;
-  if(low)low.gain.setTargetAtTime(lv,ctx.currentTime,.015);
-  if(mid)mid.gain.setTargetAtTime(mv,ctx.currentTime,.015);
-  if(high)high.gain.setTargetAtTime(hv,ctx.currentTime,.015);
+  const values=manualValues();
+  $('lowValue').textContent=`${values.low>0?'+':''}${values.low} dB`;
+  $('midValue').textContent=`${values.mid>0?'+':''}${values.mid} dB`;
+  $('highValue').textContent=`${values.high>0?'+':''}${values.high} dB`;
+  if(!challengeActive)applyAudioEq();
 }
 
 function resizeCanvas(){
@@ -161,8 +187,7 @@ function drawSpectrum(){
   const w=canvas.width,h=canvas.height;
   const maxHz=20000;
   const nyquist=ctx.sampleRate/2;
-  canvasCtx.beginPath();
-  canvasCtx.moveTo(0,h);
+  canvasCtx.beginPath();canvasCtx.moveTo(0,h);
   let peak=0;
   for(let x=0;x<w;x++){
     const normalized=x/Math.max(1,w-1);
@@ -170,8 +195,7 @@ function drawSpectrum(){
     const index=Math.min(frequencyData.length-1,Math.round(hz/nyquist*frequencyData.length));
     const value=frequencyData[index]/255;
     peak=Math.max(peak,value);
-    const y=h-(value*h*.88)-h*.03;
-    canvasCtx.lineTo(x,y);
+    canvasCtx.lineTo(x,h-(value*h*.88)-h*.03);
   }
   canvasCtx.lineTo(w,h);canvasCtx.closePath();
   const gradient=canvasCtx.createLinearGradient(0,0,0,h);
@@ -185,18 +209,14 @@ function drawWaveform(){
   analyser.getByteTimeDomainData(waveformData);
   drawGrid();
   const w=canvas.width,h=canvas.height;
-  canvasCtx.beginPath();
-  canvasCtx.strokeStyle='#87b9c7';canvasCtx.lineWidth=Math.max(2,window.devicePixelRatio||1);
-  let rms=0;
-  const step=w/Math.max(1,waveformData.length-1);
+  canvasCtx.beginPath();canvasCtx.strokeStyle='#87b9c7';canvasCtx.lineWidth=Math.max(2,window.devicePixelRatio||1);
+  let rms=0;const step=w/Math.max(1,waveformData.length-1);
   for(let i=0;i<waveformData.length;i++){
-    const sample=(waveformData[i]-128)/128;
-    rms+=sample*sample;
+    const sample=(waveformData[i]-128)/128;rms+=sample*sample;
     const x=i*step,y=h/2+sample*h*.42;
     if(i===0)canvasCtx.moveTo(x,y);else canvasCtx.lineTo(x,y);
   }
-  canvasCtx.stroke();
-  updateMeter(Math.min(1,Math.sqrt(rms/waveformData.length)*2.2));
+  canvasCtx.stroke();updateMeter(Math.min(1,Math.sqrt(rms/waveformData.length)*2.2));
 }
 
 function updateMeter(level){
@@ -215,9 +235,61 @@ function startVisualizer(){
   render();
 }
 
+function updateScore(){
+  const score=attempts?Math.round(correct/attempts*100):0;
+  $('scoreValue').textContent=score;
+  $('correctValue').textContent=correct;
+  $('attemptValue').textContent=`/ ${attempts}問`;
+  $('streakValue').textContent=streak;
+  $('bestValue').textContent=best;
+}
+
+function setAnswersEnabled(value){document.querySelectorAll('#answerGrid button').forEach(btn=>{btn.disabled=!value;btn.classList.remove('correct','wrong')})}
+
+function bandLabel(band){return band==='low'?'LOW（低域）':band==='mid'?'MID（中域）':'HIGH（高域）'}
+
+async function newChallenge(){
+  const bands=['low','mid','high'];
+  const band=bands[Math.floor(Math.random()*bands.length)];
+  const direction=Math.random()<.5?'boost':'cut';
+  const magnitude=Math.random()<.55?6:9;
+  challenge={band,direction,amount:direction==='boost'?magnitude:-magnitude};
+  challengeActive=true;challengeOriginal=false;
+  selected=['drums','bass','keys','mix'][Math.floor(Math.random()*4)];
+  document.querySelectorAll('.source-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.source===selected));
+  $('challengeTitle').textContent=`第${attempts+1}問：どこが変わった？`;
+  $('challengeText').textContent='原音と変化後を聴き比べて、変化した帯域と方向を選んでね。';
+  challengeCompareBtn.disabled=false;
+  challengeCompareBtn.textContent='現在：変化後の音';
+  challengeResult.className='challenge-result';
+  challengeResult.textContent='回答を選んでね。';
+  setAnswersEnabled(true);
+  bypass=false;bypassBtn.classList.remove('active');bypassBtn.setAttribute('aria-pressed','false');bypassBtn.textContent='EQ ON（クリックで原音比較）';
+  await start();
+}
+
+function answerChallenge(button){
+  if(!challengeActive||!challenge)return;
+  const isCorrect=button.dataset.band===challenge.band&&button.dataset.direction===challenge.direction;
+  attempts++;
+  if(isCorrect){correct++;streak++;best=Math.max(best,streak);localStorage.setItem('mixLabEqBest',String(best))}else{streak=0}
+  const correctButton=document.querySelector(`#answerGrid button[data-band="${challenge.band}"][data-direction="${challenge.direction}"]`);
+  correctButton?.classList.add('correct');
+  if(!isCorrect)button.classList.add('wrong');
+  setAnswersEnabled(false);
+  const directionText=challenge.direction==='boost'?'上げた':'下げた';
+  challengeResult.className=`challenge-result ${isCorrect?'success':'failure'}`;
+  challengeResult.textContent=isCorrect?`正解！ ${bandLabel(challenge.band)}を${Math.abs(challenge.amount)} dB ${directionText}音だったよ。`:`惜しい！ 正解は${bandLabel(challenge.band)}を${Math.abs(challenge.amount)} dB ${directionText}音。原音ともう一度比べてみよう。`;
+  $('challengeTitle').textContent=isCorrect?'🎉 正解！':'💡 答えを確認';
+  newChallengeBtn.textContent='次の問題へ';
+  updateScore();
+}
+
 for(const id of ['lowGain','midGain','highGain'])$(id).addEventListener('input',syncEq);
 
 document.querySelectorAll('.source-btn').forEach(btn=>btn.addEventListener('click',async()=>{
+  challengeActive=false;challenge=null;challengeOriginal=false;
+  challengeCompareBtn.disabled=true;setAnswersEnabled(false);
   selected=btn.dataset.source;
   document.querySelectorAll('.source-btn').forEach(x=>x.classList.toggle('active',x===btn));
   try{await start()}catch(error){console.error(error);setStatus(`再生エラー：${error.name||'不明'}`)}
@@ -233,6 +305,7 @@ document.querySelectorAll('.analyzer-tab').forEach(btn=>btn.addEventListener('cl
 playBtn.addEventListener('click',async()=>{if(playing)stopAll();else{try{await start()}catch(error){console.error(error);setStatus(`再生エラー：${error.name||'不明'}`)}}});
 stopBtn.addEventListener('click',stopAll);
 bypassBtn.addEventListener('click',()=>{
+  if(challengeActive)return;
   bypass=!bypass;
   bypassBtn.classList.toggle('active',bypass);
   bypassBtn.setAttribute('aria-pressed',String(bypass));
@@ -240,7 +313,13 @@ bypassBtn.addEventListener('click',()=>{
   setStatus(bypass?'A/B比較：現在は原音':'A/B比較：現在はEQ処理後');
 });
 $('resetBtn').addEventListener('click',()=>{$('lowGain').value=0;$('midGain').value=0;$('highGain').value=0;syncEq();setStatus('EQを0 dBに戻したよ')});
+newChallengeBtn?.addEventListener('click',()=>newChallenge().catch(error=>{console.error(error);challengeResult.textContent='問題を開始できなかったよ。もう一度押してみてね。'}));
+challengeCompareBtn?.addEventListener('click',()=>{
+  if(!challengeActive)return;
+  challengeOriginal=!challengeOriginal;applyAudioEq();
+  challengeCompareBtn.textContent=challengeOriginal?'現在：原音':'現在：変化後の音';
+});
+document.querySelectorAll('#answerGrid button').forEach(btn=>btn.addEventListener('click',()=>answerChallenge(btn)));
 window.addEventListener('resize',resizeCanvas,{passive:true});
-syncEq();
-startVisualizer();
+updateScore();syncEq();startVisualizer();
 })();
