@@ -1,47 +1,31 @@
-# Cordhyo / Music Learning Lab
+# Guitar Chord Book
 
-ギターコード表・コード進行・音楽理論・MIXラボをまとめた、ブラウザだけで動く音楽学習サイトです。
+スマホで見やすい、シンプルなギターコード表サイトです。
 
-## 公開ページ
+## 機能
 
-- `index.html`：コード表
-- `progressions.html`：コード進行
-- `theory.html`：音楽理論
-- `mix-lab.html`：MIXラボ
-- `bass.html`：ベース向けページ
-- `ukulele.html`：ウクレレ向けページ
+- コード名検索
+- 種類別フィルター
+- 難易度別フィルター
+- コードダイアグラム表示
+- 構成音・響き・使い方の説明
+- お気に入り保存（localStorage）
+- スマホ・PC対応
 
-## MIXラボの現行構成
+## 使い方
 
-現在の本番ページが直接参照している主要ファイルです。
+`index.html` をブラウザで開くだけで動きます。
 
-- `mix-lab.html`
-- `mix-lab-eq-rebuild.css`
-- `mix-lab-phase2.css`
-- `mix-lab-phase2.js`
-- `mix-lab-phase3.js`
-- `site-nav.css`
-- `shared-menu.css`
-- `shared-menu.js`
-- `neet-note-theme.css`
-- `neet-menu-ui.js`
+## GitHub Pagesで公開
 
-上記以外の `mix-lab-*.js` / `mix-lab-*.css` には、旧版・試作版・差し替え前の実装が含まれています。参照確認が終わるまでは削除せず、段階的に整理します。
+1. Settings → Pages
+2. Branchを `main`、フォルダを `/ (root)` に設定
+3. Save
 
-## GitHub Pages
+## 構成
 
-このリポジトリは `main` ブランチの `/ (root)` を直接公開します。
+- `index.html`
+- `style.css`
+- `script.js`
 
-- `.nojekyll`：Jekyll処理を無効化
-- 公開用のGitHub Actions Workflowは使用しません
-- 一度きりの自動改修Workflowは残しません
-
-## 開発ルール
-
-1. 本番HTMLから参照されているファイルを先に確認する
-2. 一時的なデプロイトリガーファイルを作らない
-3. HTMLを書き換える一度きりのWorkflowを残さない
-4. 旧実装を削除するときは、全HTMLの参照を確認してから行う
-5. 公開確認はGitHub上のコードではなく、GitHub Pagesの実配信HTMLで行う
-
-詳しい整理方針は `docs/REPOSITORY_STRUCTURE.md` を参照してください。
+外部ライブラリは使用していません。
