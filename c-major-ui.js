@@ -1,12 +1,15 @@
-// Cメジャー専用のコンパクトなフォーム切替UI。
-// 既存のフォームデータはそのまま使い、縦長のフォーム一覧だけ隠して上部選択で切り替える。
+// 全ギターコード共通のコンパクトなフォーム切替UI。
+// コード定義・フォーム定義・オンコード定義には一切触れず、既存getForms()の結果をそのまま選択UIに載せる。
 (() => {
   function shortLabel(shape='', index=0) {
     if (shape === 'オープンコード') return 'Open';
+    if (shape === 'オンコード') return 'オンコード';
     if (shape === '6弦ルート') return '6弦ルート';
     if (shape === '5弦ルート') return '5弦ルート';
-    if (shape.includes('4弦ルート')) return '4弦ルート';
-    if (shape.includes('3弦ルート')) return '3弦ルート';
+    if (shape.includes('6弦ルート')) return shape.replace('6弦ルート・','6弦 ');
+    if (shape.includes('5弦ルート')) return shape.replace('5弦ルート・','5弦 ');
+    if (shape.includes('4弦ルート')) return shape.replace('4弦ルート・','4弦 ');
+    if (shape.includes('3弦ルート')) return shape.replace('3弦ルート・','3弦 ');
     if (shape.includes('初心者')) return '初心者';
     if (shape.includes('オープン・1弦')) return 'Open 省略';
     if (shape.includes('オープン・トップG')) return 'Open +G';
@@ -23,43 +26,45 @@
   }
 
   function difficulty(shape='') {
+    if (shape === 'オンコード') return '指定ベース';
     if (shape.includes('初心者') || shape.includes('オープン')) return '初心者向け';
     if (shape.includes('トライアド') || shape.includes('カッティング')) return '初級';
     if (shape.includes('CAGED') || shape.includes('ジャズ')) return '中級';
     if (shape.includes('ハイポジション') || shape.includes('ワイド')) return '上級';
+    if (shape.includes('省略')) return '実用省略';
     return '定番';
   }
 
   function mount() {
     const host = document.querySelector('#selectedChord');
-    if (!host) return;
+    if (!host || !window.getForms && typeof getForms !== 'function') return;
 
-    const isC = rootSelect?.value === 'C' && typeSelect?.value === 'major' && bassSelect?.value === 'none';
     const oldTabs = host.querySelector('.form-tabs');
-    if (!isC) {
-      if (oldTabs) oldTabs.style.display = '';
-      host.querySelector('.c-major-compact-ui')?.remove();
-      return;
-    }
-
     if (oldTabs) oldTabs.style.display = 'none';
-    if (host.querySelector('.c-major-compact-ui')) return;
+    host.querySelector('.all-chords-compact-ui')?.remove();
 
-    const forms = getForms('C','major','none');
+    const root = rootSelect?.value;
+    const type = typeSelect?.value;
+    const bass = bassSelect?.value || 'none';
+    if (!root || !type) return;
+
+    const forms = getForms(root, type, bass) || [];
     if (!forms.length) return;
+
+    if (selectedFormIndex >= forms.length) selectedFormIndex = 0;
     const currentIndex = Math.min(selectedFormIndex, forms.length - 1);
     const current = forms[currentIndex];
 
     const ui = document.createElement('div');
-    ui.className = 'c-major-compact-ui';
+    ui.className = 'all-chords-compact-ui';
     ui.innerHTML = `
-      <label class="c-major-select-label" for="cMajorFormSelect">
+      <label class="all-chords-select-label">
         <span>押さえ方</span>
-        <select id="cMajorFormSelect" aria-label="Cコードの押さえ方を選択">
+        <select class="allChordsFormSelect" aria-label="${root}コードの押さえ方を選択">
           ${forms.map((form,index) => `<option value="${index}" ${index===currentIndex?'selected':''}>${shortLabel(form.shape,index)}｜${difficulty(form.shape)}</option>`).join('')}
         </select>
       </label>
-      <div class="c-major-current">
+      <div class="all-chords-current">
         <strong>${shortLabel(current.shape,currentIndex)}</strong>
         <span>${difficulty(current.shape)} ・ ${currentIndex + 1}/${forms.length}</span>
       </div>`;
@@ -69,7 +74,7 @@
     if (card && heading) heading.insertAdjacentElement('afterend', ui);
     else host.prepend(ui);
 
-    ui.querySelector('#cMajorFormSelect')?.addEventListener('change', event => {
+    ui.querySelector('.allChordsFormSelect')?.addEventListener('change', event => {
       selectedFormIndex = Number(event.target.value) || 0;
       render();
     });
@@ -77,16 +82,16 @@
 
   const style = document.createElement('style');
   style.textContent = `
-    .c-major-compact-ui{display:flex;align-items:end;gap:12px;margin:12px 0 14px;padding:12px;border:1px solid #ded6c9;border-radius:14px;background:#fffaf2}
-    .c-major-select-label{display:flex;flex:1;min-width:0;flex-direction:column;gap:6px;font-weight:800;color:#332b22}
-    .c-major-select-label>span{font-size:.82rem;color:#6b6256}
-    .c-major-select-label select{width:100%;min-width:0;padding:11px 38px 11px 12px;border:1px solid #d7c9b5;border-radius:11px;background:#fff;color:#2f2922;font:inherit;font-weight:750}
-    .c-major-current{display:flex;flex-direction:column;gap:3px;min-width:120px;text-align:right}
-    .c-major-current strong{font-size:.9rem}.c-major-current span{font-size:.76rem;color:#756a5d}
+    .all-chords-compact-ui{display:flex;align-items:end;gap:12px;margin:12px 0 14px;padding:12px;border:1px solid #ded6c9;border-radius:14px;background:#fffaf2}
+    .all-chords-select-label{display:flex;flex:1;min-width:0;flex-direction:column;gap:6px;font-weight:800;color:#332b22}
+    .all-chords-select-label>span{font-size:.82rem;color:#6b6256}
+    .all-chords-select-label select{width:100%;min-width:0;padding:11px 38px 11px 12px;border:1px solid #d7c9b5;border-radius:11px;background:#fff;color:#2f2922;font:inherit;font-weight:750}
+    .all-chords-current{display:flex;flex-direction:column;gap:3px;min-width:120px;text-align:right}
+    .all-chords-current strong{font-size:.9rem}.all-chords-current span{font-size:.76rem;color:#756a5d}
+    .selected-card .form-tabs{display:none!important}
     @media(max-width:560px){
-      .c-major-compact-ui{display:block;margin:10px 0 12px;padding:10px}
-      .c-major-current{display:none}
-      .selected-card .form-tabs{display:none!important}
+      .all-chords-compact-ui{display:block;margin:10px 0 12px;padding:10px}
+      .all-chords-current{display:none}
     }
   `;
   document.head.appendChild(style);
