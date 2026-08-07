@@ -1,7 +1,12 @@
 // 全ギターコード共通のコンパクトなフォーム切替UI。
-// コード定義・フォーム定義・オンコード定義には一切触れず、既存getForms()の結果をそのまま選択UIに載せる。
+// コード定義・フォーム定義・オンコード定義には触れず、getForms() の結果を見やすく分類して表示する。
 (() => {
+  const isReferenceVoicing = (shape='') =>
+    /Jazz|Standard|Triad Compact|Full Voicing|mMaj7・|6th・|m6・|資料/.test(shape);
+
   function shortLabel(shape='', index=0) {
+    // 資料準拠フォームは名前を潰さず、そのまま見せる。
+    if (isReferenceVoicing(shape)) return `📘 ${shape}`;
     if (shape === 'オープンコード') return 'Open';
     if (shape === 'オンコード') return 'オンコード';
     if (shape === '6弦ルート') return '6弦ルート';
@@ -27,12 +32,44 @@
 
   function difficulty(shape='') {
     if (shape === 'オンコード') return '指定ベース';
+    if (shape.includes('Shell')) return 'ジャズ実用';
+    if (shape.includes('Full Voicing')) return '4〜6音';
+    if (shape.includes('Triad Compact')) return '高音トライアド';
+    if (shape.includes('Jazz Basic')) return 'ジャズ定番';
+    if (shape.includes('Standard')) return '定番';
     if (shape.includes('初心者') || shape.includes('オープン')) return '初心者向け';
     if (shape.includes('トライアド') || shape.includes('カッティング')) return '初級';
     if (shape.includes('CAGED') || shape.includes('ジャズ')) return '中級';
     if (shape.includes('ハイポジション') || shape.includes('ワイド')) return '上級';
     if (shape.includes('省略')) return '実用省略';
     return '定番';
+  }
+
+  function escapeHtml(value='') {
+    return String(value)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  function optionHtml(form, index, currentIndex) {
+    return `<option value="${index}" ${index===currentIndex?'selected':''}>${escapeHtml(shortLabel(form.shape,index))}｜${escapeHtml(difficulty(form.shape))}</option>`;
+  }
+
+  function groupedOptions(forms, currentIndex) {
+    const normal = [];
+    const reference = [];
+    forms.forEach((form,index) => {
+      (isReferenceVoicing(form.shape) ? reference : normal).push({form,index});
+    });
+
+    let html = '';
+    if (normal.length) {
+      html += `<optgroup label="既存フォーム">${normal.map(({form,index})=>optionHtml(form,index,currentIndex)).join('')}</optgroup>`;
+    }
+    if (reference.length) {
+      html += `<optgroup label="📘 資料準拠ボイシング">${reference.map(({form,index})=>optionHtml(form,index,currentIndex)).join('')}</optgroup>`;
+    }
+    return html;
   }
 
   function mount() {
@@ -53,6 +90,7 @@
     if (selectedFormIndex >= forms.length) selectedFormIndex = 0;
     const currentIndex = Math.min(selectedFormIndex, forms.length - 1);
     const current = forms[currentIndex];
+    const referenceCount = forms.filter(f=>isReferenceVoicing(f.shape)).length;
 
     let ui = host.querySelector('.all-chords-compact-ui');
     if (!ui) {
@@ -66,14 +104,14 @@
 
     ui.innerHTML = `
       <label class="all-chords-select-label">
-        <span>押さえ方</span>
-        <select class="allChordsFormSelect" aria-label="${root}コードの押さえ方を選択">
-          ${forms.map((form,index) => `<option value="${index}" ${index===currentIndex?'selected':''}>${shortLabel(form.shape,index)}｜${difficulty(form.shape)}</option>`).join('')}
+        <span>押さえ方 ${referenceCount ? `<b class="reference-count">📘 資料準拠 ${referenceCount}フォーム</b>` : ''}</span>
+        <select class="allChordsFormSelect" aria-label="${escapeHtml(root)}コードの押さえ方を選択">
+          ${groupedOptions(forms,currentIndex)}
         </select>
       </label>
       <div class="all-chords-current">
-        <strong>${shortLabel(current.shape,currentIndex)}</strong>
-        <span>${difficulty(current.shape)} ・ ${currentIndex + 1}/${forms.length}</span>
+        <strong>${escapeHtml(shortLabel(current.shape,currentIndex))}</strong>
+        <span>${escapeHtml(difficulty(current.shape))} ・ ${currentIndex + 1}/${forms.length}</span>
       </div>`;
 
     const select = ui.querySelector('.allChordsFormSelect');
@@ -89,7 +127,8 @@
   style.textContent = `
     .all-chords-compact-ui{display:flex;align-items:end;gap:12px;margin:12px 0 14px;padding:12px;border:1px solid #ded6c9;border-radius:14px;background:#fffaf2;position:relative;z-index:2}
     .all-chords-select-label{display:flex;flex:1;min-width:0;flex-direction:column;gap:6px;font-weight:800;color:#332b22}
-    .all-chords-select-label>span{font-size:.82rem;color:#6b6256}
+    .all-chords-select-label>span{font-size:.82rem;color:#6b6256;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .reference-count{font-size:.72rem;font-weight:800;background:#e7f5f8;color:#256574;padding:3px 7px;border-radius:999px}
     .all-chords-select-label select{display:block;width:100%;min-width:0;min-height:44px;padding:11px 38px 11px 12px;border:1px solid #d7c9b5;border-radius:11px;background:#fff;color:#2f2922;font:inherit;font-weight:750;pointer-events:auto;touch-action:manipulation;position:relative;z-index:3;-webkit-appearance:menulist;appearance:auto}
     .all-chords-current{display:flex;flex-direction:column;gap:3px;min-width:120px;text-align:right}
     .all-chords-current strong{font-size:.9rem}.all-chords-current span{font-size:.76rem;color:#756a5d}
@@ -102,8 +141,6 @@
   `;
   document.head.appendChild(style);
 
-  // MutationObserverはiOS Safariでselectをタップした瞬間にDOMを作り直してしまうため使用しない。
-  // 既存render()の直後だけUIを同期する。
   const originalRender = render;
   render = function(...args) {
     const result = originalRender.apply(this, args);
@@ -111,6 +148,5 @@
     return result;
   };
 
-  // すでに初期描画済みなので一度だけ装着。
   requestAnimationFrame(mount);
 })();
