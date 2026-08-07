@@ -1,5 +1,5 @@
 // 全コードの押さえ方を、既存データを残したまま理論ベースで補完する。
-// Jazz はランダム生成せず Shell / Drop 2 / Drop 3 を基本にする。
+// 4音以上のコードでは Shell / Drop2 / Drop3 / Compact を優先し、Triadだけで枠が埋まらないようにする。
 (() => {
   const originalGetForms = getForms;
   const TARGET_FORM_COUNT = originalGetForms('C', 'major', 'none').length;
@@ -146,7 +146,7 @@
     ];
     const sets=[[1,2,3,4],[2,3,4,5]];
     combos.forEach((order,ci)=>sets.forEach((set,si)=>pushUnique(out,seen,
-      `${ci===0?'Compact':'Tension'} Voicing・${si===0?'Middle':'High'}`,
+      `${ci===0?'4-note Compact':'4-note Tension'}・${si===0?'Middle':'High'}`,
       placeOrder(order,set,8+si*2,6))));
     return out;
   }
@@ -165,11 +165,23 @@
   function generateFamilies(root,type,existingKeys) {
     const seen=new Set(existingKeys), out=[];
     const add=list=>list.forEach(x=>out.push(x));
-    add(triadVoicings(root,type,seen));
-    add(shellVoicings(root,type,seen));
-    add(drop2Voicings(root,type,seen));
-    add(drop3Voicings(root,type,seen));
-    add(compactExtensionVoicings(root,type,seen));
+    const intervalCount = chordIntervals(type).length;
+
+    // 4音以上のコードは、まず4和音ボイシングを優先して確保する。
+    if (intervalCount >= 4) {
+      add(shellVoicings(root,type,seen));
+      add(drop2Voicings(root,type,seen));
+      add(drop3Voicings(root,type,seen));
+      add(compactExtensionVoicings(root,type,seen));
+      add(triadVoicings(root,type,seen));
+    } else {
+      add(triadVoicings(root,type,seen));
+      add(shellVoicings(root,type,seen));
+      add(drop2Voicings(root,type,seen));
+      add(drop3Voicings(root,type,seen));
+      add(compactExtensionVoicings(root,type,seen));
+    }
+
     add(highVariants(out,seen));
     return out;
   }
@@ -179,9 +191,21 @@
     if (bass!=='none') return forms;
     if (root==='C'&&type==='major') return forms;
     if (forms.length>=TARGET_FORM_COUNT) return forms;
+
     const existing=new Set(forms.map(f=>fretKey(f.frets||[])));
     const needed=TARGET_FORM_COUNT-forms.length;
-    const additions=generateFamilies(root,type,existing).slice(0,needed).map((f,i)=>({
+    const generated=generateFamilies(root,type,existing);
+
+    // 4音以上のコードでは、最低6枠は4和音系を優先して残す。
+    const fourNoteFirst = chordIntervals(type).length >= 4
+      ? generated.sort((a,b)=>{
+          const a4=/Shell|Drop2|Drop3|4-note/.test(a.shape)?0:1;
+          const b4=/Shell|Drop2|Drop3|4-note/.test(b.shape)?0:1;
+          return a4-b4;
+        })
+      : generated;
+
+    const additions=fourNoteFirst.slice(0,needed).map((f,i)=>({
       label:`フォーム${forms.length+i+1}`,
       shape:f.shape,
       frets:f.frets,
