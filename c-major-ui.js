@@ -37,11 +37,10 @@
 
   function mount() {
     const host = document.querySelector('#selectedChord');
-    if (!host || !window.getForms && typeof getForms !== 'function') return;
+    if (!host || typeof getForms !== 'function') return;
 
     const oldTabs = host.querySelector('.form-tabs');
     if (oldTabs) oldTabs.style.display = 'none';
-    host.querySelector('.all-chords-compact-ui')?.remove();
 
     const root = rootSelect?.value;
     const type = typeSelect?.value;
@@ -55,8 +54,16 @@
     const currentIndex = Math.min(selectedFormIndex, forms.length - 1);
     const current = forms[currentIndex];
 
-    const ui = document.createElement('div');
-    ui.className = 'all-chords-compact-ui';
+    let ui = host.querySelector('.all-chords-compact-ui');
+    if (!ui) {
+      ui = document.createElement('div');
+      ui.className = 'all-chords-compact-ui';
+      const card = host.querySelector('.selected-card');
+      const heading = host.querySelector('.selected-heading');
+      if (card && heading) heading.insertAdjacentElement('afterend', ui);
+      else host.prepend(ui);
+    }
+
     ui.innerHTML = `
       <label class="all-chords-select-label">
         <span>押さえ方</span>
@@ -69,35 +76,41 @@
         <span>${difficulty(current.shape)} ・ ${currentIndex + 1}/${forms.length}</span>
       </div>`;
 
-    const card = host.querySelector('.selected-card');
-    const heading = host.querySelector('.selected-heading');
-    if (card && heading) heading.insertAdjacentElement('afterend', ui);
-    else host.prepend(ui);
-
-    ui.querySelector('.allChordsFormSelect')?.addEventListener('change', event => {
-      selectedFormIndex = Number(event.target.value) || 0;
-      render();
-    });
+    const select = ui.querySelector('.allChordsFormSelect');
+    if (select) {
+      select.addEventListener('change', event => {
+        selectedFormIndex = Number(event.target.value) || 0;
+        render();
+      }, { once: true });
+    }
   }
 
   const style = document.createElement('style');
   style.textContent = `
-    .all-chords-compact-ui{display:flex;align-items:end;gap:12px;margin:12px 0 14px;padding:12px;border:1px solid #ded6c9;border-radius:14px;background:#fffaf2}
+    .all-chords-compact-ui{display:flex;align-items:end;gap:12px;margin:12px 0 14px;padding:12px;border:1px solid #ded6c9;border-radius:14px;background:#fffaf2;position:relative;z-index:2}
     .all-chords-select-label{display:flex;flex:1;min-width:0;flex-direction:column;gap:6px;font-weight:800;color:#332b22}
     .all-chords-select-label>span{font-size:.82rem;color:#6b6256}
-    .all-chords-select-label select{width:100%;min-width:0;padding:11px 38px 11px 12px;border:1px solid #d7c9b5;border-radius:11px;background:#fff;color:#2f2922;font:inherit;font-weight:750}
+    .all-chords-select-label select{display:block;width:100%;min-width:0;min-height:44px;padding:11px 38px 11px 12px;border:1px solid #d7c9b5;border-radius:11px;background:#fff;color:#2f2922;font:inherit;font-weight:750;pointer-events:auto;touch-action:manipulation;position:relative;z-index:3;-webkit-appearance:menulist;appearance:auto}
     .all-chords-current{display:flex;flex-direction:column;gap:3px;min-width:120px;text-align:right}
     .all-chords-current strong{font-size:.9rem}.all-chords-current span{font-size:.76rem;color:#756a5d}
     .selected-card .form-tabs{display:none!important}
     @media(max-width:560px){
       .all-chords-compact-ui{display:block;margin:10px 0 12px;padding:10px}
       .all-chords-current{display:none}
+      .all-chords-select-label select{font-size:16px}
     }
   `;
   document.head.appendChild(style);
 
-  const target = document.querySelector('#selectedChord');
-  if (target) new MutationObserver(() => requestAnimationFrame(mount)).observe(target,{childList:true,subtree:true});
-  document.addEventListener('change', () => requestAnimationFrame(mount));
-  mount();
+  // MutationObserverはiOS Safariでselectをタップした瞬間にDOMを作り直してしまうため使用しない。
+  // 既存render()の直後だけUIを同期する。
+  const originalRender = render;
+  render = function(...args) {
+    const result = originalRender.apply(this, args);
+    requestAnimationFrame(mount);
+    return result;
+  };
+
+  // すでに初期描画済みなので一度だけ装着。
+  requestAnimationFrame(mount);
 })();
