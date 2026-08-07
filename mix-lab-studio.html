@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="site-nav.css?v=20260729-2">
 <link rel="stylesheet" href="shared-menu.css?v=1">
 <link rel="stylesheet" href="mix-lab-studio.css?v=20260807-3">
+<link rel="stylesheet" href="mix-lab-instruments.css?v=20260807-1">
 </head>
 <body>
 <nav class="site-nav" aria-label="ページ切り替え"><a href="index.html">🎸 コード</a><a href="progressions.html">🔄 コード進行</a><a href="theory.html">📖 理論</a><a href="mix-lab.html">🎛 Mix Lab</a><a href="mix-lab-studio.html" class="active" aria-current="page">🎚 Studio</a></nav>
@@ -17,57 +18,15 @@
     <div class="transport"><button id="playBtn" class="primary">▶</button><button id="stopBtn">■</button><button id="bypassBtn">A/B</button><button id="resetBtn">RESET</button></div>
     <div class="toolbar-right"><span id="engineState" class="engine-state">READY</span><button id="themeBtn" aria-label="テーマ切替">☾</button></div>
   </header>
-
   <section class="workspace">
-    <aside class="left-zone panel">
-      <div class="panel-title">TRACK</div>
-      <div class="track-list" id="trackList">
-        <button data-source="mix" class="track active"><span>🎵</span><div><strong>MIX</strong><small>Full Mix</small></div></button>
-        <button data-source="drums" class="track"><span>🥁</span><div><strong>DRUMS</strong><small>Rhythm</small></div></button>
-        <button data-source="bass" class="track"><span>🎸</span><div><strong>BASS</strong><small>Low End</small></div></button>
-        <button data-source="keys" class="track"><span>🎹</span><div><strong>KEYS</strong><small>Harmony</small></div></button>
-      </div>
-      <div class="panel-title insert-title">INSERTS</div>
-      <div id="insertMini" class="insert-mini"></div>
-    </aside>
-
+    <aside class="left-zone panel"><div class="panel-title">INSTRUMENT LIBRARY</div><div class="track-list" id="trackList"></div><div class="panel-title insert-title">INSERTS</div><div id="insertMini" class="insert-mini"></div></aside>
     <section class="center-zone">
-      <div class="eq-window panel">
-        <div class="eq-header">
-          <div><span class="window-label">STUDIO EQ</span><h1>Parametric Equalizer</h1></div>
-          <div class="eq-actions"><button id="addBandBtn">＋ BAND</button><button id="eqBypassBtn">EQ ON</button></div>
-        </div>
-        <div class="eq-canvas-wrap" id="eqCanvasWrap">
-          <canvas id="eqCanvas" width="1200" height="520"></canvas>
-          <div class="freq-axis"><span>20</span><span>50</span><span>100</span><span>200</span><span>500</span><span>1k</span><span>2k</span><span>5k</span><span>10k</span><span>20k</span></div>
-        </div>
-        <div class="band-strip" id="bandStrip"></div>
-        <div class="filter-bar">
-          <div class="filter-card"><label>LOW CUT <strong id="lowCutValue">20 Hz</strong></label><input id="lowCut" type="range" min="20" max="1200" value="20"><select id="lowCutSlope"><option value="6">6 dB/oct</option><option value="12" selected>12 dB/oct</option><option value="24">24 dB/oct</option><option value="48">48 dB/oct</option></select></div>
-          <div class="filter-card"><label>HIGH CUT <strong id="highCutValue">20 kHz</strong></label><input id="highCut" type="range" min="3000" max="20000" value="20000"><select id="highCutSlope"><option value="6">6 dB/oct</option><option value="12" selected>12 dB/oct</option><option value="24">24 dB/oct</option><option value="48">48 dB/oct</option></select></div>
-        </div>
-      </div>
-
-      <div class="rack-window panel">
-        <div class="rack-head"><div><span class="window-label">INSERT RACK</span><h2>Signal Chain</h2></div><span class="hint">ドラッグで順番変更</span></div>
-        <div id="rack" class="rack"></div>
-        <div id="effectPalette" class="effect-palette"></div>
-        <div id="effectEditor" class="effect-editor"><span>エフェクトを選ぶとここで調整できるよ。</span></div>
-      </div>
+      <div class="eq-window panel"><div class="eq-header"><div><span class="window-label">STUDIO EQ</span><h1>Parametric Equalizer</h1></div><div class="eq-actions"><button id="addBandBtn">＋ BAND</button><button id="eqBypassBtn">EQ ON</button></div></div><div class="eq-canvas-wrap" id="eqCanvasWrap"><canvas id="eqCanvas" width="1200" height="520"></canvas><div class="freq-axis"><span>20</span><span>50</span><span>100</span><span>200</span><span>500</span><span>1k</span><span>2k</span><span>5k</span><span>10k</span><span>20k</span></div></div><div class="band-strip" id="bandStrip"></div><div class="filter-bar"><div class="filter-card"><label>LOW CUT <strong id="lowCutValue">20 Hz</strong></label><input id="lowCut" type="range" min="20" max="1200" value="20"><select id="lowCutSlope"><option value="6">6 dB/oct</option><option value="12" selected>12 dB/oct</option><option value="24">24 dB/oct</option><option value="48">48 dB/oct</option></select></div><div class="filter-card"><label>HIGH CUT <strong id="highCutValue">20 kHz</strong></label><input id="highCut" type="range" min="3000" max="20000" value="20000"><select id="highCutSlope"><option value="6">6 dB/oct</option><option value="12" selected>12 dB/oct</option><option value="24">24 dB/oct</option><option value="48">48 dB/oct</option></select></div></div></div>
+      <div class="rack-window panel"><div class="rack-head"><div><span class="window-label">INSERT RACK</span><h2>Signal Chain</h2></div><span class="hint">ドラッグで順番変更</span></div><div id="rack" class="rack"></div><div id="effectPalette" class="effect-palette"></div><div id="effectEditor" class="effect-editor"><span>エフェクトを選ぶとここで調整できるよ。</span></div></div>
     </section>
-
-    <aside class="right-zone panel">
-      <div class="panel-title">CONTROL ROOM</div>
-      <div class="meter-card"><div class="meter-label"><span>PEAK</span><strong id="peakValue">-∞</strong></div><div class="vertical-meter"><i id="peakMeter"></i></div></div>
-      <div class="meter-card"><div class="meter-label"><span>RMS</span><strong id="rmsValue">-∞</strong></div><div class="vertical-meter rms"><i id="rmsMeter"></i></div></div>
-      <div class="scope-card"><div class="meter-label"><span>ANALYZER</span><button id="scopeMode">SPECTRUM</button></div><canvas id="scopeCanvas" width="320" height="220"></canvas></div>
-      <div class="stat-grid"><div><span>STEREO</span><strong id="stereoValue">0.00</strong></div><div><span>OUTPUT</span><strong id="outputValue">0.0 dB</strong></div></div>
-    </aside>
+    <aside class="right-zone panel"><div class="panel-title">CONTROL ROOM</div><div class="meter-card"><div class="meter-label"><span>PEAK</span><strong id="peakValue">-∞</strong></div><div class="vertical-meter"><i id="peakMeter"></i></div></div><div class="meter-card"><div class="meter-label"><span>RMS</span><strong id="rmsValue">-∞</strong></div><div class="vertical-meter rms"><i id="rmsMeter"></i></div></div><div class="scope-card"><div class="meter-label"><span>ANALYZER</span><button id="scopeMode">SPECTRUM</button></div><canvas id="scopeCanvas" width="320" height="220"></canvas></div><div class="stat-grid"><div><span>STEREO</span><strong id="stereoValue">0.00</strong></div><div><span>OUTPUT</span><strong id="outputValue">0.0 dB</strong></div></div></aside>
   </section>
-  <footer class="statusbar"><span id="statusText">EQポイントをドラッグして自由に音を作ってみよう。</span><span>48 kHz · Web Audio</span></footer>
+  <footer class="statusbar"><span id="statusText">100音色から好きな音を選んで、EQ・エフェクトを試してみよう。</span><span>100 Sounds · Web Audio</span></footer>
 </main>
-<script src="mix-lab-studio.js?v=20260807-3"></script>
-<script src="shared-menu.js?v=1"></script>
-<script src="neet-menu-ui.js?v=20260807-1"></script>
-</body>
-</html>
+<script src="mix-lab-studio.js?v=20260807-4"></script><script src="shared-menu.js?v=1"></script><script src="neet-menu-ui.js?v=20260807-1"></script>
+</body></html>
