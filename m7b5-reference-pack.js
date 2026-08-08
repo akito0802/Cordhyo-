@@ -45,7 +45,6 @@
 
     const bossa = bossa6Root(root);
     if (!shapeNames.has('Bossa・6弦Root m7♭5 デモ実例') && playable(bossa) && isM7b5(root,bossa)) {
-      // Keep the Bossa-labelled source form even if an identical generic Jazz Basic form exists.
       add.push({shape:'Bossa・6弦Root m7♭5 デモ実例', frets:bossa, barres:[]});
       shapeNames.add('Bossa・6弦Root m7♭5 デモ実例');
     }
@@ -61,4 +60,14 @@
 
   window.__M7B5_REFERENCE_PACK_LOADED__ = true;
   if (typeof render === 'function') render();
+})();
+
+// Load the next source-only PDF pack without touching the current UI structure.
+(() => {
+  if (window.__PDF_DOMINANT_SUS_LOADER_ADDED__) return;
+  window.__PDF_DOMINANT_SUS_LOADER_ADDED__ = true;
+  const s = document.createElement('script');
+  s.src = 'pdf-source-dominant-sus.js?v=20260809-1';
+  s.onload = () => { if (typeof render === 'function') render(); };
+  document.head.appendChild(s);
 })();
