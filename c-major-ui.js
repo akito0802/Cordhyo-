@@ -1,5 +1,47 @@
 // 全ギターコード共通のコンパクトなフォーム切替UI。
 (() => {
+  // Bossa Nova forms are injected here deliberately because this file is already
+  // part of the live page load chain. Keep a Bossa-labelled entry even when its
+  // fret pattern is identical to an existing generic form.
+  if (typeof getForms === 'function' && typeof roots !== 'undefined') {
+    const beforeBossa = getForms;
+    const rootIndex = Object.fromEntries(roots.map((n,i)=>[n,i]));
+    const move = (root,shape) => shape.map(v=>typeof v==='number' ? v + rootIndex[root] : 'x');
+    const bossaMovable = {
+      maj9:[['Bossa・5弦Root △7(9) 基本形',['x',3,2,4,3,'x']]],
+      '9':[['Bossa・5弦Root 7(9) 基本形',['x',3,2,3,3,'x']]],
+      m9:[['Bossa・5弦Root m7(9) 基本形',['x',3,1,3,3,'x']]],
+      maj7:[['Bossa・6弦Root △7 基本形',[8,'x',9,9,8,'x']]],
+      m7:[['Bossa・6弦Root m7 基本形',[8,'x',8,8,8,'x']]],
+      '13':[['Bossa・6弦Root 7(13) 基本形',[8,'x',8,9,10,'x']]]
+    };
+    const bossaFixed = {
+      'D:maj9':[['Bossa・D△7(9) 実例',['x',5,4,6,5,'x']]],
+      'E:9':[['Bossa・E7(9) 実例',['x',7,6,7,7,'x']]],
+      'E:m9':[['Bossa・Em7(9) 実例',['x',7,5,7,7,'x']]],
+      'D#:9':[['Bossa・E♭7(9) 実例',['x',6,5,6,6,'x']]],
+      'B:13':[['Bossa・B7(13) 実例',[7,'x',7,8,9,'x']]],
+      'A:13':[['Bossa・A7(13) 実例',['x',5,5,6,7,'x']]],
+      'F:dim7':[['Bossa・Fdim 実例',['x',8,9,7,9,'x']]],
+      'F#:m7':[['Bossa・F♯m7 実例',['x',9,11,9,10,'x']]]
+    };
+    getForms = function(root,type,bass){
+      const base = beforeBossa(root,type,bass) || [];
+      if (bass !== 'none') return base;
+      const add=[];
+      const existingNames = new Set(base.map(f=>f.shape));
+      const push=(name,frets)=>{
+        if(existingNames.has(name)) return;
+        if(!frets.every(v=>v==='x'||(Number.isInteger(v)&&v>=0&&v<=21))) return;
+        existingNames.add(name);
+        add.push({shape:name,frets:[...frets],barres:[]});
+      };
+      (bossaFixed[`${root}:${type}`]||[]).forEach(([n,f])=>push(n,f));
+      (bossaMovable[type]||[]).forEach(([n,f])=>push(n,move(root,f)));
+      return base.concat(add);
+    };
+  }
+
   const isBossaVoicing = (shape='') => /Bossa/.test(shape);
   const isReferenceVoicing = (shape='') =>
     /Jazz|Standard|Triad Compact|Full Voicing|mMaj7・|6th・|m6・|資料/.test(shape);
