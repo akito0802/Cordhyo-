@@ -1,91 +1,74 @@
-// Super Guitar Chords PDF reference pack: altered dominant + Drop 2 maj7 inversions.
-// Existing forms are preserved; these are additive reference voicings transposed to all roots.
+// Super Guitar Chords PDF reference pack.
+// Existing forms are preserved. Fixed C-reference voicings are transposed to all roots.
 (() => {
   const prev = getForms;
   const ROOT = Object.fromEntries(roots.map((n,i)=>[n,i]));
-  const OPEN = [4,9,2,7,11,4]; // 6E 5A 4D 3G 2B 1E
   const key = f => f.join('|');
+  const transpose = (root,c) => c.map(v=>typeof v==='number'?v+ROOT[root]:'x');
+  const valid = f => f.every(v=>v==='x'||(v>=0&&v<=21));
 
-  function transposeCShape(root, cFrets) {
-    const shift = ROOT[root];
-    return cFrets.map(v => typeof v === 'number' ? v + shift : 'x');
-  }
-  function valid(frets) { return frets.every(v => v === 'x' || (v >= 0 && v <= 21)); }
-  function pcs(frets) {
-    return new Set(frets.map((f,i)=>f==='x'?null:(OPEN[i]+f)%12).filter(v=>v!==null));
-  }
-  const required = {
-    '7s11':[0,4,10,6], '7b13':[0,4,10,8], '13b9':[0,4,10,1,9], '13s9':[0,4,10,3,9],
-    '7b5b9':[0,4,10,6,1], '7b5s9':[0,4,10,6,3], '7s5b9':[0,4,10,8,1], '7s5s9':[0,4,10,8,3]
+  const altered={
+    '7s11':[['PDF・7♯11 low',['x',8,8,9,7,'x']],['PDF・7♯11 mid',[8,8,8,9,10,'x']],['PDF・7♯11 high',['x',3,4,3,5,'x']]],
+    '7b13':[['PDF・7♭13 low',['x',8,8,9,9,8]],['PDF・7♭13 mid',['x',3,3,3,4,'x']],['PDF・7♭13 high',['x',15,17,15,17,'x']]],
+    '13b9':[['PDF・13♭9 low',['x',8,8,9,8,10]],['PDF・13♭9 compact',['x',3,2,3,3,5]]],
+    '13s9':[['PDF・13♯9',[8,8,8,9,10,11]]],
+    '7b5b9':[['PDF・7♭5(♭9) low',['x',8,8,9,7,9]],['PDF・7♭5(♭9) compact',['x',3,2,3,2,2]]],
+    '7b5s9':[['PDF・7♭5(♯9) low',['x',8,8,9,7,11]],['PDF・7♭5(♯9) compact',['x',3,2,3,4,2]]],
+    '7s5b9':[['PDF・7♯5(♭9) low',['x',8,8,9,9,9]],['PDF・7♯5(♭9) compact',['x',3,2,3,2,4]]],
+    '7s5s9':[['PDF・7♯5(♯9) low',[8,8,8,9,9,11]],['PDF・7♯5(♯9) compact',['x',3,2,3,4,4]]]
   };
-  function chordValid(root,type,frets) {
-    const req=required[type]; if(!req) return true;
-    const have=pcs(frets), r=ROOT[root];
-    return req.every(x=>have.has((r+x)%12));
-  }
 
-  // C reference shapes read from the PDF diagrams; x = muted string.
-  const altered = {
-    '7s11':[
-      ['PDF・7♯11 low', ['x',8,8,9,7,'x']],
-      ['PDF・7♯11 mid', [8,8,8,9,10,'x']],
-      ['PDF・7♯11 high', ['x',3,4,3,5,'x']]
+  // Drop 2: four adjacent upper strings, A- and D-string bass sets.
+  const drop2={
+    maj7:[
+      ['PDF Drop2・A弦 Root',['x',3,5,4,5,'x']],['PDF Drop2・A弦 3rd',['x',7,9,5,8,'x']],['PDF Drop2・A弦 5th',['x',10,10,9,12,'x']],['PDF Drop2・A弦 7th',['x',14,14,12,13,'x']],
+      ['PDF Drop2・D弦 Root',['x','x',10,12,12,12]],['PDF Drop2・D弦 3rd',['x','x',2,4,5,3]],['PDF Drop2・D弦 5th',['x','x',5,5,5,7]],['PDF Drop2・D弦 7th',['x','x',9,9,8,8]]
     ],
-    '7b13':[
-      ['PDF・7♭13 low', ['x',8,8,9,9,8]],
-      ['PDF・7♭13 mid', ['x',3,3,3,4,'x']],
-      ['PDF・7♭13 high', ['x',15,17,15,17,'x']]
+    '7':[
+      ['PDF Drop2・A弦 Root',['x',3,5,3,5,'x']],['PDF Drop2・A弦 3rd',['x',7,8,5,8,'x']],['PDF Drop2・A弦 5th',['x',10,10,9,11,'x']],['PDF Drop2・A弦 ♭7th',['x',13,14,12,13,'x']],
+      ['PDF Drop2・D弦 Root',['x','x',10,12,11,12]],['PDF Drop2・D弦 3rd',['x','x',2,3,5,3]],['PDF Drop2・D弦 5th',['x','x',5,5,5,6]],['PDF Drop2・D弦 ♭7th',['x','x',8,9,8,8]]
     ],
-    '13b9':[
-      ['PDF・13♭9 low', ['x',8,8,9,8,10]],
-      ['PDF・13♭9 compact', ['x',3,2,3,3,5]]
+    m7:[
+      ['PDF Drop2・A弦 Root',['x',3,5,3,4,'x']],['PDF Drop2・A弦 ♭3rd',['x',6,8,5,8,'x']],['PDF Drop2・A弦 5th',['x',10,10,8,11,'x']],['PDF Drop2・A弦 ♭7th',['x',13,13,12,13,'x']],
+      ['PDF Drop2・D弦 Root',['x','x',10,12,11,11]],['PDF Drop2・D弦 ♭3rd',['x','x',1,3,4,3]],['PDF Drop2・D弦 5th',['x','x',5,5,4,6]],['PDF Drop2・D弦 ♭7th',['x','x',8,8,8,8]]
     ],
-    '13s9':[
-      ['PDF・13♯9', [8,8,8,9,10,11]]
-    ],
-    '7b5b9':[
-      ['PDF・7♭5(♭9) low', ['x',8,8,9,7,9]],
-      ['PDF・7♭5(♭9) compact', ['x',3,2,3,2,2]]
-    ],
-    '7b5s9':[
-      ['PDF・7♭5(♯9) low', ['x',8,8,9,7,11]],
-      ['PDF・7♭5(♯9) compact', ['x',3,2,3,4,2]]
-    ],
-    '7s5b9':[
-      ['PDF・7♯5(♭9) low', ['x',8,8,9,9,9]],
-      ['PDF・7♯5(♭9) compact', ['x',3,2,3,2,4]]
-    ],
-    '7s5s9':[
-      ['PDF・7♯5(♯9) low', [8,8,8,9,9,11]],
-      ['PDF・7♯5(♯9) compact', ['x',3,2,3,4,4]]
+    m7b5:[
+      ['PDF Drop2・A弦 Root',['x',3,4,3,4,'x']],['PDF Drop2・A弦 ♭3rd',['x',6,8,4,8,'x']],['PDF Drop2・A弦 ♭5th',['x',9,10,8,11,'x']],['PDF Drop2・A弦 ♭7th',['x',13,13,11,13,'x']],
+      ['PDF Drop2・D弦 Root',['x','x',10,11,11,11]],['PDF Drop2・D弦 ♭3rd',['x','x',1,3,4,2]],['PDF Drop2・D弦 ♭5th',['x','x',4,5,4,6]],['PDF Drop2・D弦 ♭7th',['x','x',8,8,7,8]]
     ]
   };
 
-  // Major 7 Drop 2 inversions from the PDF: A-string and D-string bass-note sets.
-  const drop2Maj7 = [
-    ['PDF Drop2・A弦Bass Root', ['x',3,5,4,5,'x']],
-    ['PDF Drop2・A弦Bass 3rd', ['x',7,9,5,8,'x']],
-    ['PDF Drop2・A弦Bass 5th', ['x',10,10,9,12,'x']],
-    ['PDF Drop2・A弦Bass 7th', ['x',14,14,12,13,'x']],
-    ['PDF Drop2・D弦Bass Root', ['x','x',10,12,12,12]],
-    ['PDF Drop2・D弦Bass 3rd', ['x','x',2,4,5,3]],
-    ['PDF Drop2・D弦Bass 5th', ['x','x',5,5,5,7]],
-    ['PDF Drop2・D弦Bass 7th', ['x','x',9,9,8,8]]
-  ];
+  // Drop 3: one skipped string between bass and upper three-note structure.
+  const drop3={
+    maj7:[['PDF Drop3・6弦 Root',[8,'x',9,9,8,'x']],['PDF Drop3・6弦 3rd',[12,'x',14,12,13,'x']],['PDF Drop3・6弦 5th',[3,'x',5,4,5,'x']],['PDF Drop3・6弦 7th',[7,'x',9,9,8,'x']],['PDF Drop3・5弦 Root',['x',3,'x',4,5,3]],['PDF Drop3・5弦 3rd',['x',7,'x',9,8,8]],['PDF Drop3・5弦 5th',['x',10,'x',12,12,12]],['PDF Drop3・5弦 7th',['x',14,'x',16,13,15]]],
+    '7':[['PDF Drop3・6弦 Root',[8,'x',8,9,8,'x']],['PDF Drop3・6弦 3rd',[12,'x',14,12,11,'x']],['PDF Drop3・6弦 5th',[3,'x',5,3,5,'x']],['PDF Drop3・6弦 ♭7th',[6,'x',8,9,8,'x']],['PDF Drop3・5弦 Root',['x',3,'x',3,5,3]],['PDF Drop3・5弦 3rd',['x',7,'x',8,8,8]],['PDF Drop3・5弦 5th',['x',10,'x',12,11,12]],['PDF Drop3・5弦 ♭7th',['x',13,'x',15,13,15]]],
+    m7:[['PDF Drop3・6弦 Root',[8,'x',8,8,8,'x']],['PDF Drop3・6弦 ♭3rd',[11,'x',13,12,11,'x']],['PDF Drop3・6弦 5th',[3,'x',5,3,4,'x']],['PDF Drop3・6弦 ♭7th',[6,'x',8,8,8,'x']],['PDF Drop3・5弦 Root',['x',3,'x',3,4,3]],['PDF Drop3・5弦 ♭3rd',['x',6,'x',8,8,8]],['PDF Drop3・5弦 5th',['x',10,'x',12,11,11]],['PDF Drop3・5弦 ♭7th',['x',13,'x',15,13,14]]],
+    m7b5:[['PDF Drop3・6弦 Root',[8,'x',8,8,7,'x']],['PDF Drop3・6弦 ♭3rd',[11,'x',12,12,11,'x']],['PDF Drop3・6弦 ♭5th',[2,'x',4,3,4,'x']],['PDF Drop3・6弦 ♭7th',[6,'x',8,8,7,'x']],['PDF Drop3・5弦 Root',['x',3,'x',3,4,2]],['PDF Drop3・5弦 ♭3rd',['x',6,'x',8,7,8]],['PDF Drop3・5弦 ♭5th',['x',9,'x',11,11,11]],['PDF Drop3・5弦 ♭7th',['x',13,'x',15,13,13]]]
+  };
 
-  getForms = function(root,type,bass) {
+  // Open-string forms are key-specific in the source, so they are NOT transposed.
+  const openSpecific={
+    'E:maj9':[['PDF Open・Emaj9',[0,'x',4,4,4,0]]],
+    'E:m9':[['PDF Open・Em9 A',[0,7,5,7,0,0]],['PDF Open・Em9 B',[0,'x',4,0,3,0]]],
+    'A:maj7':[['PDF Open・Amaj7',['x',0,6,6,5,0]]],
+    'A:add9':[['PDF Open・A(add9)',['x',0,7,6,0,0]]],
+    'A:m7':[['PDF Open・Am7',['x',0,5,5,0,0]]],
+    'A:minor':[['PDF Open・Am',['x',0,7,5,0,0]]],
+    'D:madd9':[['PDF Open・Dm(add9) A',['x','x',0,7,6,0]],['PDF Open・Dm(add9) B',['x','x',0,9,10,0]]],
+    'C:maj7':[['PDF Open・Cmaj7/G',[3,3,2,0,0,0]]]
+  };
+
+  getForms=function(root,type,bass){
     const base=prev(root,type,bass)||[];
     if(bass!=='none') return base;
     let defs=[];
-    if(altered[type]) defs=altered[type];
-    if(type==='maj7') defs=defs.concat(drop2Maj7);
-    if(!defs.length) return base;
-    const seen=new Set(base.map(x=>key(x.frets)));
-    const add=[];
-    defs.forEach(([name,c])=>{
-      const f=transposeCShape(root,c);
-      if(valid(f)&&chordValid(root,type,f)&&!seen.has(key(f))){seen.add(key(f));add.push({shape:name,frets:f,barres:[]});}
-    });
+    if(altered[type]) defs=defs.concat(altered[type]);
+    if(drop2[type]) defs=defs.concat(drop2[type]);
+    if(drop3[type]) defs=defs.concat(drop3[type]);
+    const fixed=openSpecific[`${root}:${type}`]||[];
+    const seen=new Set(base.map(x=>key(x.frets))), add=[];
+    defs.forEach(([name,c])=>{const f=transpose(root,c);if(valid(f)&&!seen.has(key(f))){seen.add(key(f));add.push({shape:name,frets:f,barres:[]});}});
+    fixed.forEach(([name,f])=>{if(!seen.has(key(f))){seen.add(key(f));add.push({shape:name,frets:f,barres:[]});}});
     return base.concat(add);
   };
 })();
