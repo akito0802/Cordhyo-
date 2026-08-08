@@ -62,6 +62,13 @@
     return out;
   }
 
+  function substituteGroup(root,type,bass) {
+    if (type !== '7' || bass !== 'none' || typeof window.bossaTritoneSubstitution !== 'function') return '';
+    const sub = window.bossaTritoneSubstitution(root);
+    if (!sub || sub === root) return '';
+    return `<optgroup label="🌴 6大アレンジ法⑤"><option value="__bossa_tritone__">🔁 ♭II7代理へ：${esc(sub)}7</option></optgroup>`;
+  }
+
   let lastSignature = '';
   let busy = false;
 
@@ -72,9 +79,10 @@
     if (!forms.length) return;
     if (typeof selectedFormIndex !== 'undefined' && selectedFormIndex >= forms.length) selectedFormIndex=0;
     const current=Math.min(typeof selectedFormIndex==='number'?selectedFormIndex:0,forms.length-1);
-    const signature=[root,type,bass,current,forms.map(f=>`${f.shape}:${f.frets.join(',')}`).join(';')].join('|');
+    const subRoot = (type==='7' && bass==='none' && typeof window.bossaTritoneSubstitution==='function') ? window.bossaTritoneSubstitution(root) : '';
+    const signature=[root,type,bass,current,subRoot,forms.map(f=>`${f.shape}:${f.frets.join(',')}`).join(';')].join('|');
     const existing=host.querySelector('.all-chords-compact-ui');
-    if (!force && signature===lastSignature && existing?.dataset?.uiVersion==='universal-v1') return;
+    if (!force && signature===lastSignature && existing?.dataset?.uiVersion==='universal-v2') return;
 
     busy=true;
     const oldTabs=host.querySelector('.form-tabs');
@@ -88,7 +96,7 @@
       if (heading) heading.insertAdjacentElement('afterend',ui);
       else host.prepend(ui);
     }
-    ui.dataset.uiVersion='universal-v1';
+    ui.dataset.uiVersion='universal-v2';
 
     const referenceCount=forms.filter(f=>isReference(f.shape)).length;
     const bossaCount=forms.filter(f=>isBossa(f.shape)).length;
@@ -97,11 +105,25 @@
         <span>押さえ方 <b class="form-total">全${forms.length}フォーム</b>${referenceCount?`<b class="reference-count">📘 ${referenceCount}</b>`:''}${bossaCount?`<b class="bossa-count">🌴 ${bossaCount}</b>`:''}</span>
         <select class="allChordsFormSelect" aria-label="${esc(root)}コードの押さえ方を選択">
           ${groups(forms,current)}
+          ${substituteGroup(root,type,bass)}
         </select>
       </label>`;
 
     const select=ui.querySelector('.allChordsFormSelect');
     select?.addEventListener('change',e=>{
+      if (e.target.value === '__bossa_tritone__') {
+        const nextRoot = typeof window.bossaTritoneSubstitution==='function' ? window.bossaTritoneSubstitution(rootSelect.value) : null;
+        if (nextRoot) {
+          rootSelect.value = nextRoot;
+          typeSelect.value = '7';
+          if (typeof updateBassOptions === 'function') updateBassOptions();
+          bassSelect.value = 'none';
+          selectedFormIndex = 0;
+          render();
+          requestAnimationFrame(()=>mount(true));
+        }
+        return;
+      }
       selectedFormIndex=Number(e.target.value)||0;
       render();
       requestAnimationFrame(()=>mount(true));
@@ -126,7 +148,6 @@
     document.head.appendChild(style);
   }
 
-  // Any render, including ones invoked by older event handlers, is caught here.
   const observer=new MutationObserver(()=>requestAnimationFrame(()=>mount(false)));
   observer.observe(host,{childList:true,subtree:true});
 
