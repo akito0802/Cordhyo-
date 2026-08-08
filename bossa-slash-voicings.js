@@ -37,34 +37,20 @@
     });
   }
 
-  // Cmaj7/G and C6/G — 5th in the bass, four-note upper structure.
   registerFamily({sourceRoot:'C', type:'maj7', bassInterval:7, frets:['x','x',5,5,5,7], label:'maj7 / 5th Bass'});
   registerFamily({sourceRoot:'C', type:'6',    bassInterval:7, frets:['x','x',5,5,5,5], label:'6 / 5th Bass'});
-
-  // Dm9/C and Dm7/C — b7 in the bass.
   registerFamily({sourceRoot:'D', type:'m9', bassInterval:10, frets:['x','x',10,10,10,12], label:'m9 / ♭7 Bass'});
   registerFamily({sourceRoot:'D', type:'m7', bassInterval:10, frets:['x','x',10,10,10,10], label:'m7 / ♭7 Bass'});
-
-  // G dominant variants with F (b7) in the bass.
   registerFamily({sourceRoot:'G', type:'7b13',   bassInterval:10, frets:['x','x',3,4,4,3], label:'7♭13 / ♭7 Bass'});
   registerFamily({sourceRoot:'G', type:'7b9b13', bassInterval:10, frets:['x','x',3,4,4,4], label:'7(♭9,♭13) / ♭7 Bass'});
-
-  // D dominant family: 3rd-bass and b7-bass forms.
   registerFamily({sourceRoot:'D', type:'9',    bassInterval:4,  frets:['x','x',4,5,5,5], label:'9 / 3rd Bass'});
   registerFamily({sourceRoot:'D', type:'13',   bassInterval:10, frets:['x','x',10,11,12,12], label:'13 / ♭7 Bass'});
   registerFamily({sourceRoot:'D', type:'13b9', bassInterval:10, frets:['x','x',10,11,12,11], label:'13♭9 / ♭7 Bass'});
-
-  // E altered-dominant inversions from the exercise phrase.
   registerFamily({sourceRoot:'E', type:'7b5',     bassInterval:6, frets:[6,'x',6,7,5,'x'], label:'7♭5 / ♭5 Bass'});
   registerFamily({sourceRoot:'E', type:'7b9b13',  bassInterval:4, frets:['x','x',6,7,6,8], label:'7(♭9,♭13) / 3rd Bass'});
-
-  // G6/9/B — major 3rd in the bass.
   registerFamily({sourceRoot:'G', type:'69', bassInterval:4, frets:['x','x',9,9,10,10], label:'6/9 / 3rd Bass'});
-
-  // Am9/G — b7 in the bass; enharmonically shares a compact upper structure with Cmaj7/G.
   registerFamily({sourceRoot:'A', type:'m9', bassInterval:10, frets:['x','x',5,5,5,7], label:'m9 / ♭7 Bass Compact'});
 
-  // Additional regular voicing clearly shown in the same section: 6th-string-root maj9.
   const eRoot = root => ((pc[root] - 4 + 12) % 12) || 12;
   getForms = function(root,type,bass) {
     if (bass !== 'none') {
@@ -81,4 +67,8 @@
     if (base.some(f => f.shape === 'Bossa・6弦Root maj9 Wide')) return base;
     return base.concat([{shape:'Bossa・6弦Root maj9 Wide',frets,barres:[]}]);
   };
+
+  window.__BOSSA_SLASH_VOICINGS_LOADED__ = true;
+  if (typeof updateBassOptions === 'function') updateBassOptions();
+  if (typeof render === 'function') render();
 })();
