@@ -1,6 +1,6 @@
 // Bossa Nova "6 arrangement methods" pack from the uploaded source, pp.104-113.
 // Methods 1-4 become source-derived movable voicings. Method 5 (V7 -> bII7)
-// is exposed as substitution data for the compact selector UI. Existing forms are preserved.
+// is exposed in the existing compact selector. Existing valid forms are preserved.
 (() => {
   if (typeof getForms !== 'function' || typeof roots === 'undefined') return;
 
@@ -32,7 +32,7 @@
     if (type === '6')    out.push(['Bossa Arrange①・6弦Root 6', [er,'x',er-1,er+1,er,'x'], [0,4,7,9]]);
     if (type === '69')   out.push(['Bossa Arrange①・6弦Root 6/9', [er,'x',er-1,er+1,er,er+2], [0,2,4,7,9]]);
 
-    // ② Minor chord -> m7 / m9 (source notes m6 is also a usable option)
+    // ② Minor chord -> m7 / m9 (source also notes m6 as an option)
     if (type === 'm7') out.push(['Bossa Arrange②・6弦Root m7', [er,'x',er,er,er,'x'], [0,3,7,10]]);
     if (type === 'm9') out.push(['Bossa Arrange②・6弦Root m9', [er,'x',er,er,er,er+2], [0,2,3,7,10]]);
     if (type === 'm6') out.push(['Bossa Arrange②・6弦Root m6', [er,'x',er-1,er,er,'x'], [0,3,7,9]]);
@@ -49,7 +49,14 @@
   }
 
   getForms = function(root,type,bass) {
-    const base = previous(root,type,bass) || [];
+    let base = previous(root,type,bass) || [];
+
+    // Correct one earlier transcription error from our own Bossa pack only:
+    // A7(13) must be 6th-string-root 5-x-5-6-7-x, not x-5-5-6-7-x.
+    if (root === 'A' && type === '13' && bass === 'none') {
+      base = base.filter(f => !(f.shape === 'Bossa・A7(13) 実例' && key(f.frets) === 'x|5|5|6|7|x'));
+    }
+
     if (bass !== 'none') return base;
     const seen = new Set(base.map(f=>key(f.frets)));
     const add=[];
@@ -62,12 +69,60 @@
   };
 
   // ⑤ V7 -> bII7 = tritone substitution. For a selected dominant root,
-  // the substitute dominant root is six semitones away.
+  // the substitute dominant root is six semitones away (E7 -> Bb7, etc.).
   window.bossaTritoneSubstitution = function(root) {
     return roots[(pc[root] + 6) % 12];
   };
-  window.__BOSSA_ARRANGEMENT_RULES_LOADED__ = true;
 
+  // Keep the current compact UI. Add only one extra optgroup when plain 7 is selected.
+  function injectSubstitutionOption() {
+    if (typeof rootSelect === 'undefined' || typeof typeSelect === 'undefined' || typeof bassSelect === 'undefined') return;
+    const select = document.querySelector('.allChordsFormSelect');
+    if (!select) return;
+    select.querySelector('optgroup[data-bossa-tritone]')?.remove();
+    if (typeSelect.value !== '7' || (bassSelect.value || 'none') !== 'none') return;
+    const sub = window.bossaTritoneSubstitution(rootSelect.value);
+    if (!sub) return;
+    const group = document.createElement('optgroup');
+    group.label = '🌴 6大アレンジ法⑤';
+    group.dataset.bossaTritone = '1';
+    const option = document.createElement('option');
+    option.value = '__bossa_tritone__';
+    option.textContent = `🔁 ♭II7代理へ：${sub}7`;
+    group.appendChild(option);
+    select.appendChild(group);
+  }
+
+  if (!window.__BOSSA_TRITONE_CAPTURE__) {
+    window.__BOSSA_TRITONE_CAPTURE__ = true;
+    document.addEventListener('change', e => {
+      const target = e.target;
+      if (!(target instanceof HTMLSelectElement) || !target.classList.contains('allChordsFormSelect')) return;
+      if (target.value !== '__bossa_tritone__') return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const sub = window.bossaTritoneSubstitution(rootSelect.value);
+      if (!sub) return;
+      rootSelect.value = sub;
+      typeSelect.value = '7';
+      if (typeof updateBassOptions === 'function') updateBassOptions();
+      bassSelect.value = 'none';
+      if (typeof selectedFormIndex !== 'undefined') selectedFormIndex = 0;
+      if (typeof render === 'function') render();
+      requestAnimationFrame(injectSubstitutionOption);
+    }, true);
+  }
+
+  const host = document.querySelector('#selectedChord');
+  if (host && !window.__BOSSA_ARRANGE_UI_OBSERVER__) {
+    window.__BOSSA_ARRANGE_UI_OBSERVER__ = new MutationObserver(()=>requestAnimationFrame(injectSubstitutionOption));
+    window.__BOSSA_ARRANGE_UI_OBSERVER__.observe(host,{childList:true,subtree:true});
+  }
+  [typeof rootSelect!=='undefined'?rootSelect:null, typeof typeSelect!=='undefined'?typeSelect:null, typeof bassSelect!=='undefined'?bassSelect:null]
+    .filter(Boolean).forEach(el=>el.addEventListener('change',()=>requestAnimationFrame(injectSubstitutionOption)));
+
+  window.__BOSSA_ARRANGEMENT_RULES_LOADED__ = true;
   if (typeof updateBassOptions === 'function') updateBassOptions();
   if (typeof render === 'function') render();
+  requestAnimationFrame(injectSubstitutionOption);
 })();
