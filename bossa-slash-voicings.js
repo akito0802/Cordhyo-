@@ -72,3 +72,13 @@
   if (typeof updateBassOptions === 'function') updateBassOptions();
   if (typeof render === 'function') render();
 })();
+
+// Continue into the source's final "6 arrangement methods" section.
+(() => {
+  if (window.__BOSSA_ARRANGEMENT_LOADER__) return;
+  window.__BOSSA_ARRANGEMENT_LOADER__ = true;
+  const script = document.createElement('script');
+  script.src = 'bossa-arrangement-rules.js?v=20260809-1';
+  script.async = false;
+  document.head.appendChild(script);
+})();
