@@ -1,9 +1,10 @@
 // Source-only minor-family voicings transcribed from the uploaded Super Guitar Chords PDF, pp.31-34.
 // No theory-generated shapes. Existing forms are preserved.
 (() => {
-  if (typeof getForms !== 'function' || typeof roots === 'undefined') return;
+  if (typeof getForms !== 'function' || typeof roots === 'undefined' || typeof typeData === 'undefined') return;
   const previous = getForms;
   const PC = Object.fromEntries(roots.map((n,i)=>[n,i]));
+  const OPEN = [4,9,2,7,11,4];
 
   const C_FORMS = {
     m6: [
@@ -47,11 +48,11 @@
     const base = previous(root,type,bass) || [];
     if (bass !== 'none' || !C_FORMS[type]) return base;
     const existingShapes = new Set(base.map(f=>f.shape));
-    const add=[];
-    C_FORMS[type].forEach(([shape,cFrets])=>{
-      if(existingShapes.has(shape)) return;
-      const frets=transposeNearest(cFrets,root);
-      if(!frets) return;
+    const add = [];
+    C_FORMS[type].forEach(([shape,cFrets]) => {
+      if (existingShapes.has(shape)) return;
+      const frets = transposeNearest(cFrets,root);
+      if (!frets) return;
       existingShapes.add(shape);
       add.push({shape,frets,barres:[]});
     });
@@ -62,4 +63,13 @@
   window.__PDF_MINOR_EXTENSION_COUNT__ = Object.fromEntries(Object.entries(C_FORMS).map(([k,v])=>[k,v.length]));
   if (typeof updateBassOptions === 'function') updateBassOptions();
   if (typeof render === 'function') render();
+})();
+
+// Continue the source-only PDF series with the inversion pages (46-53).
+(() => {
+  if (window.__PDF_INVERSIONS_SOURCE_LOADED__ || document.querySelector('script[data-pdf-inversions-pack]')) return;
+  const s=document.createElement('script');
+  s.src='pdf-inversions-source-pack.js?v=20260809-1';
+  s.dataset.pdfInversionsPack='1';
+  document.head.appendChild(s);
 })();
