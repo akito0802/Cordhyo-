@@ -5,7 +5,6 @@
   const previous = getForms;
   const PC = Object.fromEntries(roots.map((n,i)=>[n,i]));
   const OPEN = [4,9,2,7,11,4];
-  const key = f => f.join('|');
 
   const C_FORMS = {
     m6: [
@@ -66,17 +65,23 @@
   getForms = function(root,type,bass) {
     const base = previous(root,type,bass) || [];
     if (bass !== 'none' || !C_FORMS[type]) return base;
-    const seen = new Set(base.map(f=>key(f.frets || [])));
+
+    // PDF source forms must stay visible even when the same fret layout already
+    // exists as a generic form. De-duplicate only by source label, not by frets.
+    const existingShapes = new Set(base.map(f=>f.shape));
     const add = [];
     C_FORMS[type].forEach(([shape,cFrets]) => {
+      if (existingShapes.has(shape)) return;
       const frets = transposeNearest(cFrets,root);
-      if (!frets || !sourceValid(root,type,frets) || seen.has(key(frets))) return;
-      seen.add(key(frets));
+      if (!frets || !sourceValid(root,type,frets)) return;
+      existingShapes.add(shape);
       add.push({shape,frets,barres:[]});
     });
     return base.concat(add);
   };
 
   window.__PDF_MINOR_EXTENSIONS_LOADED__ = true;
+  window.__PDF_MINOR_EXTENSION_COUNT__ = Object.fromEntries(Object.entries(C_FORMS).map(([k,v])=>[k,v.length]));
+  if (typeof updateBassOptions === 'function') updateBassOptions();
   if (typeof render === 'function') render();
 })();
