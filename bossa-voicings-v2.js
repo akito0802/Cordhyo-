@@ -1,14 +1,12 @@
 // Bossa Nova voicings v2 — standalone additive pack.
-// Loaded under a new filename to avoid stale GitHub Pages / Safari caches.
+// Source-backed bossa labels are preserved even when fret layouts duplicate generic forms.
 (() => {
   if (typeof getForms !== 'function' || typeof roots === 'undefined') return;
   const previousGetForms = getForms;
   const rootIndex = Object.fromEntries(roots.map((n,i)=>[n,i]));
-  const k = f => f.join('|');
   const shiftFromC = (root, shape) => shape.map(v => typeof v === 'number' ? v + rootIndex[root] : 'x');
   const playable = f => f.every(v => v === 'x' || (Number.isInteger(v) && v >= 0 && v <= 21));
 
-  // C reference shapes from the uploaded bossa source's movable-shape section.
   const movable = {
     maj9: [['Bossa・5弦Root △7(9) 基本形',['x',3,2,4,3,'x']]],
     '9': [['Bossa・5弦Root 7(9) 基本形',['x',3,2,3,3,'x']]],
@@ -32,17 +30,23 @@
   getForms = function(root,type,bass) {
     const base = previousGetForms(root,type,bass) || [];
     if (bass !== 'none') return base;
-    const seen = new Set(base.map(x => k(x.frets)));
+
+    // Keep Bossa source labels even when the exact fret layout already exists
+    // as a generic/Jazz/PDF form. Only de-duplicate identical Bossa labels.
+    const existingNames = new Set(base.map(f => f.shape));
     const additions = [];
     const push = (name, frets) => {
-      if (!playable(frets) || seen.has(k(frets))) return;
-      seen.add(k(frets));
+      if (!playable(frets) || existingNames.has(name)) return;
+      existingNames.add(name);
       additions.push({shape:name, frets:[...frets], barres:[]});
     };
+
     (fixed[`${root}:${type}`] || []).forEach(([name,frets]) => push(name,frets));
     (movable[type] || []).forEach(([name,cShape]) => push(name,shiftFromC(root,cShape)));
     return base.concat(additions);
   };
 
   window.__BOSSA_V2_LOADED__ = true;
+  if (typeof updateBassOptions === 'function') updateBassOptions();
+  if (typeof render === 'function') render();
 })();
