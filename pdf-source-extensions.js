@@ -8,7 +8,6 @@
   const OPEN = [4,9,2,7,11,4]; // 6E 5A 4D 3G 2B 1E
   const key = f => f.join('|');
 
-  // PDF p24 includes C6(9,#11), which was not previously exposed as its own chord type.
   if (!typeData['69s11']) {
     typeData['69s11'] = {
       suffix:'6/9♯11', label:'6/9♯11', intervals:[0,2,4,6,7,9],
@@ -23,7 +22,6 @@
     }
   }
 
-  // Exact C-reference fret arrays read from the PDF diagrams.
   const C_FORMS = {
     '6': [
       ['PDF p20・C6 6弦Root', [8,'x',7,9,8,'x']],
@@ -50,20 +48,14 @@
       ['PDF p23・Cmaj13 5弦Root', ['x',3,'x',4,5,5]],
       ['PDF p23・Cmaj13 5弦Root High', ['x',15,14,14,12,'x']]
     ],
-    maj13s11: [
-      ['PDF p23・Cmaj13♯11 Full', [8,7,7,7,7,7]]
-    ],
+    maj13s11: [['PDF p23・Cmaj13♯11 Full', [8,7,7,7,7,7]]],
     maj7s11: [
       ['PDF p24・Cmaj7♯11 6弦Root', [8,'x',9,9,7,'x']],
       ['PDF p24・Cmaj7♯11 4弦Root', ['x','x',10,9,7,7]],
       ['PDF p24・Cmaj7♯11 5弦Root', ['x',3,'x',4,5,2]]
     ],
-    maj9s11: [
-      ['PDF p24・Cmaj9♯11 5弦Root', ['x',3,2,4,3,2]]
-    ],
-    '69s11': [
-      ['PDF p24・C6(9,♯11) 5弦Root', ['x',3,2,2,3,2]]
-    ],
+    maj9s11: [['PDF p24・Cmaj9♯11 5弦Root', ['x',3,2,4,3,2]]],
+    '69s11': [['PDF p24・C6(9,♯11) 5弦Root', ['x',3,2,2,3,2]]],
     maj7s5: [
       ['PDF p25・Cmaj7♯5 6弦Root', [8,'x',9,9,9,'x']],
       ['PDF p25・Cmaj7♯5 5弦Root High', ['x',15,14,13,12,'x']],
@@ -120,4 +112,13 @@
   window.__PDF_SOURCE_EXTENSIONS_LOADED__ = true;
   if (typeof updateBassOptions === 'function') updateBassOptions();
   if (typeof render === 'function') render();
+})();
+
+// Load the next source-only minor-family pack from the same PDF series.
+(() => {
+  if (window.__PDF_MINOR_EXTENSIONS_LOADED__ || document.querySelector('script[data-pdf-minor-pack]')) return;
+  const s = document.createElement('script');
+  s.src = 'pdf-minor-extensions.js?v=20260809-1';
+  s.dataset.pdfMinorPack = '1';
+  document.head.appendChild(s);
 })();
