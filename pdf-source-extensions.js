@@ -116,9 +116,20 @@
 
 // Load the next source-only minor-family pack from the same PDF series.
 (() => {
-  if (window.__PDF_MINOR_EXTENSIONS_LOADED__ || document.querySelector('script[data-pdf-minor-pack]')) return;
-  const s = document.createElement('script');
-  s.src = 'pdf-minor-extensions.js?v=20260809-1';
-  s.dataset.pdfMinorPack = '1';
-  document.head.appendChild(s);
+  if (!window.__PDF_MINOR_EXTENSIONS_LOADED__ && !document.querySelector('script[data-pdf-minor-pack]')) {
+    const s = document.createElement('script');
+    s.src = 'pdf-minor-extensions.js?v=20260809-1';
+    s.dataset.pdfMinorPack = '1';
+    document.head.appendChild(s);
+  }
+})();
+
+// Load the source-only altered-dominant pack (PDF pp.37-44).
+(() => {
+  if (!window.__PDF_ALTERED_SOURCE_PACK_LOADED__ && !document.querySelector('script[data-pdf-altered-pack]')) {
+    const s = document.createElement('script');
+    s.src = 'pdf-altered-source-pack.js?v=20260809-1';
+    s.dataset.pdfAlteredPack = '1';
+    document.head.appendChild(s);
+  }
 })();
