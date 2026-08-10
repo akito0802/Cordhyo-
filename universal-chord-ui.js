@@ -3,154 +3,32 @@
 (() => {
   const host = document.querySelector('#selectedChord');
   if (!host || typeof getForms !== 'function') return;
-
-  const isBossa = (shape='') => /Bossa/.test(shape);
-  const isReference = (shape='') => /Jazz|Standard|Triad Compact|Full Voicing|Drop2|Drop3|Shell|PDF|資料|Voicing|mMaj7・|6th・|m6・/.test(shape);
-
-  const esc = (v='') => String(v)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-
-  function label(shape='', index=0) {
-    if (isBossa(shape)) return `🌴 ${shape}`;
-    if (isReference(shape)) return `📘 ${shape}`;
-    if (shape === 'オープンコード') return 'Open';
-    if (shape === 'オンコード') return 'オンコード';
-    if (shape === '6弦ルート') return '6弦ルート';
-    if (shape === '5弦ルート') return '5弦ルート';
-    if (shape.includes('6弦ルート')) return shape.replace('6弦ルート・','6弦 ');
-    if (shape.includes('5弦ルート')) return shape.replace('5弦ルート・','5弦 ');
-    if (shape.includes('4弦ルート')) return shape.replace('4弦ルート・','4弦 ');
-    if (shape.includes('3弦ルート')) return shape.replace('3弦ルート・','3弦 ');
-    if (shape.includes('初心者')) return '初心者';
-    if (shape.includes('CAGED')) return shape.replace('CAGED・','CAGED ');
-    if (shape.includes('トライアド')) return shape.replace('トライアド','Triad');
-    if (shape.includes('カッティング')) return 'Cutting';
-    if (shape.includes('ワイド')) return 'Wide';
-    if (shape.includes('ハイポジション')) return 'High';
-    return shape || `フォーム${index+1}`;
-  }
-
-  function level(shape='') {
-    if (isBossa(shape)) return 'ボサノヴァ実用';
-    if (/Shell/.test(shape)) return 'ジャズ実用';
-    if (/Drop2|Drop3/.test(shape)) return 'ジャズ転回';
-    if (/Jazz/.test(shape)) return 'ジャズ定番';
-    if (/Triad|トライアド/.test(shape)) return 'トライアド';
-    if (/初心者|オープン/.test(shape)) return '初心者向け';
-    if (/省略/.test(shape)) return '実用省略';
-    if (/ハイポジション|ワイド/.test(shape)) return '上級';
-    if (shape === 'オンコード') return '指定ベース';
-    return '定番';
-  }
-
-  function option(form,index,current) {
-    return `<option value="${index}" ${index===current?'selected':''}>${esc(label(form.shape,index))}｜${esc(level(form.shape))}</option>`;
-  }
-
-  function groups(forms,current) {
-    const standard=[], reference=[], bossa=[];
-    forms.forEach((form,index)=>{
-      if (isBossa(form.shape)) bossa.push({form,index});
-      else if (isReference(form.shape)) reference.push({form,index});
-      else standard.push({form,index});
-    });
-    let out='';
-    if (standard.length) out += `<optgroup label="基本・定番フォーム">${standard.map(x=>option(x.form,x.index,current)).join('')}</optgroup>`;
-    if (reference.length) out += `<optgroup label="📘 資料準拠・応用フォーム">${reference.map(x=>option(x.form,x.index,current)).join('')}</optgroup>`;
-    if (bossa.length) out += `<optgroup label="🌴 ボサノヴァフォーム">${bossa.map(x=>option(x.form,x.index,current)).join('')}</optgroup>`;
-    return out;
-  }
-
-  function substituteGroup(root,type,bass) {
-    if (type !== '7' || bass !== 'none' || typeof window.bossaTritoneSubstitution !== 'function') return '';
-    const sub = window.bossaTritoneSubstitution(root);
-    if (!sub || sub === root) return '';
-    return `<optgroup label="🌴 6大アレンジ法⑤"><option value="__bossa_tritone__">🔁 ♭II7代理へ：${esc(sub)}7</option></optgroup>`;
-  }
-
-  let lastSignature = '';
-  let busy = false;
-
-  function mount(force=false) {
-    if (busy || typeof rootSelect === 'undefined' || typeof typeSelect === 'undefined' || typeof bassSelect === 'undefined') return;
-    const root=rootSelect.value, type=typeSelect.value, bass=bassSelect.value || 'none';
-    const forms=getForms(root,type,bass) || [];
-    if (!forms.length) return;
-    if (typeof selectedFormIndex !== 'undefined' && selectedFormIndex >= forms.length) selectedFormIndex=0;
-    const current=Math.min(typeof selectedFormIndex==='number'?selectedFormIndex:0,forms.length-1);
-    const subRoot = (type==='7' && bass==='none' && typeof window.bossaTritoneSubstitution==='function') ? window.bossaTritoneSubstitution(root) : '';
-    const signature=[root,type,bass,current,subRoot,forms.map(f=>`${f.shape}:${f.frets.join(',')}`).join(';')].join('|');
-    const existing=host.querySelector('.all-chords-compact-ui');
-    if (!force && signature===lastSignature && existing?.dataset?.uiVersion==='universal-v2') return;
-
-    busy=true;
-    const oldTabs=host.querySelector('.form-tabs');
-    if (oldTabs) oldTabs.style.display='none';
-
-    let ui=existing;
-    if (!ui) {
-      ui=document.createElement('div');
-      ui.className='all-chords-compact-ui';
-      const heading=host.querySelector('.selected-heading');
-      if (heading) heading.insertAdjacentElement('afterend',ui);
-      else host.prepend(ui);
-    }
-    ui.dataset.uiVersion='universal-v2';
-
-    const referenceCount=forms.filter(f=>isReference(f.shape)).length;
-    const bossaCount=forms.filter(f=>isBossa(f.shape)).length;
-    ui.innerHTML=`
-      <label class="all-chords-select-label">
-        <span>押さえ方 <b class="form-total">全${forms.length}フォーム</b>${referenceCount?`<b class="reference-count">📘 ${referenceCount}</b>`:''}${bossaCount?`<b class="bossa-count">🌴 ${bossaCount}</b>`:''}</span>
-        <select class="allChordsFormSelect" aria-label="${esc(root)}コードの押さえ方を選択">
-          ${groups(forms,current)}
-          ${substituteGroup(root,type,bass)}
-        </select>
-      </label>`;
-
+  const isBossa=(shape='')=>/Bossa/.test(shape);
+  const isReference=(shape='')=>/Jazz|Standard|Triad Compact|Full Voicing|Drop2|Drop3|Shell|PDF|資料|Voicing|mMaj7・|6th・|m6・/.test(shape);
+  const esc=(v='')=>String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  function label(shape='',index=0){if(isBossa(shape))return`🌴 ${shape}`;if(isReference(shape))return`📘 ${shape}`;if(shape==='オープンコード')return'Open';if(shape==='オンコード')return'オンコード';if(shape==='6弦ルート')return'6弦ルート';if(shape==='5弦ルート')return'5弦ルート';if(shape.includes('6弦ルート'))return shape.replace('6弦ルート・','6弦 ');if(shape.includes('5弦ルート'))return shape.replace('5弦ルート・','5弦 ');if(shape.includes('4弦ルート'))return shape.replace('4弦ルート・','4弦 ');if(shape.includes('3弦ルート'))return shape.replace('3弦ルート・','3弦 ');if(shape.includes('初心者'))return'初心者';if(shape.includes('CAGED'))return shape.replace('CAGED・','CAGED ');if(shape.includes('トライアド'))return shape.replace('トライアド','Triad');if(shape.includes('カッティング'))return'Cutting';if(shape.includes('ワイド'))return'Wide';if(shape.includes('ハイポジション'))return'High';return shape||`フォーム${index+1}`;}
+  function level(shape=''){if(isBossa(shape))return'ボサノヴァ実用';if(/Shell/.test(shape))return'ジャズ実用';if(/Drop2|Drop3/.test(shape))return'ジャズ転回';if(/Jazz/.test(shape))return'ジャズ定番';if(/Triad|トライアド/.test(shape))return'トライアド';if(/初心者|オープン/.test(shape))return'初心者向け';if(/省略/.test(shape))return'実用省略';if(/ハイポジション|ワイド/.test(shape))return'上級';if(shape==='オンコード')return'指定ベース';return'定番';}
+  const option=(form,index,current)=>`<option value="${index}" ${index===current?'selected':''}>${esc(label(form.shape,index))}｜${esc(level(form.shape))}</option>`;
+  function groups(forms,current){const standard=[],reference=[],bossa=[];forms.forEach((form,index)=>{if(isBossa(form.shape))bossa.push({form,index});else if(isReference(form.shape))reference.push({form,index});else standard.push({form,index});});let out='';if(standard.length)out+=`<optgroup label="基本・定番フォーム">${standard.map(x=>option(x.form,x.index,current)).join('')}</optgroup>`;if(reference.length)out+=`<optgroup label="📘 資料準拠・応用フォーム">${reference.map(x=>option(x.form,x.index,current)).join('')}</optgroup>`;if(bossa.length)out+=`<optgroup label="🌴 ボサノヴァフォーム">${bossa.map(x=>option(x.form,x.index,current)).join('')}</optgroup>`;return out;}
+  function substituteGroup(root,type,bass){if(type!=='7'||bass!=='none'||typeof window.bossaTritoneSubstitution!=='function')return'';const sub=window.bossaTritoneSubstitution(root);if(!sub||sub===root)return'';return`<optgroup label="🌴 6大アレンジ法⑤"><option value="__bossa_tritone__">🔁 ♭II7代理へ：${esc(sub)}7</option></optgroup>`;}
+  let lastSignature='',busy=false;
+  function mount(force=false){
+    if(busy||typeof rootSelect==='undefined'||typeof typeSelect==='undefined'||typeof bassSelect==='undefined')return;
+    const root=rootSelect.value,type=typeSelect.value,bass=bassSelect.value||'none',forms=getForms(root,type,bass)||[];if(!forms.length)return;
+    if(typeof selectedFormIndex!=='undefined'&&selectedFormIndex>=forms.length)selectedFormIndex=0;
+    const current=Math.min(typeof selectedFormIndex==='number'?selectedFormIndex:0,forms.length-1),subRoot=(type==='7'&&bass==='none'&&typeof window.bossaTritoneSubstitution==='function')?window.bossaTritoneSubstitution(root):'';
+    const signature=[root,type,bass,current,subRoot,forms.map(f=>`${f.shape}:${f.frets.join(',')}`).join(';')].join('|'),existing=host.querySelector('.all-chords-compact-ui');
+    if(!force&&signature===lastSignature&&existing?.dataset?.uiVersion==='universal-v3')return;
+    busy=true;const oldTabs=host.querySelector('.form-tabs');if(oldTabs)oldTabs.style.display='none';
+    let ui=existing;if(!ui){ui=document.createElement('div');ui.className='all-chords-compact-ui';const heading=host.querySelector('.selected-heading');if(heading)heading.insertAdjacentElement('afterend',ui);else host.prepend(ui);}ui.dataset.uiVersion='universal-v3';
+    const referenceCount=forms.filter(f=>isReference(f.shape)).length,bossaCount=forms.filter(f=>isBossa(f.shape)).length;
+    ui.innerHTML=`<label class="all-chords-select-label"><span>押さえ方 <b class="form-total">全${forms.length}フォーム</b>${referenceCount?`<b class="reference-count">📘 ${referenceCount}</b>`:''}${bossaCount?`<b class="bossa-count">🌴 ${bossaCount}</b>`:''}</span><select class="allChordsFormSelect" aria-label="${esc(root)}コードの押さえ方を選択">${groups(forms,current)}${substituteGroup(root,type,bass)}</select></label>`;
     const select=ui.querySelector('.allChordsFormSelect');
-    select?.addEventListener('change',e=>{
-      if (e.target.value === '__bossa_tritone__') {
-        const nextRoot = typeof window.bossaTritoneSubstitution==='function' ? window.bossaTritoneSubstitution(rootSelect.value) : null;
-        if (nextRoot) {
-          rootSelect.value = nextRoot;
-          typeSelect.value = '7';
-          if (typeof updateBassOptions === 'function') updateBassOptions();
-          bassSelect.value = 'none';
-          selectedFormIndex = 0;
-          render();
-          requestAnimationFrame(()=>mount(true));
-        }
-        return;
-      }
-      selectedFormIndex=Number(e.target.value)||0;
-      render();
-      requestAnimationFrame(()=>mount(true));
-    });
-
-    lastSignature=signature;
-    busy=false;
+    select?.addEventListener('change',e=>{if(e.target.value==='__bossa_tritone__'){const nextRoot=typeof window.bossaTritoneSubstitution==='function'?window.bossaTritoneSubstitution(rootSelect.value):null;if(nextRoot){rootSelect.value=nextRoot;typeSelect.value='7';if(typeof updateBassOptions==='function')updateBassOptions();bassSelect.value='none';selectedFormIndex=0;render();requestAnimationFrame(()=>mount(true));}return;}selectedFormIndex=Number(e.target.value)||0;render();requestAnimationFrame(()=>mount(true));});
+    lastSignature=signature;busy=false;
+    window.dispatchEvent(new CustomEvent('universal-form-ui-mounted'));
   }
-
-  if (!document.querySelector('#universal-chord-ui-style')) {
-    const style=document.createElement('style');
-    style.id='universal-chord-ui-style';
-    style.textContent=`
-      .selected-card .form-tabs{display:none!important}
-      .all-chords-compact-ui{display:block;margin:10px 0 13px;padding:10px 12px;border:1px solid #ded6c9;border-radius:14px;background:#fffaf2;position:relative;z-index:10}
-      .all-chords-select-label{display:flex;flex-direction:column;gap:7px;font-weight:800;color:#332b22}
-      .all-chords-select-label>span{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:.82rem;color:#6b6256}
-      .all-chords-select-label b{font-size:.7rem;padding:3px 7px;border-radius:999px;font-weight:800}
-      .form-total{background:#f0ece5;color:#655c50}.reference-count{background:#e7f5f8;color:#256574}.bossa-count{background:#eef4df;color:#486127}
-      .all-chords-select-label select{display:block;width:100%;min-height:46px;padding:10px 38px 10px 12px;border:1px solid #d7c9b5;border-radius:11px;background:#fff;color:#2f2922;font:inherit;font-size:16px;font-weight:750;pointer-events:auto;touch-action:manipulation;position:relative;z-index:11;-webkit-appearance:menulist;appearance:auto}
-    `;
-    document.head.appendChild(style);
-  }
-
-  const observer=new MutationObserver(()=>requestAnimationFrame(()=>mount(false)));
-  observer.observe(host,{childList:true,subtree:true});
-
-  [rootSelect,typeSelect,bassSelect].forEach(el=>el?.addEventListener('change',()=>requestAnimationFrame(()=>mount(true))));
-  requestAnimationFrame(()=>mount(true));
+  if(!document.querySelector('#universal-chord-ui-style')){const style=document.createElement('style');style.id='universal-chord-ui-style';style.textContent=`.selected-card .form-tabs{display:none!important}.all-chords-compact-ui{display:block;margin:10px 0 13px;padding:10px 12px;border:1px solid #ded6c9;border-radius:14px;background:#fffaf2;position:relative;z-index:10}.all-chords-select-label{display:flex;flex-direction:column;gap:7px;font-weight:800;color:#332b22}.all-chords-select-label>span{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:.82rem;color:#6b6256}.all-chords-select-label b{font-size:.7rem;padding:3px 7px;border-radius:999px;font-weight:800}.form-total{background:#f0ece5;color:#655c50}.reference-count{background:#e7f5f8;color:#256574}.bossa-count{background:#eef4df;color:#486127}.all-chords-select-label select{display:block;width:100%;min-height:46px;padding:10px 38px 10px 12px;border:1px solid #d7c9b5;border-radius:11px;background:#fff;color:#2f2922;font:inherit;font-size:16px;font-weight:750;pointer-events:auto;touch-action:manipulation;position:relative;z-index:11;-webkit-appearance:menulist;appearance:auto}`;document.head.appendChild(style);}
+  const observer=new MutationObserver(()=>requestAnimationFrame(()=>mount(false)));observer.observe(host,{childList:true,subtree:true});
+  [rootSelect,typeSelect,bassSelect].forEach(el=>el?.addEventListener('change',()=>requestAnimationFrame(()=>mount(true))));requestAnimationFrame(()=>mount(true));
 })();
