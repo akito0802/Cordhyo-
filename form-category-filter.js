@@ -10,16 +10,17 @@
   const forms=getForms(rootSelect.value,typeSelect.value,bassSelect.value||'none')||[];if(!forms.length)return;
   let bar=ui.querySelector('.form-category-filter');if(!bar){bar=document.createElement('div');bar.className='form-category-filter';select.parentNode.insertBefore(bar,select);}
   const counts=Object.fromEntries(FILTERS.map(([id])=>[id,0]));counts.all=forms.length;forms.forEach(f=>counts[category(f.shape)]++);
+  if(active!=='all'&&!counts[active])active='all';
   bar.innerHTML=FILTERS.map(([id,label])=>`<button type="button" class="form-filter-chip${active===id?' active':''}" data-filter="${id}" ${id!=='all'&&!counts[id]?'disabled':''}>${label}<span>${counts[id]||0}</span></button>`).join('');
-  const visible=forms.map((form,index)=>({form,index})).filter(x=>active==='all'||category(x.form.shape)===active);const list=visible.length?visible:forms.map((form,index)=>({form,index}));
-  if(!visible.length&&active!=='all')active='all';
-  const current=typeof selectedFormIndex==='number'?selectedFormIndex:0;
+  const list=forms.map((form,index)=>({form,index})).filter(x=>active==='all'||category(x.form.shape)===active);
+  let current=typeof selectedFormIndex==='number'?selectedFormIndex:0;
+  if(!list.some(x=>x.index===current)&&list.length){current=list[0].index;window.selectedFormIndex=current;}
   select.innerHTML=list.map(({form,index})=>{const c=category(form.shape),s=String(form.shape||`フォーム${index+1}`),name=s.startsWith(icon[c])?s:`${icon[c]} ${s}`;return `<option value="${index}" ${index===current?'selected':''}>${name}</option>`}).join('');
-  if(!list.some(x=>x.index===current)){window.selectedFormIndex=list[0].index;select.value=String(list[0].index);}else select.value=String(current);
-  bar.onclick=e=>{const b=e.target.closest('[data-filter]');if(!b||b.disabled)return;active=b.dataset.filter;const target=forms.map((form,index)=>({form,index})).filter(x=>active==='all'||category(x.form.shape)===active);if(target.length)window.selectedFormIndex=target[0].index;mount();if(typeof render==='function')render();};
+  if(list.length)select.value=String(current);
+  bar.onclick=e=>{const b=e.target.closest('[data-filter]');if(!b||b.disabled)return;active=b.dataset.filter;const target=forms.map((form,index)=>({form,index})).filter(x=>active==='all'||category(x.form.shape)===active);if(!target.length)return;window.selectedFormIndex=target[0].index;if(typeof render==='function')render();};
  }
  const st=document.createElement('style');st.textContent=`.form-category-filter{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px 1px 5px}.form-category-filter::-webkit-scrollbar{display:none}.form-filter-chip{flex:0 0 auto;min-height:32px;padding:6px 9px;border:1px solid #d7c9b5;border-radius:999px;background:#fff;font-size:.75rem;font-weight:800;white-space:nowrap}.form-filter-chip span{margin-left:4px;font-size:.64rem}.form-filter-chip.active{background:#2e2924;color:#fff;border-color:#2e2924}.form-filter-chip:disabled{opacity:.3}`;document.head.appendChild(st);
+ window.addEventListener('universal-form-ui-mounted',mount);
  [rootSelect,typeSelect,bassSelect].forEach(el=>el?.addEventListener('change',()=>{active='all';setTimeout(mount,0);}));
- // Initial render has already run before this script; mount once only.
  setTimeout(mount,0);
 })();
