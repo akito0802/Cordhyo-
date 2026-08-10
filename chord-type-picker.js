@@ -1,17 +1,18 @@
 // Lightweight compact chord type picker. Keeps #typeSelect as source of truth.
 (()=>{
  const sel=document.querySelector('#typeSelect');if(!sel)return;const label=sel.closest('label');
+ // Frequency first, with related chord qualities paired left/right in the 2-column mobile grid.
  const cats={
-  '定番':['major','minor','7','maj7','m7','sus4'],
-  '基本':['major','minor','5','6','m6','7','maj7','m7'],
-  '7th':['7','maj7','m7','mMaj7','m7b5','7sus4','7b9','7s9'],
-  '9/11/13':['9','m9','maj9','11','m11','13','m13','maj13'],
-  'sus/add':['sus2','sus4','add9','madd9','add11','7sus4','9sus4','13sus4'],
-  'Altered':['7b5','7s5','7b9','7s9','7b13','7s11','13b9','13s9'],
-  'dim/aug':['m7b5','dim','dim7','aug','aug7','augmaj7']
+  '定番':['major','minor','maj7','m7','7','sus4','add9','m7b5'],
+  '基本':['major','minor','maj7','m7','7','6','m6','5','mMaj7','no3','no5','5add9'],
+  '7th':['maj7','m7','7','mMaj7','m7b5','7sus4','7b5','7s5','7b9','7s9','7b13','7s11'],
+  '9/11/13':['9','m9','maj9','mMaj9','11','m11','maj11','maj7s11','13','m13','maj13','maj13s11','69','m69','mMaj13'],
+  'sus/add':['sus2','sus4','add2','add4','add9','madd9','add11','madd11','6sus2','6sus4','7sus2','7sus4','9sus2','9sus4','13sus2','13sus4'],
+  'dim/aug':['dim','aug','dim7','aug7','dimMaj7','augmaj7','dim9','aug9','m7b5','m9b5','m11b5','augMaj9','aug13'],
+  'Altered':['7b5','7s5','7b9','7s9','7b13','7s11','9b5','9s5','13b9','13s9','7b5b9','7b5s9','7s5b9','7s5s9','7b9b13','7s9b13','7b9s11','7s9s11']
  };
  const map=new Map([...sel.options].map(o=>[o.value,o]));
- const short=v=>({major:'M',minor:'m',maj7:'M7',maj9:'M9',maj11:'M11',maj13:'M13',mMaj7:'mM7',mMaj9:'mM9'}[v]||map.get(v)?.textContent||v);
+ const short=v=>({major:'M',minor:'m',maj7:'M7',maj9:'M9',maj11:'M11',maj13:'M13',mMaj7:'mM7',mMaj9:'mM9',mMaj13:'mM13'}[v]||map.get(v)?.textContent||v);
  const wrap=document.createElement('div');wrap.className='type-picker';wrap.innerHTML=`<div class="type-row"><b>コード</b><div class="type-cats"></div></div><div class="type-buttons"></div><div class="type-bottom"><span class="type-current"></span><button type="button" class="type-more">もっと見る</button></div><div class="type-panel" hidden><input type="search" placeholder="コード検索"><div class="type-all"></div></div>`;label.parentNode.insertBefore(wrap,label);label.style.display='none';
  const catsEl=wrap.querySelector('.type-cats'),btns=wrap.querySelector('.type-buttons'),cur=wrap.querySelector('.type-current'),panel=wrap.querySelector('.type-panel'),all=wrap.querySelector('.type-all'),input=panel.querySelector('input');let active='定番';
  catsEl.innerHTML=Object.keys(cats).map((c,i)=>`<button type="button" data-cat="${c}" class="${i===0?'active':''}">${c}</button>`).join('');
