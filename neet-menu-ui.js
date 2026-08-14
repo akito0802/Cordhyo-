@@ -20,14 +20,13 @@ if(document.querySelector('#selectedChord')&&document.querySelector('#rootSelect
     document.body.appendChild(u);
   }
 
-  // Load the readability pass after page-specific UI scripts have injected their styles.
-  // This keeps all existing behavior intact while ensuring the mobile visual hierarchy wins.
+  // Load the final visual pass after page-specific UI scripts have injected their styles.
   setTimeout(()=>{
     if(document.querySelector('#chord-ui-v3-readability'))return;
     const r=document.createElement('link');
     r.id='chord-ui-v3-readability';
     r.rel='stylesheet';
-    r.href='ui-v3-readability.css?v=20260815-3';
+    r.href='ui-v3-readability.css?v=20260815-4';
     document.head.appendChild(r);
   },0);
 }
