@@ -25,6 +25,8 @@ filterLabels[1]?.classList.add('ui3-filter-type');
 filterLabels[2]?.classList.add('ui3-filter-bass');
 
 function placeResultCloser(){
+  // V4 owns the page order: quick selectors -> chord -> detailed controls.
+  if(document.body.classList.contains('chord-ui-v4'))return;
   const controls=document.querySelector('.controls');
   const filters=document.querySelector('.selection-filters');
   if(!controls||!filters)return;
