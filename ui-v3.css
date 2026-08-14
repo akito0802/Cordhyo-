@@ -1,294 +1,276 @@
-/* Chord Dictionary UI V3 — visual-only refinement.
-   No feature, chord data, or interaction logic is changed here. */
+/* Chord Dictionary UI V3 — concept 3 visual layer only.
+   Existing chord data, search, filters, form switching and menu behavior stay unchanged. */
 
 :root{
-  --ui3-soft:#faf7f0;
-  --ui3-panel:#fffdfa;
-  --ui3-panel-2:#f6f0e6;
-  --ui3-brown:#3d2b1f;
-  --ui3-brown-soft:#75695d;
-  --ui3-line:#ddd2c3;
-  --ui3-shadow:0 12px 30px rgba(61,43,31,.08);
-  --ui3-shadow-soft:0 5px 16px rgba(61,43,31,.055);
+  --ui3-bg:#f6f1e8;
+  --ui3-panel:#fffdf9;
+  --ui3-panel-soft:#faf5ec;
+  --ui3-brown:#3b281d;
+  --ui3-muted:#76695d;
+  --ui3-line:#dfd1be;
+  --ui3-dark:#2c2925;
+  --ui3-accent:#ff6b35;
+  --ui3-shadow:0 10px 28px rgba(69,48,33,.08);
+  --ui3-shadow-soft:0 4px 14px rgba(69,48,33,.055);
 }
 
-/* 1. Search is the first visual priority */
-.controls .search-field{
-  gap:10px;
-  margin-bottom:20px;
+body.chord-ui-v3{
+  background:linear-gradient(180deg,#fbf8f2 0,#f6f1e8 42%,#f3eee6 100%);
   color:var(--ui3-brown);
-  font-size:14px;
-  font-weight:900;
-  letter-spacing:.02em;
 }
-.controls .search-field input{
-  min-height:66px;
-  padding:18px 22px 18px 58px;
-  border:1px solid var(--ui3-line);
-  border-radius:21px;
-  background-color:#fff;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%233d2b1f' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-4-4'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;
-  background-position:20px 50%;
-  box-shadow:var(--ui3-shadow-soft);
-  color:var(--ink);
-  font-size:18px;
-  font-weight:750;
-  transition:border-color .16s ease,box-shadow .16s ease,transform .16s ease;
-}
-.controls .search-field input::placeholder{color:#999087;font-weight:650}
-.controls .search-field input:focus{
-  border-color:var(--accent);
-  box-shadow:0 0 0 4px rgba(255,107,53,.12),0 12px 26px rgba(61,43,31,.08);
-}
-.controls .search-field small{padding-left:2px;font-size:12px;line-height:1.5}
 
-/* 2. Filters: equal visual rhythm and clearer hierarchy */
-.controls{border-color:rgba(216,210,199,.9);background:rgba(255,253,248,.97)}
-.controls .selection-filters{gap:14px;align-items:stretch}
-.controls .selection-filters>label{
-  display:grid;
-  grid-template-rows:auto 1fr;
-  gap:10px;
-  min-height:112px;
-  padding:14px;
-  border:1px solid var(--ui3-line);
-  border-radius:17px;
-  background:var(--ui3-panel);
-  box-shadow:var(--ui3-shadow-soft);
+/* ===== Header: concept 3 ===== */
+body.chord-ui-v3 .hero{
+  min-height:0;
+  padding:20px 92px 20px 24px;
+  display:block;
+  background:rgba(255,253,249,.98);
   color:var(--ui3-brown);
-  font-size:13px;
-  font-weight:900;
-  line-height:1.3;
+  border-bottom:1px solid #eadfce;
 }
-.controls .selection-filters>label select{
-  align-self:end;
-  min-height:52px;
-  padding:13px 14px;
-  border-color:#d8c9b8;
-  border-radius:12px;
-  background:#fff;
-  color:#33271f;
-  font-size:16px;
-  font-weight:750;
+body.chord-ui-v3 .hero>div{width:min(100%,1100px);margin:0 auto}
+body.chord-ui-v3 .ui3-brand{display:flex;align-items:center;gap:14px;min-height:72px}
+body.chord-ui-v3 .ui3-brand-icon{
+  flex:0 0 62px;width:62px;height:62px;display:grid;place-items:center;
+  border-radius:16px;background:linear-gradient(145deg,#a96624,#49301f);
+  color:#fff;font-size:31px;box-shadow:0 7px 17px rgba(74,45,25,.17)
 }
-.controls .selection-filters>label select:focus{border-color:var(--accent)}
-.controls .control-note{
-  margin:16px 0 0;
-  padding:13px 15px 13px 44px;
-  position:relative;
-  border:1px solid #e0d7ca;
-  border-radius:14px;
-  background:#f7f2e9;
-  color:#6f6256;
-  font-size:12px;
-  line-height:1.65;
-}
-.controls .control-note::before{
-  content:'i';
-  position:absolute;
-  left:14px;
-  top:50%;
-  display:grid;
-  place-items:center;
-  width:21px;
-  height:21px;
-  transform:translateY(-50%);
-  border:1.5px solid #7a6a5b;
-  border-radius:50%;
-  color:#6b5948;
-  font-size:13px;
-  font-weight:900;
+body.chord-ui-v3 .ui3-brand-title{margin:0;color:#332117;font-size:clamp(30px,4vw,43px);font-weight:950;line-height:1.05;letter-spacing:-.035em}
+body.chord-ui-v3 .ui3-brand-sub{margin:8px 0 0;color:#654f3d;font-size:clamp(12px,1.8vw,16px);font-weight:700;letter-spacing:.01em}
+
+/* Existing global hamburger, visually integrated into header. */
+body.chord-ui-v3 .ngm-btn{
+  top:16px!important;right:18px!important;left:auto!important;bottom:auto!important;
+  width:62px!important;height:62px!important;border-radius:15px!important;
+  border:1px solid #d9c7af!important;background:#fffdf9!important;color:#39271c!important;
+  box-shadow:0 7px 18px rgba(61,43,31,.10)!important;font-size:27px!important;
 }
 
-/* Quick chips: same function, cleaner scanability */
-.controls .popular-slash{
-  margin-top:18px;
-  padding:17px;
-  border:1px solid var(--ui3-line);
-  border-radius:17px;
-  background:rgba(255,255,255,.52);
+/* ===== Navigation: dark rectangular tabs ===== */
+body.chord-ui-v3 .site-nav{
+  position:sticky;top:0;z-index:48;
+  display:grid;grid-auto-flow:column;grid-auto-columns:minmax(132px,1fr);
+  justify-content:stretch;gap:0;padding:0;
+  overflow-x:auto;scrollbar-width:none;
+  background:linear-gradient(180deg,#34312d,#252320);
+  border-bottom:1px solid #1f1d1a;box-shadow:0 8px 18px rgba(36,29,24,.10);
+  backdrop-filter:none;
 }
-.controls .popular-slash-heading{margin-bottom:13px}
-.controls .popular-slash-heading p{color:var(--ui3-brown);font-size:16px;letter-spacing:.01em}
-.controls .popular-slash-heading span{font-size:11px}
-.controls .slash-quick-list{gap:8px 9px}
-.controls .slash-chip{
-  min-height:38px;
-  padding:8px 14px;
-  border-color:#d9cbbb;
-  background:#fffdfa;
-  color:#46362b;
-  box-shadow:0 2px 8px rgba(61,43,31,.035);
-  font-weight:850;
+body.chord-ui-v3 .site-nav::-webkit-scrollbar{display:none}
+body.chord-ui-v3 .site-nav a{
+  min-width:132px;min-height:92px;padding:15px 12px;
+  display:grid;place-items:center;align-content:center;gap:5px;
+  border:0;border-right:1px solid rgba(255,255,255,.15);border-radius:0;
+  background:transparent;color:#f4ede4;text-decoration:none;text-align:center;
+  font-size:15px;font-weight:900;white-space:nowrap;box-shadow:none;
 }
-.controls .slash-chip:hover,.controls .slash-chip:focus-visible{border-color:var(--accent);background:#fff7f1}
-
-/* 3. Every selected chord uses the same stronger card hierarchy */
-.selected-chord{margin-top:24px}
-.selected-chord .selected-card{
-  padding:30px;
-  border:1px solid var(--ui3-line);
-  border-radius:24px;
-  background:var(--ui3-panel);
-  box-shadow:0 16px 38px rgba(61,43,31,.10);
+body.chord-ui-v3 .site-nav a:hover{background:rgba(255,255,255,.055);color:#fff;border-color:rgba(255,255,255,.15)}
+body.chord-ui-v3 .site-nav a.active{
+  position:relative;background:#fffdfa;color:var(--ui3-accent);box-shadow:none;border-color:#e5d8c7;
 }
-.selected-card .selected-heading{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) auto;
-  column-gap:18px;
-  align-items:start;
-  padding-bottom:18px;
-  border-bottom:1px solid #ece4d9;
-}
-.selected-card .selected-label{grid-column:1/-1;margin-bottom:7px;color:#8a7c6f;font-size:11px;letter-spacing:.15em}
-.selected-card .selected-name{
-  grid-column:1;
-  margin:0;
-  color:#2f2119;
-  font-size:clamp(54px,9vw,84px);
-  font-weight:900;
-  line-height:.95;
-  letter-spacing:-.055em;
-}
-.selected-card .meta{grid-column:1;margin-top:12px;gap:8px}
-.selected-card .badge{
-  padding:7px 11px;
-  border:1px solid #e1d7ca;
-  border-radius:9px;
-  background:#f5f0e8;
-  color:#66594d;
-  font-size:11px;
-  font-weight:850;
-}
-.selected-card .badge:first-child{border-color:rgba(255,107,53,.34);background:#fff2e8;color:#c7562d}
-
-/* Existing form selector: visually integrated, no interaction changes */
-.selected-card .all-chords-compact-ui{
-  margin:16px 0 14px;
-  padding:12px 14px;
-  border:1px solid var(--ui3-line);
-  border-radius:15px;
-  background:#faf6ef;
-  box-shadow:none;
-}
-.selected-card .all-chords-select-label>span{color:#75675b;font-size:12px}
-.selected-card .all-chords-select-label select{
-  min-height:50px;
-  border-color:#d8c9b8;
-  border-radius:11px;
-  background:#fff;
-  color:#342920;
-  font-weight:800;
+body.chord-ui-v3 .site-nav a.active::after{
+  content:'';position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--ui3-accent)
 }
 
-/* Chord diagram is the visual main content for every chord */
-.selected-card .selected-content{gap:22px;margin-top:16px;align-items:stretch}
-.selected-card .diagram-panel{
-  min-height:260px;
-  display:grid;
-  place-items:center;
-  padding:22px;
-  border:1px solid #d9cbbb;
-  border-radius:18px;
-  background:linear-gradient(180deg,#fff 0%,#fdfaf5 100%);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.65),0 8px 22px rgba(61,43,31,.055);
-}
-.selected-card .diagram-wrap{min-height:220px}
-.selected-card[data-chord-orientation="vertical"] .selected-content{grid-template-columns:minmax(0,1.25fr) minmax(260px,.75fr)!important}
-.selected-card[data-chord-orientation="vertical"] .orientation-vertical{width:min(100%,310px)!important;max-width:310px!important}
-.selected-card[data-chord-orientation="horizontal"] .orientation-horizontal{width:min(100%,610px)!important;max-width:610px!important}
-
-/* 4. Existing action/switch controls: consistent and clearly interactive */
-.selected-card .diagram-orientation-control{
-  grid-column:2;
-  grid-row:2/span 2;
-  align-self:start;
-  justify-self:end;
-  margin:0;
-}
-.selected-card .diagram-orientation-toggle{
-  min-height:44px;
-  padding:10px 14px;
-  border:1px solid #cdbda9;
-  border-radius:11px;
-  background:#fff;
-  color:#49382d;
-  box-shadow:0 5px 12px rgba(61,43,31,.055);
-  font-size:12px;
-  font-weight:900;
-  transition:border-color .15s ease,background .15s ease,transform .15s ease;
-}
-.selected-card .diagram-orientation-toggle:hover{border-color:var(--accent);background:#fff7f1}
-.selected-card .diagram-orientation-toggle:focus-visible{outline:3px solid rgba(255,107,53,.18);outline-offset:2px}
-.selected-card .form-tab,.selected-card button,.selected-card select{touch-action:manipulation}
-
-/* 5. Four information blocks: clearer hierarchy, equal cards */
-.selected-card .info-list{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px;
-  align-content:stretch;
-}
-.selected-card .info-box{
-  position:relative;
-  min-height:116px;
-  padding:18px 16px 17px 68px;
-  border:1px solid #e5dbcf;
-  border-radius:15px;
-  background:#fffdfa;
-  color:#51453b;
-  box-shadow:0 4px 13px rgba(61,43,31,.035);
-  font-size:13px;
-  line-height:1.7;
-}
-.selected-card .info-box strong{
-  margin-bottom:6px;
-  color:#34271f;
-  font-size:15px;
-  font-weight:900;
-  line-height:1.25;
-}
-.selected-card .info-box::before{
-  position:absolute;
-  left:16px;
-  top:17px;
-  display:grid;
-  place-items:center;
-  width:38px;
-  height:38px;
-  border-radius:50%;
-  background:#f3e7d4;
-  color:#594333;
-  font-size:20px;
-  font-weight:900;
-}
-.selected-card .info-box:nth-child(1)::before{content:'♪'}
-.selected-card .info-box:nth-child(2)::before{content:'𝄢';font-size:22px}
-.selected-card .info-box:nth-child(3)::before{content:'≈';font-size:25px}
-.selected-card .info-box:nth-child(4)::before{content:'⌁';font-size:22px}
-
-/* Desktop/tablet: keep the current responsive behavior, only polish it */
-@media(max-width:820px){
-  .controls .selection-filters>label{min-height:106px}
-  .selected-card[data-chord-orientation="vertical"] .selected-content{grid-template-columns:1fr!important}
-  .selected-card .info-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+/* ===== Page flow: no old overlapping hero card ===== */
+body.chord-ui-v3 .container{width:min(940px,calc(100% - 28px));margin:28px auto 72px}
+body.chord-ui-v3 .controls{
+  padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;backdrop-filter:none
 }
 
-@media(max-width:640px){
-  .controls .search-field input{min-height:62px;padding-left:54px;background-position:18px 50%;font-size:17px}
-  .controls .selection-filters>label{min-height:auto;padding:13px}
-  .controls .popular-slash{padding:14px}
-  .selected-chord .selected-card{padding:18px;border-radius:20px}
-  .selected-card .selected-heading{grid-template-columns:1fr;padding-bottom:15px}
-  .selected-card .selected-name{font-size:clamp(48px,15vw,70px)}
-  .selected-card .diagram-orientation-control{grid-column:1;grid-row:auto;justify-self:stretch;margin-top:13px}
-  .selected-card .diagram-orientation-toggle{width:100%;min-height:46px}
-  .selected-card .diagram-panel{min-height:230px;padding:14px 9px}
-  .selected-card .diagram-wrap{min-height:195px}
-  .selected-card[data-chord-orientation="horizontal"] .orientation-horizontal{width:100%!important;max-width:100%!important}
-  .selected-card[data-chord-orientation="vertical"] .orientation-vertical{width:min(100%,285px)!important;max-width:285px!important}
-  .selected-card .info-list{grid-template-columns:1fr}
-  .selected-card .info-box{min-height:104px;padding:16px 14px 15px 64px}
-  .selected-card .info-box::before{left:14px;top:15px}
+/* 1. Search is the main entry point */
+body.chord-ui-v3 .controls .search-field{
+  display:block;margin:0 0 22px;color:transparent;font-size:0;font-weight:900
+}
+body.chord-ui-v3 .controls .search-field input{
+  width:100%;min-height:72px;padding:19px 24px 19px 64px;
+  border:1px solid #d8c7b1;border-radius:28px;background:#fff;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='%23372a20' stroke-width='2.15' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-4-4'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:22px 50%;
+  color:#372a20;font-size:18px;font-weight:750;outline:none;
+  box-shadow:var(--ui3-shadow);
+}
+body.chord-ui-v3 .controls .search-field input::placeholder{color:#aaa29a;font-weight:700}
+body.chord-ui-v3 .controls .search-field input:focus{border-color:var(--ui3-accent);box-shadow:0 0 0 4px rgba(255,107,53,.11),var(--ui3-shadow)}
+body.chord-ui-v3 .controls .search-field small{display:block;min-height:0;margin-top:8px;padding-left:8px;color:var(--ui3-muted);font-size:11px;font-weight:750}
+
+/* 2. Three equal filter cards */
+body.chord-ui-v3 .selection-filters{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:stretch
+}
+body.chord-ui-v3 .selection-filters>label{
+  position:relative;display:grid;grid-template-rows:auto 1fr;gap:10px;min-height:126px;
+  padding:18px 15px 15px 48px;border:1px solid var(--ui3-line);border-radius:17px;
+  background:var(--ui3-panel);box-shadow:var(--ui3-shadow-soft);
+  color:#3a2b21;font-size:14px;font-weight:900;line-height:1.25
+}
+body.chord-ui-v3 .selection-filters>label::before{
+  position:absolute;left:17px;top:17px;color:#3d2b20;font-size:20px;font-weight:900;line-height:1
+}
+body.chord-ui-v3 .ui3-filter-root::before{content:'♪'}
+body.chord-ui-v3 .ui3-filter-type::before{content:'☷'}
+body.chord-ui-v3 .ui3-filter-bass::before{content:'⊕'}
+body.chord-ui-v3 .selection-filters>label select{
+  grid-column:1/-1;align-self:end;width:calc(100% + 33px);margin-left:-33px;
+  min-height:54px;padding:13px 14px;border:1px solid #d9c5ad;border-radius:11px;
+  background:#fff;color:#35271e;font-size:16px;font-weight:800;outline:none
+}
+body.chord-ui-v3 .selection-filters>label select:focus{border-color:var(--ui3-accent);box-shadow:0 0 0 3px rgba(255,107,53,.10)}
+
+/* Information note is its own card */
+body.chord-ui-v3 .control-note{
+  position:relative;margin:20px 0 0;padding:17px 18px 17px 58px;
+  border:1px solid #e1d3c1;border-radius:15px;background:#f8f2e8;
+  color:#594a3d;font-size:13px;font-weight:650;line-height:1.7
+}
+body.chord-ui-v3 .control-note::before{
+  content:'i';position:absolute;left:18px;top:50%;transform:translateY(-50%);
+  width:28px;height:28px;display:grid;place-items:center;border-radius:50%;
+  background:#6a5441;color:#fff;font-size:17px;font-weight:950
+}
+
+/* Quick chips are a separate framed section */
+body.chord-ui-v3 .popular-slash{
+  margin-top:20px;padding:18px 20px;border:1px solid var(--ui3-line);border-radius:16px;
+  background:rgba(255,253,249,.68);box-shadow:none
+}
+body.chord-ui-v3 .popular-slash-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px}
+body.chord-ui-v3 .popular-slash-heading p{margin:0;color:#37291f;font-size:17px;font-weight:950}
+body.chord-ui-v3 .popular-slash-heading span{color:#8a7d70;font-size:11px;font-weight:700}
+body.chord-ui-v3 .slash-quick-list{display:flex;flex-wrap:wrap;gap:9px 10px}
+body.chord-ui-v3 .slash-chip{
+  min-height:38px;padding:8px 16px;border:1px solid #d9c7b1;border-radius:999px;
+  background:#fffdfa;color:#3d3027;font-weight:850;box-shadow:none
+}
+body.chord-ui-v3 .slash-chip:hover,body.chord-ui-v3 .slash-chip:focus-visible{border-color:var(--ui3-accent);background:#fff7f1}
+
+/* ===== 3. Every chord uses the concept-3 card ===== */
+body.chord-ui-v3 .selected-chord{margin-top:22px;scroll-margin-top:105px}
+body.chord-ui-v3 .selected-card{
+  overflow:hidden;padding:26px;border:1px solid var(--ui3-line);border-radius:22px;
+  background:var(--ui3-panel);box-shadow:0 12px 30px rgba(61,43,31,.085)
+}
+body.chord-ui-v3 .selected-heading{
+  position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 16px;
+  align-items:start;padding:0 0 17px;border-bottom:1px solid #ede3d6
+}
+body.chord-ui-v3 .selected-label{grid-column:1/-1;margin:0;color:#8b7b6c;font-size:10px;font-weight:850;letter-spacing:.16em}
+body.chord-ui-v3 .selected-name{
+  grid-column:1;margin:0;color:#362319;font-family:Georgia,"Times New Roman","Noto Serif JP",serif;
+  font-size:clamp(52px,9vw,78px);font-weight:800;line-height:.98;letter-spacing:-.045em;overflow-wrap:anywhere
+}
+body.chord-ui-v3 .meta{grid-column:1;display:flex;flex-wrap:wrap;gap:7px;margin:6px 0 0}
+body.chord-ui-v3 .badge{
+  padding:6px 10px;border:1px solid #ddd0bf;border-radius:7px;background:#f7f1e8;
+  color:#6e5f51;font-size:11px;font-weight:850
+}
+body.chord-ui-v3 .badge:first-child{border-color:#ffc0a5;background:#fff5ef;color:#df5b2a}
+
+/* 4. Existing orientation button stays a clear action in the header */
+body.chord-ui-v3 .diagram-orientation-control{
+  grid-column:2;grid-row:2/span 2;align-self:start;justify-self:end;margin:0
+}
+body.chord-ui-v3 .diagram-orientation-toggle{
+  min-height:43px;padding:9px 13px;border:1px solid #d1baa0;border-radius:10px;
+  background:#fff;color:#49372b;font-size:12px;font-weight:900;box-shadow:none
+}
+body.chord-ui-v3 .diagram-orientation-toggle:hover{border-color:var(--ui3-accent);background:#fff7f1}
+
+/* Preserve all forms: use the original functional form buttons as a compact, scrollable selector. */
+body.chord-ui-v3 .all-chords-compact-ui{display:none!important}
+body.chord-ui-v3 .selected-card .form-tabs{
+  display:flex!important;gap:0;margin:17px 0 14px;padding:0;overflow-x:auto;scrollbar-width:none;
+  border:1px solid #dccbb7;border-radius:10px;background:#fff;box-shadow:none
+}
+body.chord-ui-v3 .selected-card .form-tabs::-webkit-scrollbar{display:none}
+body.chord-ui-v3 .form-tab{
+  flex:0 0 auto;min-width:86px;min-height:48px;padding:8px 12px;border:0;border-right:1px solid #e3d7c8;border-radius:0;
+  background:#fff;color:#493a30;font-size:12px;font-weight:850;box-shadow:none
+}
+body.chord-ui-v3 .form-tab:last-child{border-right:0}
+body.chord-ui-v3 .form-tab small{display:block;margin-top:2px;color:#8b7d70;font-size:9px;font-weight:700;white-space:nowrap}
+body.chord-ui-v3 .form-tab.active{background:linear-gradient(180deg,#ff7c43,#f26728);color:#fff;box-shadow:none}
+body.chord-ui-v3 .form-tab.active small{color:#fff;opacity:.9}
+
+/* Diagram is the main visual block. Information sits below, as in concept 3. */
+body.chord-ui-v3 .selected-content,
+body.chord-ui-v3 .selected-card[data-chord-orientation="vertical"] .selected-content,
+body.chord-ui-v3 .selected-card[data-chord-orientation="horizontal"] .selected-content{
+  display:grid!important;grid-template-columns:1fr!important;gap:14px;margin-top:0;align-items:stretch
+}
+body.chord-ui-v3 .diagram-panel{
+  min-height:300px;display:grid;place-items:center;padding:20px 18px;
+  border:1px solid #e1d2bf;border-radius:15px;background:linear-gradient(180deg,#fff 0%,#fdfaf5 100%);
+  box-shadow:none
+}
+body.chord-ui-v3 .diagram-wrap{width:100%;min-height:260px;display:grid;place-items:center;overflow:hidden}
+body.chord-ui-v3 .orientation-horizontal{width:min(100%,650px)!important;max-width:650px!important}
+body.chord-ui-v3 .orientation-vertical{width:min(100%,320px)!important;max-width:320px!important}
+body.chord-ui-v3 .dot{fill:var(--ui3-accent)}
+body.chord-ui-v3 .barre{stroke:var(--ui3-accent)}
+
+/* 5. Four readable information tiles, always shared by all chord types */
+body.chord-ui-v3 .info-list{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch
+}
+body.chord-ui-v3 .info-box{
+  position:relative;min-height:116px;padding:17px 16px 16px 68px;
+  border:1px solid #e4d7c7;border-radius:14px;background:#fffdfa;color:#57483d;
+  box-shadow:0 3px 10px rgba(61,43,31,.025);font-size:13px;font-weight:620;line-height:1.7
+}
+body.chord-ui-v3 .info-box strong{display:block;margin:0 0 5px;color:#38291f;font-size:16px;font-weight:950;line-height:1.25}
+body.chord-ui-v3 .info-box::before{
+  position:absolute;left:15px;top:16px;width:40px;height:40px;display:grid;place-items:center;
+  border-radius:50%;background:#f3e5d0;color:#4f3828;font-size:21px;font-weight:900
+}
+body.chord-ui-v3 .info-box:nth-child(1)::before{content:'♪'}
+body.chord-ui-v3 .info-box:nth-child(2)::before{content:'𝄢';font-size:23px}
+body.chord-ui-v3 .info-box:nth-child(3)::before{content:'⌁';font-size:23px}
+body.chord-ui-v3 .info-box:nth-child(4)::before{content:'◉';font-size:18px}
+
+footer{color:#7f7267}
+
+@media(max-width:700px){
+  body.chord-ui-v3 .hero{padding:15px 76px 15px 15px}
+  body.chord-ui-v3 .ui3-brand{gap:11px;min-height:62px}
+  body.chord-ui-v3 .ui3-brand-icon{flex-basis:54px;width:54px;height:54px;border-radius:14px;font-size:27px}
+  body.chord-ui-v3 .ui3-brand-title{font-size:29px}
+  body.chord-ui-v3 .ui3-brand-sub{margin-top:5px;font-size:11px}
+  body.chord-ui-v3 .ngm-btn{top:13px!important;right:12px!important;width:54px!important;height:54px!important;border-radius:14px!important;font-size:24px!important}
+  body.chord-ui-v3 .site-nav{grid-auto-columns:minmax(112px,1fr)}
+  body.chord-ui-v3 .site-nav a{min-width:112px;min-height:78px;padding:12px 9px;font-size:13px}
+  body.chord-ui-v3 .container{width:min(100% - 18px,940px);margin-top:20px}
+  body.chord-ui-v3 .controls .search-field{margin-bottom:15px}
+  body.chord-ui-v3 .controls .search-field input{min-height:62px;padding:15px 17px 15px 54px;border-radius:22px;background-position:17px 50%;background-size:26px;font-size:16px}
+  body.chord-ui-v3 .selection-filters{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+  body.chord-ui-v3 .selection-filters>label{min-height:108px;padding:13px 8px 9px 30px;border-radius:13px;font-size:11px}
+  body.chord-ui-v3 .selection-filters>label::before{left:9px;top:13px;font-size:16px}
+  body.chord-ui-v3 .selection-filters>label select{width:calc(100% + 22px);margin-left:-22px;min-height:44px;padding:9px 6px;border-radius:9px;font-size:13px;font-weight:800}
+  body.chord-ui-v3 .control-note{margin-top:14px;padding:14px 12px 14px 48px;font-size:11px}
+  body.chord-ui-v3 .control-note::before{left:13px;width:25px;height:25px;font-size:14px}
+  body.chord-ui-v3 .popular-slash{margin-top:14px;padding:15px 13px}
+  body.chord-ui-v3 .popular-slash-heading{align-items:flex-start;flex-direction:column;gap:3px}
+  body.chord-ui-v3 .slash-chip{min-height:34px;padding:7px 12px;font-size:12px}
+  body.chord-ui-v3 .selected-card{padding:17px;border-radius:18px}
+  body.chord-ui-v3 .selected-heading{grid-template-columns:minmax(0,1fr) auto;gap:7px 9px;padding-bottom:13px}
+  body.chord-ui-v3 .selected-name{font-size:clamp(44px,14vw,62px)}
+  body.chord-ui-v3 .diagram-orientation-toggle{min-height:40px;padding:8px 10px;font-size:10px}
+  body.chord-ui-v3 .selected-card .form-tabs{margin:13px 0 12px}
+  body.chord-ui-v3 .form-tab{min-width:72px;min-height:43px;padding:7px 9px;font-size:11px}
+  body.chord-ui-v3 .diagram-panel{min-height:245px;padding:12px 7px}
+  body.chord-ui-v3 .diagram-wrap{min-height:215px}
+  body.chord-ui-v3 .orientation-horizontal{width:100%!important;max-width:100%!important}
+  body.chord-ui-v3 .orientation-vertical{width:min(100%,285px)!important;max-width:285px!important}
+  body.chord-ui-v3 .info-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  body.chord-ui-v3 .info-box{min-height:112px;padding:14px 9px 12px 49px;border-radius:12px;font-size:10.5px;line-height:1.55}
+  body.chord-ui-v3 .info-box strong{font-size:13px}
+  body.chord-ui-v3 .info-box::before{left:9px;top:13px;width:32px;height:32px;font-size:17px}
+  body.chord-ui-v3 .info-box:nth-child(2)::before{font-size:19px}
+}
+
+@media(max-width:365px){
+  body.chord-ui-v3 .ui3-brand-sub{display:none}
+  body.chord-ui-v3 .selection-filters{gap:5px}
+  body.chord-ui-v3 .selection-filters>label{font-size:10px}
+  body.chord-ui-v3 .selection-filters>label select{font-size:12px}
 }
