@@ -3,13 +3,22 @@
 const ROOT='https://akito0802.github.io/NEET-note/';
 document.querySelectorAll(`a[href="${ROOT}"]`).forEach(a=>{const t=(a.textContent||'').trim();a.href=/ノート/.test(t)?ROOT+'?mode=note':ROOT+'home.html'});
 
-// Guitar chord dictionary visual layer only. No behavior/data changes.
-if(document.querySelector('#selectedChord')&&document.querySelector('#rootSelect')&&!document.querySelector('#chord-ui-v3-style')){
-  const l=document.createElement('link');
-  l.id='chord-ui-v3-style';
-  l.rel='stylesheet';
-  l.href='ui-v3.css?v=20260815-1';
-  document.head.appendChild(l);
+// Guitar chord dictionary concept-3 visual layer only. No chord/search/form behavior changes.
+if(document.querySelector('#selectedChord')&&document.querySelector('#rootSelect')){
+  if(!document.querySelector('#chord-ui-v3-style')){
+    const l=document.createElement('link');
+    l.id='chord-ui-v3-style';
+    l.rel='stylesheet';
+    l.href='ui-v3.css?v=20260815-2';
+    document.head.appendChild(l);
+  }
+  if(!window.__CHORD_UI_V3_LAYOUT_LOADER__){
+    window.__CHORD_UI_V3_LAYOUT_LOADER__=true;
+    const u=document.createElement('script');
+    u.src='ui-v3-layout.js?v=20260815-2';
+    u.async=false;
+    document.body.appendChild(u);
+  }
 }
 
 if(!window.__NEET_CHORD_ORIENTATION_LOADER__){
