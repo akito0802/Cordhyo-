@@ -1,0 +1,187 @@
+/* V4 immediate chord view — visual/layout only.
+   Goal: open the page, choose quickly, and see the chord immediately.
+   Existing search, detailed pickers, chord data and form behavior stay intact below the result. */
+
+body.chord-ui-v4 .container{
+  width:min(940px,calc(100% - 18px))!important;
+  margin:10px auto 60px!important;
+}
+
+/* Compact quick selectors shown before the chord result. */
+body.chord-ui-v4 .ui4-quick-selectors{
+  display:grid!important;
+  grid-template-columns:.72fr 1.38fr .9fr!important;
+  gap:8px!important;
+  margin:0 0 10px!important;
+  padding:10px!important;
+  border:1px solid #e2d7c9!important;
+  border-radius:15px!important;
+  background:rgba(255,253,249,.96)!important;
+  box-shadow:0 5px 16px rgba(69,48,33,.055)!important;
+}
+body.chord-ui-v4 .ui4-quick-selectors label{
+  display:block!important;
+  min-width:0!important;
+  margin:0!important;
+  color:#493a30!important;
+  font-size:10.5px!important;
+  font-weight:900!important;
+  line-height:1.2!important;
+}
+body.chord-ui-v4 .ui4-quick-selectors label>span{
+  display:block!important;
+  margin:0 0 6px!important;
+  padding-left:2px!important;
+  white-space:nowrap!important;
+}
+body.chord-ui-v4 .ui4-quick-selectors select{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  height:46px!important;
+  margin:0!important;
+  padding:9px 28px 9px 10px!important;
+  border:1px solid #dbcdbd!important;
+  border-radius:10px!important;
+  background:#fff!important;
+  color:#33271f!important;
+  font-size:13px!important;
+  font-weight:800!important;
+  line-height:1.2!important;
+  box-shadow:none!important;
+  outline:none!important;
+  -webkit-appearance:menulist!important;
+  appearance:auto!important;
+}
+body.chord-ui-v4 .ui4-quick-selectors select:focus{
+  border-color:#f36d32!important;
+  box-shadow:0 0 0 3px rgba(243,109,50,.10)!important;
+}
+
+/* Chord card is now the primary content directly after the quick selectors. */
+body.chord-ui-v4 #selectedChord.ui4-primary-result{
+  margin:0!important;
+  scroll-margin-top:66px!important;
+}
+body.chord-ui-v4 #selectedChord.ui4-primary-result .selected-card{
+  margin:0!important;
+  padding:15px!important;
+  border-radius:18px!important;
+}
+body.chord-ui-v4 #selectedChord.ui4-primary-result .selected-heading{
+  padding-bottom:11px!important;
+}
+body.chord-ui-v4 #selectedChord.ui4-primary-result .selected-name{
+  font-size:clamp(42px,12vw,58px)!important;
+}
+
+/* Form selection remains the existing all-form grouped selector, but is easier to reach. */
+body.chord-ui-v4 #selectedChord .all-chords-compact-ui{
+  display:block!important;
+  margin:8px 0 10px!important;
+  padding:9px 10px!important;
+  border-radius:11px!important;
+}
+body.chord-ui-v4 #selectedChord .all-chords-select-label>span{
+  font-size:.74rem!important;
+}
+body.chord-ui-v4 #selectedChord .allChordsFormSelect{
+  min-height:50px!important;
+  padding:10px 38px 10px 11px!important;
+  font-size:16px!important;
+  border-radius:10px!important;
+}
+body.chord-ui-v4 #selectedChord .selected-card .form-tabs{
+  display:none!important;
+}
+
+/* Bring the diagram higher inside the card without shrinking its readability. */
+body.chord-ui-v4 #selectedChord .diagram-panel{
+  min-height:222px!important;
+  padding:9px 5px!important;
+  border-radius:13px!important;
+}
+body.chord-ui-v4 #selectedChord .diagram-wrap{
+  min-height:198px!important;
+}
+
+/* Search and the detailed picker remain available, but only after the chord result. */
+body.chord-ui-v4 .ui4-secondary-controls{
+  margin:14px 0 0!important;
+  padding-top:14px!important;
+  border-top:1px solid rgba(223,209,190,.72)!important;
+}
+body.chord-ui-v4 .ui4-secondary-controls .search-field{
+  margin-bottom:12px!important;
+}
+body.chord-ui-v4 .ui4-secondary-controls .search-field input{
+  min-height:54px!important;
+}
+
+@media(max-width:700px){
+  body.chord-ui-v4 .container{
+    width:min(100% - 14px,940px)!important;
+    margin-top:8px!important;
+  }
+  body.chord-ui-v4 .ui4-quick-selectors{
+    gap:6px!important;
+    margin-bottom:8px!important;
+    padding:8px!important;
+    border-radius:13px!important;
+  }
+  body.chord-ui-v4 .ui4-quick-selectors label{
+    font-size:9.5px!important;
+  }
+  body.chord-ui-v4 .ui4-quick-selectors label>span{
+    margin-bottom:5px!important;
+  }
+  body.chord-ui-v4 .ui4-quick-selectors select{
+    height:44px!important;
+    padding:8px 24px 8px 8px!important;
+    border-radius:9px!important;
+    font-size:12px!important;
+  }
+  body.chord-ui-v4 #selectedChord.ui4-primary-result .selected-card{
+    padding:13px!important;
+  }
+  body.chord-ui-v4 #selectedChord.ui4-primary-result .selected-heading{
+    gap:6px 8px!important;
+    padding-bottom:9px!important;
+  }
+  body.chord-ui-v4 #selectedChord.ui4-primary-result .selected-name{
+    font-size:clamp(40px,11.5vw,54px)!important;
+  }
+  body.chord-ui-v4 #selectedChord .all-chords-compact-ui{
+    margin:7px 0 9px!important;
+    padding:8px 9px!important;
+  }
+  body.chord-ui-v4 #selectedChord .allChordsFormSelect{
+    min-height:48px!important;
+  }
+  body.chord-ui-v4 #selectedChord .diagram-panel{
+    min-height:210px!important;
+    padding:7px 4px!important;
+  }
+  body.chord-ui-v4 #selectedChord .diagram-wrap{
+    min-height:188px!important;
+  }
+  body.chord-ui-v4 .ui4-secondary-controls{
+    margin-top:12px!important;
+    padding-top:12px!important;
+  }
+}
+
+@media(max-width:355px){
+  body.chord-ui-v4 .ui4-quick-selectors{
+    grid-template-columns:.7fr 1.35fr .95fr!important;
+    gap:4px!important;
+    padding:7px!important;
+  }
+  body.chord-ui-v4 .ui4-quick-selectors label{
+    font-size:9px!important;
+  }
+  body.chord-ui-v4 .ui4-quick-selectors select{
+    font-size:11px!important;
+    padding-left:6px!important;
+  }
+}
