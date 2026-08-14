@@ -24,15 +24,35 @@ filterLabels[0]?.classList.add('ui3-filter-root');
 filterLabels[1]?.classList.add('ui3-filter-type');
 filterLabels[2]?.classList.add('ui3-filter-bass');
 
+function placeResultCloser(){
+  const controls=document.querySelector('.controls');
+  const filters=document.querySelector('.selection-filters');
+  if(!controls||!filters)return;
+  if(host.parentElement!==controls||filters.nextElementSibling!==host){
+    filters.insertAdjacentElement('afterend',host);
+  }
+  host.classList.add('ui3-inline-result');
+}
+
 function enhanceCard(){
+  placeResultCloser();
   const card=host.querySelector('.selected-card');
   if(!card)return;
   card.dataset.uiConcept='3';
   card.querySelectorAll('.form-tab').forEach((button,i)=>{
     button.dataset.uiIndex=String(i+1);
   });
+
+  // Keep the recommended-form helper available, but show the actual chord card first.
+  const recommended=host.querySelector('.recommended-form-hero');
+  if(recommended&&recommended.previousElementSibling!==card){
+    card.insertAdjacentElement('afterend',recommended);
+  }
 }
 
 new MutationObserver(()=>requestAnimationFrame(enhanceCard)).observe(host,{childList:true,subtree:true});
-requestAnimationFrame(enhanceCard);
+requestAnimationFrame(()=>{
+  placeResultCloser();
+  enhanceCard();
+});
 })();
