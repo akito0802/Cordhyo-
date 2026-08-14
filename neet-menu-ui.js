@@ -15,19 +15,27 @@ if(document.querySelector('#selectedChord')&&document.querySelector('#rootSelect
   if(!window.__CHORD_UI_V3_LAYOUT_LOADER__){
     window.__CHORD_UI_V3_LAYOUT_LOADER__=true;
     const u=document.createElement('script');
-    u.src='ui-v3-layout.js?v=20260815-2';
+    u.src='ui-v3-layout.js?v=20260815-3';
     u.async=false;
     document.body.appendChild(u);
   }
 
-  // Load the final visual pass after page-specific UI scripts have injected their styles.
+  // Load the final visual passes after page-specific UI scripts have injected their styles.
   setTimeout(()=>{
-    if(document.querySelector('#chord-ui-v3-readability'))return;
-    const r=document.createElement('link');
-    r.id='chord-ui-v3-readability';
-    r.rel='stylesheet';
-    r.href='ui-v3-readability.css?v=20260815-4';
-    document.head.appendChild(r);
+    if(!document.querySelector('#chord-ui-v3-readability')){
+      const r=document.createElement('link');
+      r.id='chord-ui-v3-readability';
+      r.rel='stylesheet';
+      r.href='ui-v3-readability.css?v=20260815-4';
+      document.head.appendChild(r);
+    }
+    if(!document.querySelector('#chord-ui-v3-flow')){
+      const f=document.createElement('link');
+      f.id='chord-ui-v3-flow';
+      f.rel='stylesheet';
+      f.href='ui-v3-flow.css?v=20260815-1';
+      document.head.appendChild(f);
+    }
   },0);
 }
 
