@@ -1,43 +1,52 @@
 /* Concept 3 readability pass — visual only.
-   1) quieter notebook background
+   2) compact mobile header
    4) mobile filters stacked vertically
    5) clearer control hierarchy
+   NOTE: the notebook background is intentionally left untouched/restored.
 */
 
-/* 1. Quiet the notebook motif so controls win visually. */
-body.chord-ui-v3{
-  background:#f6f1e8!important;
-  background-image:linear-gradient(180deg,#fbf8f2 0%,#f6f1e8 44%,#f3eee6 100%)!important;
+/* 2. Compact the header without changing navigation or menu behavior. */
+body.chord-ui-v3 .hero{
+  height:auto!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:12px 78px 12px 16px!important;
+  place-items:initial!important;
 }
-body.chord-ui-v3 .container,
-body.chord-ui-v3 .controls,
-body.chord-ui-v3 .root-note-pad,
-body.chord-ui-v3 .type-picker,
-body.chord-ui-v3 .selection-filters>label,
-body.chord-ui-v3 .popular-slash,
-body.chord-ui-v3 .control-note,
-body.chord-ui-v3 .selected-card,
-body.chord-ui-v3 .diagram-panel,
-body.chord-ui-v3 .info-box{
-  background-image:none!important;
+body.chord-ui-v3 .hero>div{
+  width:min(100%,1100px)!important;
+  min-height:0!important;
+  margin:0 auto!important;
 }
-body.chord-ui-v3 .container::before,
-body.chord-ui-v3 .container::after,
-body.chord-ui-v3 .controls::before,
-body.chord-ui-v3 .controls::after,
-body.chord-ui-v3 .selected-card::before,
-body.chord-ui-v3 .selected-card::after{
-  opacity:.035!important;
-  pointer-events:none!important;
+body.chord-ui-v3 .ui3-brand{
+  min-height:54px!important;
+  gap:11px!important;
 }
-body.chord-ui-v3 .root-note-pad,
-body.chord-ui-v3 .type-picker,
-body.chord-ui-v3 .selection-filters>label,
-body.chord-ui-v3 .popular-slash,
-body.chord-ui-v3 .selected-card,
-body.chord-ui-v3 .diagram-panel,
-body.chord-ui-v3 .info-box{
-  background-color:rgba(255,253,249,.985)!important;
+body.chord-ui-v3 .ui3-brand-icon{
+  flex:0 0 48px!important;
+  width:48px!important;
+  height:48px!important;
+  border-radius:13px!important;
+  font-size:24px!important;
+  box-shadow:0 5px 12px rgba(74,45,25,.13)!important;
+}
+body.chord-ui-v3 .ui3-brand-title{
+  font-size:clamp(26px,3.4vw,36px)!important;
+  line-height:1!important;
+}
+body.chord-ui-v3 .ui3-brand-sub{
+  margin-top:5px!important;
+  font-size:12px!important;
+  line-height:1.35!important;
+}
+body.chord-ui-v3 .ngm-btn{
+  top:11px!important;
+  right:12px!important;
+  width:48px!important;
+  height:48px!important;
+  border-radius:13px!important;
+  font-size:22px!important;
+  box-shadow:0 5px 12px rgba(61,43,31,.08)!important;
 }
 
 /* 4. Make the generated root/type/bass controls read as one vertical flow. */
@@ -120,7 +129,6 @@ body.chord-ui-v3 .selection-filters>.slash-field{
   border:1px solid #ddcfbd!important;
   border-radius:15px!important;
   box-shadow:0 3px 10px rgba(61,43,31,.035)!important;
-  background:#fffdf9!important;
   color:#4d3d31!important;
   font-size:.78rem!important;
   font-weight:900!important;
@@ -184,10 +192,43 @@ body.chord-ui-v3 .ngm-btn{
   background:#fffdf9!important;
   color:#49382d!important;
   border-color:#d9c7af!important;
-  box-shadow:0 5px 14px rgba(61,43,31,.07)!important;
 }
 
 @media(max-width:700px){
+  body.chord-ui-v3 .hero{
+    height:auto!important;
+    min-height:0!important;
+    padding:9px 62px 9px 11px!important;
+  }
+  body.chord-ui-v3 .ui3-brand{
+    min-height:44px!important;
+    gap:9px!important;
+  }
+  body.chord-ui-v3 .ui3-brand-icon{
+    flex-basis:40px!important;
+    width:40px!important;
+    height:40px!important;
+    border-radius:11px!important;
+    font-size:20px!important;
+  }
+  body.chord-ui-v3 .ui3-brand-title{
+    font-size:24px!important;
+  }
+  body.chord-ui-v3 .ui3-brand-sub{
+    margin-top:3px!important;
+    font-size:10px!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  body.chord-ui-v3 .ngm-btn{
+    top:8px!important;
+    right:9px!important;
+    width:42px!important;
+    height:42px!important;
+    border-radius:11px!important;
+    font-size:20px!important;
+  }
   body.chord-ui-v3 .container{width:min(100% - 20px,940px)!important}
   body.chord-ui-v3 .root-note-pad{
     display:block!important;
@@ -246,14 +287,10 @@ body.chord-ui-v3 .ngm-btn{
   body.chord-ui-v3 .selection-filters>.slash-field{
     padding:13px!important;
   }
-  body.chord-ui-v3 .control-note,
-  body.chord-ui-v3 .popular-slash,
-  body.chord-ui-v3 .selected-card{
-    background:#fffdf9!important;
-  }
 }
 
 @media(max-width:390px){
+  body.chord-ui-v3 .ui3-brand-sub{display:none!important}
   body.chord-ui-v3 .type-buttons{
     grid-template-columns:repeat(3,minmax(0,1fr))!important;
   }
