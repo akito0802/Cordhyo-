@@ -19,6 +19,17 @@ if(document.querySelector('#selectedChord')&&document.querySelector('#rootSelect
     u.async=false;
     document.body.appendChild(u);
   }
+
+  // Load the readability pass after page-specific UI scripts have injected their styles.
+  // This keeps all existing behavior intact while ensuring the mobile visual hierarchy wins.
+  setTimeout(()=>{
+    if(document.querySelector('#chord-ui-v3-readability'))return;
+    const r=document.createElement('link');
+    r.id='chord-ui-v3-readability';
+    r.rel='stylesheet';
+    r.href='ui-v3-readability.css?v=20260815-1';
+    document.head.appendChild(r);
+  },0);
 }
 
 if(!window.__NEET_CHORD_ORIENTATION_LOADER__){
