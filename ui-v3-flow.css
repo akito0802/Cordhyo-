@@ -1,0 +1,119 @@
+/* Concept 3 flow refinement — visual only.
+   Bring the chord result closer to the selectors and restore the universal grouped form picker.
+*/
+
+/* Result now sits immediately below the selectors. */
+body.chord-ui-v3 #selectedChord.ui3-inline-result{
+  margin:12px 0 0!important;
+  scroll-margin-top:76px!important;
+}
+body.chord-ui-v3 #selectedChord.ui3-inline-result .selected-card{
+  margin:0!important;
+}
+
+/* The explanatory/quick-on-chord sections now come after the actual chord result. */
+body.chord-ui-v3 #selectedChord.ui3-inline-result + .control-note{
+  margin-top:14px!important;
+}
+
+/* Restore the existing universal grouped form selector instead of horizontal form tabs. */
+body.chord-ui-v3 .selected-card .form-tabs{
+  display:none!important;
+}
+body.chord-ui-v3 .all-chords-compact-ui{
+  display:block!important;
+  margin:12px 0 14px!important;
+  padding:12px 13px!important;
+  border:1px solid #e2d7c9!important;
+  border-radius:13px!important;
+  background:#fff!important;
+  box-shadow:none!important;
+}
+body.chord-ui-v3 .all-chords-select-label{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:8px!important;
+  color:#3d2e24!important;
+}
+body.chord-ui-v3 .all-chords-select-label>span{
+  display:flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  flex-wrap:wrap!important;
+  color:#5c4d41!important;
+  font-size:.8rem!important;
+  font-weight:900!important;
+}
+body.chord-ui-v3 .all-chords-select-label>span::before{
+  content:'フォーム選択';
+  color:#3d2e24;
+  font-size:.82rem;
+  font-weight:950;
+  margin-right:2px;
+}
+body.chord-ui-v3 .all-chords-select-label b{
+  padding:3px 7px!important;
+  border-radius:999px!important;
+  font-size:.66rem!important;
+  font-weight:850!important;
+}
+body.chord-ui-v3 .form-total{
+  background:#f3ede5!important;
+  color:#6a5a4d!important;
+}
+body.chord-ui-v3 .reference-count{
+  background:#eef6f7!important;
+  color:#356a73!important;
+}
+body.chord-ui-v3 .bossa-count{
+  background:#f0f4e7!important;
+  color:#526636!important;
+}
+body.chord-ui-v3 .allChordsFormSelect{
+  display:block!important;
+  width:100%!important;
+  min-height:52px!important;
+  padding:11px 42px 11px 13px!important;
+  border:1px solid #d8cbbc!important;
+  border-radius:11px!important;
+  background:#fff!important;
+  color:#33271f!important;
+  font-size:16px!important;
+  font-weight:800!important;
+  line-height:1.3!important;
+  box-shadow:none!important;
+  outline:none!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+  -webkit-appearance:menulist!important;
+  appearance:auto!important;
+}
+body.chord-ui-v3 .allChordsFormSelect:focus{
+  border-color:#f36d32!important;
+  box-shadow:0 0 0 3px rgba(243,109,50,.11)!important;
+}
+
+/* Recommended form remains available, but it no longer blocks the chord card. */
+body.chord-ui-v3 #selectedChord.ui3-inline-result .recommended-form-hero{
+  margin:10px 0 0!important;
+}
+
+@media(max-width:700px){
+  body.chord-ui-v3 #selectedChord.ui3-inline-result{
+    margin-top:10px!important;
+    scroll-margin-top:68px!important;
+  }
+  body.chord-ui-v3 .all-chords-compact-ui{
+    margin:10px 0 12px!important;
+    padding:11px!important;
+    border-radius:12px!important;
+  }
+  body.chord-ui-v3 .all-chords-select-label>span{
+    font-size:.76rem!important;
+  }
+  body.chord-ui-v3 .allChordsFormSelect{
+    min-height:54px!important;
+    padding:12px 38px 12px 12px!important;
+    font-size:16px!important;
+  }
+}
