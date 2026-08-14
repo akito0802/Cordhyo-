@@ -27,7 +27,7 @@ if(document.querySelector('#selectedChord')&&document.querySelector('#rootSelect
     const r=document.createElement('link');
     r.id='chord-ui-v3-readability';
     r.rel='stylesheet';
-    r.href='ui-v3-readability.css?v=20260815-2';
+    r.href='ui-v3-readability.css?v=20260815-3';
     document.head.appendChild(r);
   },0);
 }
