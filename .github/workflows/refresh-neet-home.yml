@@ -34,7 +34,7 @@ jobs:
               s=p.read_text(encoding='utf-8'); old=s
               s=anchor.sub(replace_anchor,s)
               s=re.sub(r'https://akito0802\.github\.io/NEET-note/global-menu-v4\.js\?v=[^"\']+',ROOT+'global-menu-v4.js?v=20260814-7',s)
-              s=re.sub(r'neet-menu-ui\.js\?v=[^"\']+','neet-menu-ui.js?v=20260815-ui3d',s)
+              s=re.sub(r'neet-menu-ui\.js\?v=[^"\']+','neet-menu-ui.js?v=20260815-ui3e',s)
               if 'global-menu-v4.js' not in s:
                   s=s.replace('</body>',LOADER+'\n</body>',1) if '</body>' in s else s+'\n'+LOADER+'\n'
               if s!=old:
@@ -48,6 +48,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "Refresh compact chord header cache"
+          git commit -m "Refresh restored chord header cache"
           git pull --rebase origin main
           git push
