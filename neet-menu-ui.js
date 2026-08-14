@@ -3,7 +3,8 @@
 const ROOT='https://akito0802.github.io/NEET-note/';
 document.querySelectorAll(`a[href="${ROOT}"]`).forEach(a=>{const t=(a.textContent||'').trim();a.href=/ノート/.test(t)?ROOT+'?mode=note':ROOT+'home.html'});
 
-// Guitar chord dictionary concept-3 visual layer only. No chord/search/form behavior changes.
+// Guitar chord dictionary concept-3 base + V4 immediate chord-first layout.
+// Chord data, search, filters, form switching and menu behavior stay unchanged.
 if(document.querySelector('#selectedChord')&&document.querySelector('#rootSelect')){
   if(!document.querySelector('#chord-ui-v3-style')){
     const l=document.createElement('link');
@@ -15,12 +16,12 @@ if(document.querySelector('#selectedChord')&&document.querySelector('#rootSelect
   if(!window.__CHORD_UI_V3_LAYOUT_LOADER__){
     window.__CHORD_UI_V3_LAYOUT_LOADER__=true;
     const u=document.createElement('script');
-    u.src='ui-v3-layout.js?v=20260815-3';
+    u.src='ui-v3-layout.js?v=20260815-4';
     u.async=false;
     document.body.appendChild(u);
   }
 
-  // Load the final visual passes after page-specific UI scripts have injected their styles.
+  // Run after the page-specific UI scripts so V4 can reuse all existing selectors and form logic.
   setTimeout(()=>{
     if(!document.querySelector('#chord-ui-v3-readability')){
       const r=document.createElement('link');
@@ -35,6 +36,20 @@ if(document.querySelector('#selectedChord')&&document.querySelector('#rootSelect
       f.rel='stylesheet';
       f.href='ui-v3-flow.css?v=20260815-1';
       document.head.appendChild(f);
+    }
+    if(!document.querySelector('#chord-ui-v4-immediate-style')){
+      const v=document.createElement('link');
+      v.id='chord-ui-v4-immediate-style';
+      v.rel='stylesheet';
+      v.href='ui-v4-immediate.css?v=20260815-1';
+      document.head.appendChild(v);
+    }
+    if(!window.__CHORD_UI_V4_IMMEDIATE_LOADER__){
+      window.__CHORD_UI_V4_IMMEDIATE_LOADER__=true;
+      const j=document.createElement('script');
+      j.src='ui-v4-immediate.js?v=20260815-1';
+      j.async=false;
+      document.body.appendChild(j);
     }
   },0);
 }
