@@ -63,7 +63,7 @@ if(!window.__NEET_CHORD_ORIENTATION_LOADER__){
 }
 if(window.__NEET_MENU_V4_LOADER__)return;
 const s=document.createElement('script');
-s.src=ROOT+'global-menu-v4.js?v=20260814-7';
+s.src=ROOT+'global-menu-v4.js?v=20260817-5';
 s.defer=true;
 document.body.appendChild(s);
 })();
