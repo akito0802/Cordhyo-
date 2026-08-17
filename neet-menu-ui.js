@@ -4,7 +4,7 @@ const ROOT='https://akito0802.github.io/NEET-note/';
 document.querySelectorAll(`a[href="${ROOT}"]`).forEach(a=>{const t=(a.textContent||'').trim();a.href=/ノート/.test(t)?ROOT+'?mode=note':ROOT+'home.html'});
 
 // Guitar chord dictionary concept-3 base + V4 immediate chord-first layout.
-// Chord data, search, filters, form switching and menu behavior stay unchanged.
+// Chord data, search, filters and form switching stay unchanged.
 if(document.querySelector('#selectedChord')&&document.querySelector('#rootSelect')){
   if(!document.querySelector('#chord-ui-v3-style')){
     const l=document.createElement('link');
@@ -21,7 +21,6 @@ if(document.querySelector('#selectedChord')&&document.querySelector('#rootSelect
     document.body.appendChild(u);
   }
 
-  // Run after the page-specific UI scripts so V4 can reuse all existing selectors and form logic.
   setTimeout(()=>{
     if(!document.querySelector('#chord-ui-v3-readability')){
       const r=document.createElement('link');
@@ -63,7 +62,7 @@ if(!window.__NEET_CHORD_ORIENTATION_LOADER__){
 }
 if(window.__NEET_MENU_V4_LOADER__)return;
 const s=document.createElement('script');
-s.src=ROOT+'global-menu-v4.js?v=20260817-5';
+s.src=ROOT+'global-menu-v4.js?v=20260817-6';
 s.defer=true;
 document.body.appendChild(s);
 })();
