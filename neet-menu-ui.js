@@ -3,6 +3,38 @@
 const ROOT='https://akito0802.github.io/NEET-note/';
 document.querySelectorAll(`a[href="${ROOT}"]`).forEach(a=>{const t=(a.textContent||'').trim();a.href=/ノート/.test(t)?ROOT+'?mode=note':ROOT+'home.html'});
 
+// Chord dictionary safety net: always pin the shared hamburger to the left,
+// even if an older cached global-menu positioning script loads later.
+if(!window.__NEET_CHORD_MENU_LEFT_FIX__){
+  window.__NEET_CHORD_MENU_LEFT_FIX__=true;
+  const pinLeft=()=>{
+    const mobile=window.innerWidth<=600;
+    document.querySelectorAll('.ngm-btn').forEach(btn=>{
+      btn.style.setProperty('position','fixed','important');
+      btn.style.setProperty('top',mobile?'max(10px,env(safe-area-inset-top))':'max(12px,env(safe-area-inset-top))','important');
+      btn.style.setProperty('left',mobile?'max(10px,env(safe-area-inset-left))':'max(12px,env(safe-area-inset-left))','important');
+      btn.style.setProperty('right','auto','important');
+      btn.style.setProperty('bottom','auto','important');
+    });
+  };
+  const ensureFixScript=()=>{
+    if(document.querySelector('script[data-chord-menu-left-fix]'))return;
+    const f=document.createElement('script');
+    f.src=ROOT+'global-menu-left-top.js?v=20260818-2';
+    f.defer=true;
+    f.dataset.chordMenuLeftFix='1';
+    f.onload=pinLeft;
+    document.head.appendChild(f);
+  };
+  pinLeft();
+  ensureFixScript();
+  new MutationObserver(()=>{pinLeft();ensureFixScript();}).observe(document.documentElement,{childList:true,subtree:true});
+  window.addEventListener('resize',pinLeft,{passive:true});
+  setTimeout(pinLeft,0);
+  setTimeout(pinLeft,250);
+  setTimeout(pinLeft,1000);
+}
+
 // Guitar chord dictionary concept-3 base + V4 immediate chord-first layout.
 // Chord data, search, filters and form switching stay unchanged.
 if(document.querySelector('#selectedChord')&&document.querySelector('#rootSelect')){
@@ -62,7 +94,7 @@ if(!window.__NEET_CHORD_ORIENTATION_LOADER__){
 }
 if(window.__NEET_MENU_V4_LOADER__)return;
 const s=document.createElement('script');
-s.src=ROOT+'global-menu-v4.js?v=20260817-6';
+s.src=ROOT+'global-menu-v4.js?v=20260818-2';
 s.defer=true;
 document.body.appendChild(s);
 })();
