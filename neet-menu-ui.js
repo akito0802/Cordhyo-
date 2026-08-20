@@ -52,6 +52,14 @@ if(document.querySelector('#selectedChord')&&document.querySelector('#rootSelect
     u.async=false;
     document.body.appendChild(u);
   }
+  // GUITAR PRO deep-link bridge. One-shot loader, no DOM observer.
+  if(!window.__CHORD_GUITAR_PRO_DEEPLINK__){
+    window.__CHORD_GUITAR_PRO_DEEPLINK__=true;
+    const d=document.createElement('script');
+    d.src='chord-deeplink.js?v=20260820-1';
+    d.async=false;
+    document.body.appendChild(d);
+  }
 
   setTimeout(()=>{
     if(!document.querySelector('#chord-ui-v3-readability')){
