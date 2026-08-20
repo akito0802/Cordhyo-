@@ -18,7 +18,7 @@ jobs:
           tag='<script src="https://akito0802.github.io/NEET-note/global-menu-v4.js?v=20260818-left2"></script>'
           for p in Path('.').rglob('*.html'):
               s=p.read_text(encoding='utf-8'); original=s
-              s=re.sub(r'neet-menu-ui\.js\?v=[^"\']+', 'neet-menu-ui.js?v=20260818-left2', s)
+              s=re.sub(r'neet-menu-ui\.js\?v=[^"\']+', 'neet-menu-ui.js?v=20260820-gp1', s)
               s=re.sub(r'<script[^>]+src=["\']https://akito0802\.github\.io/NEET-note/global-menu(?:-v4)?\.js\?v=[^"\']+["\'][^>]*></script>','',s)
               s=re.sub(r'<script[^>]+src=["\']https://akito0802\.github\.io/NEET-note/menu-dedupe\.js\?v=[^"\']+["\'][^>]*></script>','',s)
               s=s.replace('</body>',tag+'\n</body>',1) if '</body>' in s else s+'\n'+tag+'\n'
@@ -29,6 +29,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "Bust chord menu cache and unify left-top menu"
+          git commit -m "Enable GUITAR PRO chord deep links"
           git pull --rebase origin main
           git push
