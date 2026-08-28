@@ -41,3 +41,11 @@ document.head.appendChild(sharedMenuStyle);
 const sharedMenuScript=document.createElement('script');
 sharedMenuScript.src='shared-menu.js?v=2';
 document.body.appendChild(sharedMenuScript);
+
+// コード辞典：音名から和音を逆引きする検索機能。
+if(!document.querySelector('script[data-note-chord-search]')){
+ const noteChordSearchScript=document.createElement('script');
+ noteChordSearchScript.src='note-chord-search.js?v=20260828-1';
+ noteChordSearchScript.dataset.noteChordSearch='1';
+ document.body.appendChild(noteChordSearchScript);
+}
